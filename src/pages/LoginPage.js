@@ -1,120 +1,143 @@
 import React, { useState } from 'react';
 import { authService } from '../services/auth';
-import { handleApiError } from '../utils/helpers';
-import LoadingSpinner from '../components/LoadingSpinner';
-import './LoginPage.css';
 
 const LoginPage = ({ onLogin }) => {
-    const [formData, setFormData] = useState({
-        email: 'demo@telenos.com', // Pre-filled for demo
-        password: 'demo123'
-    });
+    const [isLogin, setIsLogin] = useState(true);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+    const [confirmationCode, setConfirmationCode] = useState('');
+    const [needsConfirmation, setNeedsConfirmation] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-        // Clear error when user starts typing
-        if (error) setError('');
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!formData.email || !formData.password) {
-            setError('Please enter both email and password');
-            return;
-        }
-
         setLoading(true);
         setError('');
 
         try {
-            const result = await authService.signIn(formData.email, formData.password);
-
-            if (result.success) {
+            if (needsConfirmation) {
+                // Confirm sign up
+                await authService.confirmSignUp(email, confirmationCode);
+                const loginResult = await authService.signIn(email, password);
+                onLogin(loginResult.user);
+            } else if (isLogin) {
+                // Sign in
+                const result = await authService.signIn(email, password);
                 onLogin(result.user);
+            } else {
+                // Sign up
+                const result = await authService.signUp(email, password, name);
+                if (result.needsConfirmation) {
+                    setNeedsConfirmation(true);
+                }
             }
-        } catch (err) {
-            setError(handleApiError(err));
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleForgotPassword = async () => {
+        if (!email) {
+            setError('Please enter your email address');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            await authService.forgotPassword(email);
+            alert('Password reset email sent! Check your inbox.');
+        } catch (error) {
+            setError(error.message);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="login-page">
-            <div className="login-container">
-                <div className="login-header">
-                    <h1 className="login-title">Healthcare Provider Login</h1>
-                    <p className="login-subtitle">HIPAA-Compliant Platform</p>
-                </div>
+        <div className="login-container">
+            <div className="login-form">
+                <h2>
+                    {needsConfirmation ? 'Confirm Your Email' :
+                        isLogin ? 'Sign In' : 'Create Account'}
+                </h2>
 
-                <form className="login-form" onSubmit={handleSubmit}>
-                    {error && (
-                        <div className="error-message">
-                            {error}
-                        </div>
+                {error && <div className="error-message">{error}</div>}
+
+                <form onSubmit={handleSubmit}>
+                    {needsConfirmation ? (
+                        <>
+                            <p>Please enter the confirmation code sent to {email}</p>
+                            <input
+                                type="text"
+                                placeholder="Confirmation Code"
+                                value={confirmationCode}
+                                onChange={(e) => setConfirmationCode(e.target.value)}
+                                required
+                            />
+                        </>
+                    ) : (
+                        <>
+                            {!isLogin && (
+                                <input
+                                    type="text"
+                                    placeholder="Full Name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                />
+                            )}
+                            <input
+                                type="email"
+                                placeholder="Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </>
                     )}
 
-                    <div className="form-group">
-                        <label className="form-label" htmlFor="email">
-                            Email Address
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            className="form-input"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            disabled={loading}
-                            placeholder="Enter your email"
-                            autoComplete="email"
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label className="form-label" htmlFor="password">
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            className="form-input"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            disabled={loading}
-                            placeholder="Enter your password"
-                            autoComplete="current-password"
-                            required
-                        />
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="btn btn-primary login-button"
-                        disabled={loading}
-                    >
-                        {loading ? <LoadingSpinner size="small" text="" /> : 'Sign In'}
+                    <button type="submit" disabled={loading}>
+                        {loading ? 'Loading...' :
+                            needsConfirmation ? 'Confirm Account' :
+                                isLogin ? 'Sign In' : 'Sign Up'}
                     </button>
-
-                    <div className="demo-credentials">
-                        <p className="demo-title">Demo Credentials:</p>
-                        <p className="demo-info">Email: demo@telenos.com</p>
-                        <p className="demo-info">Password: demo123</p>
-                    </div>
-
-                    <div className="security-note">
-                        🔒 Your session is secured with AWS Cognito and encrypted end-to-end
-                    </div>
                 </form>
+
+                {!needsConfirmation && (
+                    <>
+                        <div className="form-toggle">
+                            <button
+                                type="button"
+                                onClick={() => setIsLogin(!isLogin)}
+                                className="link-button"
+                            >
+                                {isLogin ? 'Need an account? Sign Up' : 'Have an account? Sign In'}
+                            </button>
+                        </div>
+
+                        {isLogin && (
+                            <button
+                                type="button"
+                                onClick={handleForgotPassword}
+                                className="link-button"
+                                disabled={loading}
+                            >
+                                Forgot Password?
+                            </button>
+                        )}
+                    </>
+                )}
             </div>
         </div>
     );

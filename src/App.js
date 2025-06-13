@@ -1,98 +1,38 @@
-// App.js - Main application component
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import './styles/globals.css';
 
-// Import pages
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
-import PatientsPage from './pages/PatientsPage';
-import NewPatientPage from './pages/NewPatientPage';
-import CalendarPage from './pages/CalendarPage';
-import AppointmentPage from './pages/AppointmentPage';
-import VideoCallPage from './pages/VideoCallPage';
+import React from 'react';
+import { useState, useEffect } from 'react';
+import LandingPage from "../src/pages/LandingPage"; 
+import HealthcareDashboard from "../src/pages/HealthcareDashboard"; 
+// Main App Component
+const App = () => {
+  const [currentView, setCurrentView] = useState('landing');
 
-// Import components
-import Header from './components/Header';
-import LoadingSpinner from './components/LoadingSpinner';
-
-// Import services
-import { authService } from './services/auth';
-
-function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Check if user is logged in on app start
-    const checkAuth = async () => {
-      try {
-        const userData = await authService.getCurrentUser();
-        setUser(userData);
-      } catch (error) {
-        console.log('No user logged in');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  const handleLogin = (userData) => {
-    setUser(userData);
+  const handleEnterDashboard = () => {
+    setCurrentView('dashboard');
   };
 
-  const handleLogout = () => {
-    authService.logout();
-    setUser(null);
+  const handleBackToLanding = () => {
+    setCurrentView('landing');
   };
 
-  if (loading) {
-    return <LoadingSpinner />;
+  if (currentView === 'dashboard') {
+    return (
+      <div>
+        {/* Back to Landing Button */}
+        <div className="fixed top-4 left-4 z-50">
+          <button
+            onClick={handleBackToLanding}
+            className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-sm font-medium border border-slate-300 flex items-center gap-2 transition-colors"
+          >
+            ← Back to Landing
+          </button>
+        </div>
+        <HealthcareDashboard />
+      </div>
+    );
   }
 
-  return (
-    <Router>
-      <div className="app">
-        <Header user={user} onLogout={handleLogout} />
-
-        <main className="main-content">
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={
-              user ? <Navigate to="/dashboard" /> : <LoginPage onLogin={handleLogin} />
-            } />
-
-            {/* Protected routes */}
-            <Route path="/dashboard" element={
-              user ? <DashboardPage /> : <Navigate to="/login" />
-            } />
-            <Route path="/patients" element={
-              user ? <PatientsPage /> : <Navigate to="/login" />
-            } />
-            <Route path="/patients/new" element={
-              user ? <NewPatientPage /> : <Navigate to="/login" />
-            } />
-            <Route path="/calendar" element={
-              user ? <CalendarPage /> : <Navigate to="/login" />
-            } />
-            <Route path="/appointment/:id" element={
-              user ? <AppointmentPage /> : <Navigate to="/login" />
-            } />
-            <Route path="/video-call/:appointmentId" element={
-              user ? <VideoCallPage /> : <Navigate to="/login" />
-            } />
-
-            {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
-  );
-}
+  return <LandingPage onEnterDashboard={handleEnterDashboard} />;
+};
 
 export default App;
