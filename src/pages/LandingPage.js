@@ -1,7 +1,7 @@
 import React from 'react';
 const { useState, useEffect } = React;
 
-const EnhancedLandingPage = ({ onEnterDashboard }) => {
+const LandingPage = ({ onEnterDashboard }) => {
     const [fadeAnim, setFadeAnim] = useState(false);
     const [currentFeature, setCurrentFeature] = useState(0);
 
@@ -144,8 +144,8 @@ const EnhancedLandingPage = ({ onEnterDashboard }) => {
                                 <div
                                     key={index}
                                     className={`group p-6 rounded-2xl border transition-all duration-500 cursor-pointer ${currentFeature === index
-                                            ? 'bg-gradient-to-r from-slate-800/80 to-slate-700/80 border-blue-500/50 shadow-lg shadow-blue-500/20 backdrop-blur-lg'
-                                            : 'bg-slate-800/30 border-slate-700/50 hover:border-slate-600/50 hover:bg-slate-800/50'
+                                        ? 'bg-gradient-to-r from-slate-800/80 to-slate-700/80 border-blue-500/50 shadow-lg shadow-blue-500/20 backdrop-blur-lg'
+                                        : 'bg-slate-800/30 border-slate-700/50 hover:border-slate-600/50 hover:bg-slate-800/50'
                                         }`}
                                     onClick={() => setCurrentFeature(index)}
                                 >
@@ -331,4 +331,4 @@ const EnhancedLandingPage = ({ onEnterDashboard }) => {
     );
 };
 
-export default EnhancedLandingPage;
+export default LandingPage;

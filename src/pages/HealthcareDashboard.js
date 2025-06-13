@@ -1,7 +1,7 @@
 import React from 'react';
 const { useState, useEffect } = React;
 
-const EnhancedHealthcareDashboard = () => {
+const HealthcareDashboard = ({ onNavigateToCalendar }) => {
     const [stats, setStats] = useState({
         totalPatients: 0,
         todayAppointments: 0,
@@ -138,8 +138,12 @@ const EnhancedHealthcareDashboard = () => {
         }
     ];
 
-    const MetricCard = ({ title, value, subtitle, trend, icon, color, percentage }) => (
-        <div className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-105 relative overflow-hidden">
+    const MetricCard = ({ title, value, subtitle, trend, icon, color, percentage, onClick, clickable }) => (
+        <div
+            className={`group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-105 relative overflow-hidden ${clickable ? 'cursor-pointer hover:border-blue-300' : ''
+                }`}
+            onClick={clickable ? onClick : undefined}
+        >
             {/* Background Pattern */}
             <div
                 className="absolute inset-0 opacity-5"
@@ -156,8 +160,8 @@ const EnhancedHealthcareDashboard = () => {
                     </div>
                     {trend && (
                         <div className={`flex items-center px-3 py-1 rounded-full text-xs font-bold ${trend > 0
-                                ? 'bg-emerald-100 text-emerald-700'
-                                : 'bg-red-100 text-red-700'
+                            ? 'bg-emerald-100 text-emerald-700'
+                            : 'bg-red-100 text-red-700'
                             }`}>
                             <span className="mr-1">{trend > 0 ? '↗️' : '↘️'}</span>
                             {Math.abs(trend)}%
@@ -182,6 +186,15 @@ const EnhancedHealthcareDashboard = () => {
                                 background: `linear-gradient(90deg, ${color}, ${color}dd)`
                             }}
                         ></div>
+                    </div>
+                )}
+
+                {/* Clickable indicator */}
+                {clickable && (
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <div className="bg-blue-500 text-white p-1 rounded-full text-xs">
+                            →
+                        </div>
                     </div>
                 )}
             </div>
@@ -297,6 +310,8 @@ const EnhancedHealthcareDashboard = () => {
                             color="#3B82F6"
                             trend={8}
                             percentage={67}
+                            onClick={onNavigateToCalendar}
+                            clickable={true}
                         />
                         <MetricCard
                             title="Upcoming"
@@ -457,12 +472,17 @@ const EnhancedHealthcareDashboard = () => {
                             <h3 className="text-xl font-bold text-gray-900 mb-4">Today's Schedule</h3>
                             <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-4 space-y-3 shadow-lg">
                                 {upcomingAppointments.map((apt, index) => (
-                                    <div key={index} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200">
-                                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <div
+                                        key={index}
+                                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 transition-colors duration-200 cursor-pointer group"
+                                        onClick={onNavigateToCalendar}
+                                        title="Click to view in calendar"
+                                    >
+                                        <div className="w-12 h-12 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center transition-colors duration-200">
                                             <span className="text-blue-600 font-bold text-sm">{apt.time}</span>
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="font-semibold text-gray-900 text-sm truncate">{apt.patient}</p>
+                                            <p className="font-semibold text-gray-900 text-sm truncate group-hover:text-blue-600 transition-colors duration-200">{apt.patient}</p>
                                             <p className="text-gray-500 text-xs">{apt.reason}</p>
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -471,9 +491,18 @@ const EnhancedHealthcareDashboard = () => {
                                             )}
                                             <div className={`w-2 h-2 rounded-full ${apt.status === 'confirmed' ? 'bg-green-500' : 'bg-yellow-500'
                                                 }`}></div>
+                                            <div className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200">
+                                                →
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
+                                <div
+                                    className="mt-4 p-3 bg-blue-50 hover:bg-blue-100 rounded-xl cursor-pointer transition-colors duration-200 text-center"
+                                    onClick={onNavigateToCalendar}
+                                >
+                                    <span className="text-blue-600 font-semibold text-sm">View Full Calendar →</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -483,4 +512,4 @@ const EnhancedHealthcareDashboard = () => {
     );
 };
 
-export default EnhancedHealthcareDashboard;
+export default HealthcareDashboard;
