@@ -1,20 +1,15 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-healthcarewebapp-dev-6475f-authRole",
-      "UnauthRoleArn": "arn:aws:iam::042005748243:role/amplify-healthcarewebapp-dev-6475f-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::042005748243:role/amplify-healthcarewebapp-dev-6475f-authRole",
+      "AuthRoleName": "amplify-telenoshealthweb-dev-56721-authRole",
+      "UnauthRoleArn": "arn:aws:iam::042005748243:role/amplify-telenoshealthweb-dev-56721-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::042005748243:role/amplify-telenoshealthweb-dev-56721-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-healthcarewebapp-dev-6475f-deployment",
-      "UnauthRoleName": "amplify-healthcarewebapp-dev-6475f-unauthRole",
-      "StackName": "amplify-healthcarewebapp-dev-6475f",
-      "StackId": "arn:aws:cloudformation:us-east-1:042005748243:stack/amplify-healthcarewebapp-dev-6475f/78339090-47ea-11f0-8274-0affd694be4d",
-      "AmplifyAppId": "d256quw3rblk49"
-    },
-    "categories": {
-      "auth": {
-        "healthcarewebapp45749e91": {}
-      }
+      "DeploymentBucketName": "amplify-telenoshealthweb-dev-56721-deployment",
+      "UnauthRoleName": "amplify-telenoshealthweb-dev-56721-unauthRole",
+      "StackName": "amplify-telenoshealthweb-dev-56721",
+      "StackId": "arn:aws:cloudformation:us-east-1:042005748243:stack/amplify-telenoshealthweb-dev-56721/765d8610-48b0-11f0-a288-0affdc783f17",
+      "AmplifyAppId": "d2dky25cj3n3mf"
     }
   }
 }
