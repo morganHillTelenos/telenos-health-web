@@ -1,6 +1,241 @@
-import React from 'react';
-const { useState, useEffect } = React;
+import React, { useState, useEffect } from 'react';
+import { X, Search, User, Phone, Mail, Calendar } from 'lucide-react';
 
+// Patients Modal Component
+const PatientsListModal = ({ isOpen, onClose }) => {
+    const [patients, setPatients] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredPatients, setFilteredPatients] = useState([]);
+
+    useEffect(() => {
+        if (isOpen) {
+            loadPatients();
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (searchTerm) {
+            const filtered = patients.filter(patient =>
+                patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                patient.phone.includes(searchTerm)
+            );
+            setFilteredPatients(filtered);
+        } else {
+            setFilteredPatients(patients);
+        }
+    }, [searchTerm, patients]);
+
+    const loadPatients = async () => {
+        setLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        const mockPatients = [
+            {
+                id: '1',
+                name: 'John Smith',
+                email: 'john.smith@email.com',
+                phone: '(555) 123-4567',
+                dob: '1985-06-15',
+                insurance: 'Blue Cross Blue Shield',
+                lastVisit: '2024-12-10',
+                status: 'Active'
+            },
+            {
+                id: '2',
+                name: 'Sarah Johnson',
+                email: 'sarah.johnson@email.com',
+                phone: '(555) 234-5678',
+                dob: '1990-03-22',
+                insurance: 'Aetna',
+                lastVisit: '2024-12-08',
+                status: 'Active'
+            },
+            {
+                id: '3',
+                name: 'Michael Brown',
+                email: 'michael.brown@email.com',
+                phone: '(555) 345-6789',
+                dob: '1978-11-08',
+                insurance: 'UnitedHealth',
+                lastVisit: '2024-12-05',
+                status: 'Active'
+            },
+            {
+                id: '4',
+                name: 'Emily Davis',
+                email: 'emily.davis@email.com',
+                phone: '(555) 456-7890',
+                dob: '1992-09-14',
+                insurance: 'Cigna',
+                lastVisit: '2024-12-12',
+                status: 'Active'
+            },
+            {
+                id: '5',
+                name: 'Robert Wilson',
+                email: 'robert.wilson@email.com',
+                phone: '(555) 567-8901',
+                dob: '1975-01-30',
+                insurance: 'Medicare',
+                lastVisit: '2024-12-11',
+                status: 'Active'
+            }
+        ];
+
+        setPatients(mockPatients);
+        setLoading(false);
+    };
+
+    const calculateAge = (dob) => {
+        const birth = new Date(dob);
+        const today = new Date();
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
+                <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                            <span className="text-white text-xl">👥</span>
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-bold text-white">Current Patients</h2>
+                            <p className="text-green-100 text-sm">
+                                {loading ? 'Loading...' : `${filteredPatients.length} patients found`}
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors"
+                    >
+                        <X className="w-5 h-5 text-white" />
+                    </button>
+                </div>
+
+                <div className="p-6 border-b border-gray-200">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <input
+                            type="text"
+                            placeholder="Search patients by name, email, or phone..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        />
+                    </div>
+                </div>
+
+                <div className="p-6 overflow-y-auto max-h-[60vh]">
+                    {loading ? (
+                        <div className="flex items-center justify-center py-12">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                        </div>
+                    ) : filteredPatients.length === 0 ? (
+                        <div className="text-center py-12">
+                            <span className="text-6xl mb-4 block opacity-30">👥</span>
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">No patients found</h3>
+                            <p className="text-gray-500">
+                                {searchTerm ? 'Try adjusting your search terms' : 'No patients in the system yet'}
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {filteredPatients.map((patient) => (
+                                <div
+                                    key={patient.id}
+                                    className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200 hover:scale-[1.02] cursor-pointer"
+                                >
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                                <span className="text-green-600 text-xl">👤</span>
+                                            </div>
+                                            <div>
+                                                <h3 className="font-semibold text-gray-900 text-lg">{patient.name}</h3>
+                                                <p className="text-gray-500 text-sm">Age {calculateAge(patient.dob)}</p>
+                                            </div>
+                                        </div>
+                                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            {patient.status}
+                                        </span>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-3">
+                                            <Mail className="w-4 h-4 text-gray-400" />
+                                            <span className="text-gray-600 text-sm">{patient.email}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <Phone className="w-4 h-4 text-gray-400" />
+                                            <span className="text-gray-600 text-sm">{patient.phone}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <Calendar className="w-4 h-4 text-gray-400" />
+                                            <span className="text-gray-600 text-sm">Last visit: {formatDate(patient.lastVisit)}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 pt-4 border-t border-gray-100">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="text-xs text-gray-500 mb-1">Insurance</p>
+                                                <p className="text-sm font-medium text-gray-900">{patient.insurance}</p>
+                                            </div>
+                                            <button className="px-4 py-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg text-sm font-medium transition-colors">
+                                                View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
+                    <div className="flex items-center justify-between">
+                        <p className="text-sm text-gray-600">
+                            Showing {filteredPatients.length} of {patients.length} patients
+                        </p>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={onClose}
+                                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                            >
+                                Close
+                            </button>
+                            <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                Add New Patient
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Main Dashboard Component
 const HealthcareDashboard = ({ onNavigateToCalendar }) => {
     const [stats, setStats] = useState({
         totalPatients: 0,
@@ -11,6 +246,7 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
     const [recentActivity, setRecentActivity] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [showPatientsModal, setShowPatientsModal] = useState(false);
 
     useEffect(() => {
         const loadDashboardData = async () => {
@@ -43,25 +279,25 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                 {
                     type: 'alert',
                     title: 'Critical lab results ready for review',
-                    time: '5 minutes ago',
+                    time: '8 minutes ago',
                     icon: '⚠️',
-                    color: '#F59E0B',
+                    color: '#EF4444',
                     priority: 'urgent'
                 },
                 {
-                    type: 'completion',
-                    title: 'Telehealth session with Emma Davis completed',
-                    time: '1 hour ago',
+                    type: 'appointment',
+                    title: 'Appointment completed: Robert Johnson',
+                    time: '25 minutes ago',
                     icon: '✅',
-                    color: '#8B5CF6',
+                    color: '#10B981',
                     priority: 'normal'
                 },
                 {
-                    type: 'schedule',
-                    title: 'Tomorrow: 14 appointments scheduled',
-                    time: 'Tomorrow',
-                    icon: '📅',
-                    color: '#06B6D4',
+                    type: 'message',
+                    title: 'New message from Dr. Martinez',
+                    time: '1 hour ago',
+                    icon: '💬',
+                    color: '#8B5CF6',
                     priority: 'normal'
                 }
             ]);
@@ -71,26 +307,17 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
 
         loadDashboardData();
 
-        // Update time every minute
         const timeInterval = setInterval(() => {
             setCurrentTime(new Date());
-        }, 60000);
+        }, 1000);
 
         return () => clearInterval(timeInterval);
     }, []);
 
     const quickActions = [
         {
-            title: 'New Patient',
-            subtitle: 'Register new patient',
-            icon: '👥',
-            gradient: 'from-emerald-500 to-emerald-600',
-            bgPattern: 'bg-emerald-50',
-            action: () => alert('Navigate to New Patient form')
-        },
-        {
-            title: 'Schedule',
-            subtitle: 'Book appointment',
+            title: 'New Appointment',
+            subtitle: 'Schedule patient visit',
             icon: '📅',
             gradient: 'from-blue-500 to-blue-600',
             bgPattern: 'bg-blue-50',
@@ -102,7 +329,7 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
             icon: '📋',
             gradient: 'from-purple-500 to-purple-600',
             bgPattern: 'bg-purple-50',
-            action: () => alert('Navigate to Current Patients')
+            action: () => setShowPatientsModal(true)
         },
         {
             title: 'Video Call',
@@ -202,85 +429,67 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
     );
 
     const QuickActionCard = ({ title, subtitle, icon, gradient, bgPattern, action }) => (
-        <button
+        <div
+            className={`group ${bgPattern} rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer relative overflow-hidden`}
             onClick={action}
-            className={`group relative overflow-hidden bg-gradient-to-r ${gradient} text-white rounded-2xl p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/20`}
         >
-            {/* Animated background pattern */}
-            <div className="absolute inset-0 bg-white opacity-10 transform rotate-12 scale-150 translate-x-full group-hover:translate-x-0 transition-transform duration-700"></div>
-
-            <div className="relative z-10 flex items-center justify-between">
-                <div className="flex items-center">
-                    <div className="p-4 bg-white bg-opacity-20 rounded-xl mr-4 group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-3xl">{icon}</span>
-                    </div>
-                    <div className="text-left">
-                        <div className="font-bold text-xl mb-1">{title}</div>
-                        <div className="text-white text-opacity-90 text-sm">{subtitle}</div>
+            <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+            <div className="relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="text-4xl">{icon}</div>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <div className={`w-8 h-8 bg-gradient-to-br ${gradient} rounded-full flex items-center justify-center text-white text-sm`}>
+                            →
+                        </div>
                     </div>
                 </div>
-                <div className="text-white text-2xl group-hover:translate-x-2 transition-transform duration-300">
-                    →
-                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
+                <p className="text-gray-600 text-sm">{subtitle}</p>
             </div>
-        </button>
+        </div>
     );
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="relative">
-                        <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-6"></div>
-                        <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-b-blue-300 rounded-full animate-spin animation-delay-150"></div>
-                    </div>
-                    <div className="text-slate-700 font-semibold text-lg">Loading your dashboard...</div>
-                    <div className="text-slate-500 text-sm mt-2">Preparing your healthcare insights</div>
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <div className="text-lg font-semibold text-gray-900">Loading Dashboard...</div>
+                    <div className="text-sm text-gray-500">Preparing your healthcare insights</div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-            {/* Enhanced Header */}
-            <div className="bg-white/80 backdrop-blur-lg border-b border-gray-200/50 px-6 py-6 sticky top-0 z-50 shadow-sm">
-                <div className="flex items-center justify-between max-w-7xl mx-auto">
-                    <div className="flex items-center">
-                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                            <span className="text-white text-xl">🏥</span>
-                        </div>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+            <div className="container mx-auto px-6 py-8 pt-20">
+                {/* Header */}
+                <div className="mb-8">
+                    <div className="flex items-center justify-between mb-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
-                                Welcome back, <span className="text-blue-600">Dr. Smith</span>
+                            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                                Good {currentTime.getHours() < 12 ? 'Morning' : currentTime.getHours() < 18 ? 'Afternoon' : 'Evening'}! 👋
                             </h1>
-                            <p className="text-gray-600 text-sm font-medium flex items-center gap-2">
-                                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            <p className="text-gray-600 text-lg">Here's what's happening with your practice today</p>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-2xl font-bold text-gray-900">
+                                {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                            <div className="text-gray-500">
                                 {currentTime.toLocaleDateString('en-US', {
                                     weekday: 'long',
+                                    year: 'numeric',
                                     month: 'long',
-                                    day: 'numeric',
-                                    year: 'numeric'
-                                })} • {currentTime.toLocaleTimeString('en-US', {
-                                    hour: 'numeric',
-                                    minute: '2-digit'
+                                    day: 'numeric'
                                 })}
-                            </p>
+                            </div>
                         </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <button className="p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors duration-200 group">
-                            <span className="text-blue-500 text-xl group-hover:rotate-180 transition-transform duration-300">🔄</span>
-                        </button>
-                        <button className="p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-colors duration-200 shadow-lg hover:shadow-blue-500/25">
-                            <span className="text-xl">🔔</span>
-                        </button>
-                    </div>
                 </div>
-            </div>
 
-            <div className="p-6 max-w-7xl mx-auto">
-                {/* Enhanced Metrics Overview */}
+                {/* Stats Cards */}
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-6">
                         <div>
@@ -301,6 +510,8 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                             color="#10B981"
                             trend={12}
                             percentage={85}
+                            onClick={() => setShowPatientsModal(true)}
+                            clickable={true}
                         />
                         <MetricCard
                             title="Today's Appointments"
@@ -337,7 +548,7 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                 {/* Enhanced Quick Actions */}
                 <div className="mb-8">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6 tracking-tight">Quick Actions</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {quickActions.map((action, index) => (
                             <QuickActionCard key={index} {...action} />
                         ))}
@@ -352,22 +563,17 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                             {recentActivity.length > 0 ? (
                                 <div className="divide-y divide-gray-100">
                                     {recentActivity.map((item, index) => (
-                                        <div key={index} className="p-6 hover:bg-gray-50/50 transition-colors duration-200 group">
-                                            <div className="flex items-start">
+                                        <div key={index} className="p-6 hover:bg-gray-50/50 transition-colors duration-200">
+                                            <div className="flex items-start gap-4">
                                                 <div
-                                                    className="p-3 rounded-xl mr-4 group-hover:scale-110 transition-transform duration-200"
+                                                    className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-lg"
                                                     style={{ backgroundColor: `${item.color}15` }}
                                                 >
-                                                    <span className="text-lg">{item.icon}</span>
+                                                    {item.icon}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <div className="flex items-start justify-between">
-                                                        <div className="flex-1">
-                                                            <p className="font-semibold text-gray-900 text-sm mb-1">
-                                                                {item.title}
-                                                            </p>
-                                                            <p className="text-gray-500 text-xs">{item.time}</p>
-                                                        </div>
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <h4 className="font-semibold text-gray-900 text-sm leading-tight">{item.title}</h4>
                                                         <div className="flex items-center gap-2">
                                                             {item.priority === 'urgent' && (
                                                                 <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-bold">
@@ -385,6 +591,7 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                                                             ></div>
                                                         </div>
                                                     </div>
+                                                    <p className="text-gray-500 text-xs">{item.time}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -402,112 +609,52 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                         </div>
                     </div>
 
-                    {/* Enhanced Sidebar Content */}
-                    <div className="space-y-8">
-                        {/* Next Appointment */}
-                        <div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-4">Next Appointment</h3>
-                            <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-6 shadow-lg">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div>
-                                        <h4 className="text-lg font-semibold">Michael Chen</h4>
-                                        <p className="text-blue-100 text-sm">Video Consultation</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-2xl font-bold">2:00 PM</div>
-                                        <div className="text-blue-100 text-sm">In 15 minutes</div>
-                                    </div>
-                                </div>
-                                <div className="flex gap-3">
-                                    <button className="flex-1 bg-white/20 hover:bg-white/30 backdrop-blur text-white px-4 py-3 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105">
-                                        <span>🎥</span>
-                                        Start Video
-                                    </button>
-                                    <button className="flex-1 bg-white/20 hover:bg-white/30 backdrop-blur text-white px-4 py-3 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105">
-                                        <span>👤</span>
-                                        Patient Info
-                                    </button>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm text-blue-100 mt-4">
-                                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                                    HIPAA Compliant • End-to-End Encrypted
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* AI Insights */}
-                        <div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-4">AI Insights</h3>
-                            <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl p-6 shadow-lg">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="p-3 bg-white/20 rounded-xl">
-                                        <span className="text-2xl">🧠</span>
-                                    </div>
-                                    <div className="bg-yellow-400 text-purple-900 px-3 py-1 rounded-full text-xs font-bold">
-                                        NEW INSIGHTS
-                                    </div>
-                                </div>
-                                <h4 className="text-lg font-semibold mb-3">Practice Analytics</h4>
-                                <p className="text-purple-100 text-sm leading-relaxed mb-4">
-                                    Your patient satisfaction rate is 18% above average this month.
-                                    Consider scheduling follow-ups for 3 patients showing improvement trends.
-                                </p>
-                                <div className="space-y-2 mb-4">
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-purple-200">AI Confidence</span>
-                                        <span className="font-bold">94.2%</span>
-                                    </div>
-                                    <div className="w-full bg-purple-400/30 rounded-full h-2">
-                                        <div className="bg-white h-2 rounded-full w-[94%] transition-all duration-1000"></div>
-                                    </div>
-                                </div>
-                                <button className="text-sm font-semibold text-white hover:text-purple-200 transition-colors underline">
-                                    View Detailed Report →
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Upcoming Appointments Preview */}
-                        <div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-4">Today's Schedule</h3>
-                            <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-4 space-y-3 shadow-lg">
-                                {upcomingAppointments.map((apt, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 transition-colors duration-200 cursor-pointer group"
-                                        onClick={onNavigateToCalendar}
-                                        title="Click to view in calendar"
-                                    >
-                                        <div className="w-12 h-12 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center transition-colors duration-200">
-                                            <span className="text-blue-600 font-bold text-sm">{apt.time}</span>
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-semibold text-gray-900 text-sm truncate group-hover:text-blue-600 transition-colors duration-200">{apt.patient}</p>
-                                            <p className="text-gray-500 text-xs">{apt.reason}</p>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            {apt.type === 'Video Consultation' && (
-                                                <span className="text-blue-500">🎥</span>
-                                            )}
-                                            <div className={`w-2 h-2 rounded-full ${apt.status === 'confirmed' ? 'bg-green-500' : 'bg-yellow-500'
-                                                }`}></div>
-                                            <div className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200">
-                                                →
+                    {/* Enhanced Upcoming Appointments */}
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-6 tracking-tight">Upcoming Today</h2>
+                        <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 shadow-lg">
+                            {upcomingAppointments.length > 0 ? (
+                                <div className="divide-y divide-gray-100">
+                                    {upcomingAppointments.map((appointment, index) => (
+                                        <div key={index} className="p-6 hover:bg-gray-50/50 transition-colors duration-200">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="font-bold text-lg text-blue-600">{appointment.time}</div>
+                                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${appointment.status === 'confirmed'
+                                                    ? 'bg-green-100 text-green-700'
+                                                    : 'bg-yellow-100 text-yellow-700'
+                                                    }`}>
+                                                    {appointment.status.toUpperCase()}
+                                                </span>
+                                            </div>
+                                            <div className="mb-2">
+                                                <div className="font-semibold text-gray-900">{appointment.patient}</div>
+                                                <div className="text-sm text-gray-600">{appointment.reason}</div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className={`w-2 h-2 rounded-full ${appointment.type === 'Video Consultation' ? 'bg-blue-500' : 'bg-green-500'
+                                                    }`}></span>
+                                                <span className="text-xs text-gray-500">{appointment.type}</span>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                                <div
-                                    className="mt-4 p-3 bg-blue-50 hover:bg-blue-100 rounded-xl cursor-pointer transition-colors duration-200 text-center"
-                                    onClick={onNavigateToCalendar}
-                                >
-                                    <span className="text-blue-600 font-semibold text-sm">View Full Calendar →</span>
+                                    ))}
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="p-12 text-center">
+                                    <div className="text-6xl mb-4 opacity-30">📅</div>
+                                    <div className="font-semibold text-gray-900 mb-2">No appointments today</div>
+                                    <div className="text-gray-500 text-sm">Enjoy your free day!</div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Patients Modal */}
+            <PatientsListModal
+                isOpen={showPatientsModal}
+                onClose={() => setShowPatientsModal(false)}
+            />
         </div>
     );
 };
