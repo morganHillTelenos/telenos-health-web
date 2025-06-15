@@ -1,8 +1,308 @@
 import React, { useState, useEffect } from 'react';
 import { X, Search, User, Phone, Mail, Calendar } from 'lucide-react';
+import NewPatientForm from './NewPatientForm';
+
+// Simple Patient Detail Component
+const PatientDetailPage = ({ patientId, onBack }) => {
+    const [patient, setPatient] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (patientId) {
+            loadPatientData();
+        }
+    }, [patientId]);
+
+    const loadPatientData = async () => {
+        setLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        const mockPatients = {
+            '1': {
+                id: '1',
+                name: 'John Smith',
+                email: 'john.smith@email.com',
+                phone: '(555) 123-4567',
+                dob: '1985-06-15',
+                address: '123 Main St, Anytown, ST 12345',
+                emergencyContact: 'Jane Smith',
+                emergencyPhone: '(555) 987-6543',
+                insurance: 'Blue Cross Blue Shield',
+                allergies: 'None known',
+                medications: 'Lisinopril 10mg daily',
+                lastVisit: '2024-12-10',
+                status: 'Active',
+                vitals: {
+                    height: '6\'0"',
+                    weight: '180 lbs',
+                    bloodPressure: '120/80',
+                    heartRate: '72 bpm',
+                    temperature: '98.6°F',
+                    lastUpdated: '2024-12-10'
+                }
+            },
+            '2': {
+                id: '2',
+                name: 'Sarah Johnson',
+                email: 'sarah.johnson@email.com',
+                phone: '(555) 234-5678',
+                dob: '1990-03-22',
+                address: '456 Oak Ave, Somewhere, ST 67890',
+                emergencyContact: 'Mike Johnson',
+                emergencyPhone: '(555) 876-5432',
+                insurance: 'Aetna',
+                allergies: 'Penicillin',
+                medications: 'Birth control',
+                lastVisit: '2024-12-08',
+                status: 'Active',
+                vitals: {
+                    height: '5\'6"',
+                    weight: '140 lbs',
+                    bloodPressure: '110/70',
+                    heartRate: '68 bpm',
+                    temperature: '98.4°F',
+                    lastUpdated: '2024-12-08'
+                }
+            },
+            '3': {
+                id: '3',
+                name: 'Michael Brown',
+                email: 'michael.brown@email.com',
+                phone: '(555) 345-6789',
+                dob: '1978-11-08',
+                address: '789 Pine Dr, Elsewhere, ST 13579',
+                emergencyContact: 'Lisa Brown',
+                emergencyPhone: '(555) 765-4321',
+                insurance: 'UnitedHealth',
+                allergies: 'Shellfish',
+                medications: 'Metformin 500mg twice daily',
+                lastVisit: '2024-12-05',
+                status: 'Active',
+                vitals: {
+                    height: '5\'10"',
+                    weight: '195 lbs',
+                    bloodPressure: '130/85',
+                    heartRate: '75 bpm',
+                    temperature: '98.8°F',
+                    lastUpdated: '2024-12-05'
+                }
+            },
+            '4': {
+                id: '4',
+                name: 'Emily Davis',
+                email: 'emily.davis@email.com',
+                phone: '(555) 456-7890',
+                dob: '1992-09-14',
+                address: '321 Elm St, Anywhere, ST 24680',
+                emergencyContact: 'Tom Davis',
+                emergencyPhone: '(555) 654-3210',
+                insurance: 'Cigna',
+                allergies: 'Latex',
+                medications: 'Synthroid 50mcg daily',
+                lastVisit: '2024-12-12',
+                status: 'Active',
+                vitals: {
+                    height: '5\'4"',
+                    weight: '125 lbs',
+                    bloodPressure: '115/75',
+                    heartRate: '70 bpm',
+                    temperature: '98.5°F',
+                    lastUpdated: '2024-12-12'
+                }
+            },
+            '5': {
+                id: '5',
+                name: 'Robert Wilson',
+                email: 'robert.wilson@email.com',
+                phone: '(555) 567-8901',
+                dob: '1975-01-30',
+                address: '654 Maple Ave, Somewhere, ST 97531',
+                emergencyContact: 'Carol Wilson',
+                emergencyPhone: '(555) 543-2109',
+                insurance: 'Medicare',
+                allergies: 'Aspirin',
+                medications: 'Atorvastatin 20mg daily',
+                lastVisit: '2024-12-11',
+                status: 'Active',
+                vitals: {
+                    height: '5\'8"',
+                    weight: '170 lbs',
+                    bloodPressure: '125/80',
+                    heartRate: '74 bpm',
+                    temperature: '98.7°F',
+                    lastUpdated: '2024-12-11'
+                }
+            }
+        };
+
+        const patientData = mockPatients[patientId];
+        if (!patientData) {
+            onBack();
+            return;
+        }
+
+        setPatient(patientData);
+        setLoading(false);
+    };
+
+    const calculateAge = (dob) => {
+        const birth = new Date(dob);
+        const today = new Date();
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <div className="text-lg font-semibold text-gray-900">Loading Patient Details...</div>
+                    <div className="text-sm text-gray-500">Please wait while we fetch the information</div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!patient) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="text-6xl mb-4 opacity-30">👤</div>
+                    <div className="text-lg font-semibold text-gray-900 mb-2">Patient Not Found</div>
+                    <div className="text-sm text-gray-500 mb-6">The requested patient could not be located</div>
+                    <button
+                        onClick={onBack}
+                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        Return to Dashboard
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+            <div className="container mx-auto px-6 py-8 pt-20">
+                <div className="mb-8">
+                    <button
+                        onClick={onBack}
+                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors group"
+                    >
+                        <span className="text-lg">←</span>
+                        Back to Dashboard
+                    </button>
+
+                    <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-8 shadow-lg">
+                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                            <div className="flex items-center gap-6">
+                                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg">
+                                    👤
+                                </div>
+                                <div>
+                                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{patient.name}</h1>
+                                    <div className="flex flex-wrap items-center gap-4 text-gray-600">
+                                        <span className="flex items-center gap-2">
+                                            📅 Age {calculateAge(patient.dob)}
+                                        </span>
+                                        <span className="flex items-center gap-2">
+                                            📧 {patient.email}
+                                        </span>
+                                        <span className="flex items-center gap-2">
+                                            📞 {patient.phone}
+                                        </span>
+                                    </div>
+                                    <div className="mt-2">
+                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                            <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                            {patient.status}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-6 shadow-lg">
+                        <h3 className="text-lg font-bold text-gray-900 mb-4">Contact Information</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <div className="text-sm font-medium text-gray-500 mb-1">Address</div>
+                                <div className="text-gray-900">{patient.address}</div>
+                            </div>
+                            <div>
+                                <div className="text-sm font-medium text-gray-500 mb-1">Emergency Contact</div>
+                                <div className="text-gray-900">{patient.emergencyContact}</div>
+                                <div className="text-gray-600 text-sm">{patient.emergencyPhone}</div>
+                            </div>
+                            <div>
+                                <div className="text-sm font-medium text-gray-500 mb-1">Insurance</div>
+                                <div className="text-gray-900">{patient.insurance}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-6 shadow-lg">
+                        <h3 className="text-lg font-bold text-gray-900 mb-4">Medical Information</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <div className="text-sm font-medium text-gray-500 mb-1">Allergies</div>
+                                <div className="text-gray-900 bg-orange-50 p-3 rounded-lg">{patient.allergies}</div>
+                            </div>
+                            <div>
+                                <div className="text-sm font-medium text-gray-500 mb-1">Current Medications</div>
+                                <div className="text-gray-900 bg-blue-50 p-3 rounded-lg">{patient.medications}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-6 shadow-lg">
+                        <h3 className="text-lg font-bold text-gray-900 mb-4">Latest Vitals</h3>
+                        <div className="space-y-3">
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Blood Pressure:</span>
+                                <span className="font-semibold">{patient.vitals?.bloodPressure}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Heart Rate:</span>
+                                <span className="font-semibold">{patient.vitals?.heartRate}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Temperature:</span>
+                                <span className="font-semibold">{patient.vitals?.temperature}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Weight:</span>
+                                <span className="font-semibold">{patient.vitals?.weight}</span>
+                            </div>
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                            <div className="text-xs text-gray-500">Last updated: {formatDate(patient.vitals?.lastUpdated)}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 // Patients Modal Component
-const PatientsListModal = ({ isOpen, onClose }) => {
+const PatientsListModal = ({ isOpen, onClose, onPatientClick }) => {
     const [patients, setPatients] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -164,6 +464,7 @@ const PatientsListModal = ({ isOpen, onClose }) => {
                                 <div
                                     key={patient.id}
                                     className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200 hover:scale-[1.02] cursor-pointer"
+                                    onClick={() => onPatientClick(patient.id)}
                                 >
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="flex items-center gap-3">
@@ -201,7 +502,13 @@ const PatientsListModal = ({ isOpen, onClose }) => {
                                                 <p className="text-xs text-gray-500 mb-1">Insurance</p>
                                                 <p className="text-sm font-medium text-gray-900">{patient.insurance}</p>
                                             </div>
-                                            <button className="px-4 py-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg text-sm font-medium transition-colors">
+                                            <button
+                                                className="px-4 py-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg text-sm font-medium transition-colors"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onPatientClick(patient.id);
+                                                }}
+                                            >
                                                 View Details
                                             </button>
                                         </div>
@@ -247,6 +554,7 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [showPatientsModal, setShowPatientsModal] = useState(false);
+    const [selectedPatientId, setSelectedPatientId] = useState(null);
 
     useEffect(() => {
         const loadDashboardData = async () => {
@@ -314,6 +622,16 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
         return () => clearInterval(timeInterval);
     }, []);
 
+    // If a patient is selected, show the patient detail page
+    if (selectedPatientId) {
+        return (
+            <PatientDetailPage
+                patientId={selectedPatientId}
+                onBack={() => setSelectedPatientId(null)}
+            />
+        );
+    }
+
     const quickActions = [
         {
             title: 'New Appointment',
@@ -367,11 +685,9 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
 
     const MetricCard = ({ title, value, subtitle, trend, icon, color, percentage, onClick, clickable }) => (
         <div
-            className={`group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-105 relative overflow-hidden ${clickable ? 'cursor-pointer hover:border-blue-300' : ''
-                }`}
+            className={`group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-105 relative overflow-hidden ${clickable ? 'cursor-pointer hover:border-blue-300' : ''}`}
             onClick={clickable ? onClick : undefined}
         >
-            {/* Background Pattern */}
             <div
                 className="absolute inset-0 opacity-5"
                 style={{
@@ -386,10 +702,7 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                         <span className="text-2xl">{icon}</span>
                     </div>
                     {trend && (
-                        <div className={`flex items-center px-3 py-1 rounded-full text-xs font-bold ${trend > 0
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : 'bg-red-100 text-red-700'
-                            }`}>
+                        <div className={`flex items-center px-3 py-1 rounded-full text-xs font-bold ${trend > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
                             <span className="mr-1">{trend > 0 ? '↗️' : '↘️'}</span>
                             {Math.abs(trend)}%
                         </div>
@@ -402,7 +715,6 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                     {subtitle && <div className="text-gray-500 text-xs">{subtitle}</div>}
                 </div>
 
-                {/* Progress bar */}
                 {percentage && (
                     <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
@@ -416,7 +728,6 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                     </div>
                 )}
 
-                {/* Clickable indicator */}
                 {clickable && (
                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <div className="bg-blue-500 text-white p-1 rounded-full text-xs">
@@ -464,7 +775,6 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
             <div className="container mx-auto px-6 py-8 pt-20">
-                {/* Header */}
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-6">
                         <div>
@@ -489,7 +799,6 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                     </div>
                 </div>
 
-                {/* Stats Cards */}
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-6">
                         <div>
@@ -545,7 +854,6 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                     </div>
                 </div>
 
-                {/* Enhanced Quick Actions */}
                 <div className="mb-8">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6 tracking-tight">Quick Actions</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -556,7 +864,6 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Enhanced Recent Activity */}
                     <div className="lg:col-span-2">
                         <h2 className="text-2xl font-bold text-gray-900 mb-6 tracking-tight">Recent Activity</h2>
                         <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 overflow-hidden shadow-lg">
@@ -609,7 +916,6 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                         </div>
                     </div>
 
-                    {/* Enhanced Upcoming Appointments */}
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900 mb-6 tracking-tight">Upcoming Today</h2>
                         <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 shadow-lg">
@@ -650,10 +956,13 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                 </div>
             </div>
 
-            {/* Patients Modal */}
             <PatientsListModal
                 isOpen={showPatientsModal}
                 onClose={() => setShowPatientsModal(false)}
+                onPatientClick={(patientId) => {
+                    setShowPatientsModal(false);
+                    setSelectedPatientId(patientId);
+                }}
             />
         </div>
     );
