@@ -556,6 +556,8 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
     const [showPatientsModal, setShowPatientsModal] = useState(false);
     const [selectedPatientId, setSelectedPatientId] = useState(null);
 
+    const [showNewPatientForm, setShowNewPatientForm] = useState(false);
+
     useEffect(() => {
         const loadDashboardData = async () => {
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -640,6 +642,14 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
             gradient: 'from-blue-500 to-blue-600',
             bgPattern: 'bg-blue-50',
             action: () => alert('Navigate to New Appointment form')
+        },
+        {
+            title: 'New Patient',  // Changed from 'Patients'
+            subtitle: 'Register new patient',  // Updated subtitle
+            icon: '👤',  // Changed icon
+            gradient: 'from-green-500 to-green-600',  // Changed color
+            bgPattern: 'bg-green-50',
+            action: () => setShowNewPatientForm(true)  // NEW ACTION
         },
         {
             title: 'Patients',
@@ -964,6 +974,16 @@ const HealthcareDashboard = ({ onNavigateToCalendar }) => {
                     setSelectedPatientId(patientId);
                 }}
             />
+            {showNewPatientForm && (
+                <NewPatientForm
+                    onClose={() => setShowNewPatientForm(false)}
+                    onSave={(patientData) => {
+                        console.log('New patient saved:', patientData);
+                        setShowNewPatientForm(false);
+                    }}
+                    showCloseButton={true}
+                />
+            )}
         </div>
     );
 };

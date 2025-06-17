@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import NewPatientForm from './NewPatientForm'; // You'll need to create this file
+// Add this import at the top of your LandingPage.js
+import { useNavigate } from 'react-router-dom';
 
+// Update your LandingPage component to include navigation
 const LandingPage = ({ onEnterDashboard }) => {
+    const navigate = useNavigate(); // Add this hook
     const [showPatientForm, setShowPatientForm] = useState(false);
+    const [currentTime, setCurrentTime] = useState(new Date());
 
     const handlePatientSaved = (patientData) => {
         console.log('New patient saved:', patientData);
@@ -165,6 +170,83 @@ const LandingPage = ({ onEnterDashboard }) => {
                             >
                                 Register Patient
                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Join Our Team Section - NEW */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 py-20">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 className="text-3xl font-bold text-white mb-8">
+                        Join Our Telemedicine Team
+                    </h2>
+                    <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
+                        We're looking for licensed psychiatrists to join our growing telemedicine practice.
+                        Work remotely with flexible hours and cutting-edge technology.
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                            <div className="text-4xl mb-4">👩‍⚕️</div>
+                            <h3 className="text-xl font-semibold text-white mb-2">For Psychiatrists</h3>
+                            <p className="text-blue-100 mb-4">
+                                Apply to join our remote psychiatric practice
+                            </p>
+                            <button
+                                onClick={() => navigate('/apply-psychiatrist')}
+                                className="w-full px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium transform hover:scale-105 shadow-lg hover:shadow-xl"
+                            >
+                                Apply Now
+                            </button>
+                        </div>
+
+                        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                            <div className="text-4xl mb-4">💼</div>
+                            <h3 className="text-xl font-semibold text-white mb-2">Why Join Us?</h3>
+                            <ul className="text-blue-100 text-left space-y-2">
+                                <li className="flex items-center">
+                                    <span className="text-green-300 mr-2">✓</span>
+                                    Flexible remote work
+                                </li>
+                                <li className="flex items-center">
+                                    <span className="text-green-300 mr-2">✓</span>
+                                    Competitive compensation
+                                </li>
+                                <li className="flex items-center">
+                                    <span className="text-green-300 mr-2">✓</span>
+                                    Modern telemedicine platform
+                                </li>
+                                <li className="flex items-center">
+                                    <span className="text-green-300 mr-2">✓</span>
+                                    Growing patient base
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    {/* Additional Benefits */}
+                    <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span className="text-2xl">🏠</span>
+                            </div>
+                            <h4 className="text-white font-semibold mb-2">Work From Home</h4>
+                            <p className="text-blue-100 text-sm">Practice from the comfort of your own office</p>
+                        </div>
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span className="text-2xl">⏰</span>
+                            </div>
+                            <h4 className="text-white font-semibold mb-2">Flexible Hours</h4>
+                            <p className="text-blue-100 text-sm">Choose your schedule and work-life balance</p>
+                        </div>
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span className="text-2xl">🚀</span>
+                            </div>
+                            <h4 className="text-white font-semibold mb-2">Advanced Tech</h4>
+                            <p className="text-blue-100 text-sm">State-of-the-art telemedicine platform</p>
                         </div>
                     </div>
                 </div>
