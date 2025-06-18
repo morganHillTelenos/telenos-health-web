@@ -1,217 +1,206 @@
-// src/App.js - Updated with login flow
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { authService } from './services/auth';
-
-// Import your pages
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useParams } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
-import PatientsPage from './pages/PatientsPage';
-import NewPatientPage from './pages/NewPatientPage';
+import HealthcareDashboard from './pages/HealthcareDashboard';
 import CalendarPage from './pages/CalendarPage';
-import VideoCallPage from './pages/VideoCallPage';
+import NewAppointmentPage from './pages/NewAppointmentPage';
+import PatientsPage from './pages/PatientsPage';
+import PsychiatristApplicationPage from './pages/PsychiatristApplicationPage'; // New import
 
-// Import components
-import Header from './components/Header';
-import LoadingSpinner from './components/LoadingSpinner';
+// For now, we'll create a simple patient detail component inline
+const PatientDetailPage = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-// Import styles
-import './styles/globals.css';
-
-function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Check for existing authentication on app load
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = async () => {
-    try {
-      setLoading(true);
-
-      // Check if user is authenticated
-      if (authService.isAuthenticated()) {
-        try {
-          // Verify token is still valid by getting current user
-          const currentUser = await authService.getCurrentUser();
-          setUser(currentUser);
-          console.log('User authenticated:', currentUser);
-        } catch (error) {
-          console.warn('Token validation failed:', error);
-          // Clear invalid authentication
-          await authService.signOut();
-          setUser(null);
-        }
-      } else {
-        console.log('No authentication found');
-        setUser(null);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      setError(error.message);
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogin = (userData) => {
-    console.log('Login successful, setting user:', userData);
-    setUser(userData);
-    setError(null);
-  };
-
-  const handleLogout = async () => {
-    try {
-      setLoading(true);
-      await authService.signOut();
-      setUser(null);
-      console.log('Logout successful');
-    } catch (error) {
-      console.error('Logout error:', error);
-      setError(error.message);
-      // Clear user anyway
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Loading screen
-  if (loading) {
-    return (
-      <div className="app-loading">
-        <LoadingSpinner />
-        <p>Loading TelenosHealth...</p>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="container mx-auto px-6 py-8 pt-20">
+        <div className="mb-8">
+          <button
+            onClick={() => navigate('/patients')}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors group"
+          >
+            <span className="text-lg">←</span>
+            Back to Patients
+          </button>
+          <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-8 shadow-lg">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Patient Details</h1>
+            <p className="text-gray-600">Patient ID: {id}</p>
+            <p className="text-sm text-gray-500 mt-4">
+              Replace this component with your PatientDetailPage artifact by creating:
+              <br />
+              <code className="bg-gray-100 px-2 py-1 rounded">src/pages/PatientDetailPage.js</code>
+            </p>
+          </div>
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
+};
 
-  // Error screen
-  if (error) {
-    return (
-      <div className="app-error">
-        <h2>Something went wrong</h2>
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()}>
-          Refresh Page
+// New Patient Page Placeholder
+const NewPatientPage = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="container mx-auto px-6 py-8 pt-20">
+        <div className="mb-8">
+          <button
+            onClick={() => navigate('/patients')}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors group"
+          >
+            <span className="text-lg">←</span>
+            Back to Patients
+          </button>
+          <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-8 shadow-lg">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Add New Patient</h1>
+            <p className="text-gray-600 mb-6">Create a new patient record in your system.</p>
+            <p className="text-sm text-gray-500">
+              This is a placeholder page. You can create a full patient form here or use your existing NewPatientPage component.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Navigation Component
+const Navigation = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="fixed top-4 left-4 right-4 z-50 flex justify-between items-center">
+      <button
+        onClick={() => navigate('/')}
+        className="bg-white/90 hover:bg-white backdrop-blur-lg text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 hover:border-gray-300 flex items-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl"
+      >
+        ← Back to Landing
+      </button>
+
+      <div className="flex gap-2">
+        <button
+          onClick={() => navigate('/dashboard')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg ${window.location.pathname === '/dashboard'
+            ? 'bg-blue-500 text-white shadow-blue-500/25'
+            : 'bg-white/90 hover:bg-white backdrop-blur-lg text-gray-700 hover:text-gray-900 border border-gray-200 hover:border-gray-300'
+            }`}
+        >
+          Dashboard
+        </button>
+        <button
+          onClick={() => navigate('/patients')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg ${window.location.pathname === '/patients'
+            ? 'bg-blue-500 text-white shadow-blue-500/25'
+            : 'bg-white/90 hover:bg-white backdrop-blur-lg text-gray-700 hover:text-gray-900 border border-gray-200 hover:border-gray-300'
+            }`}
+        >
+          Patients
+        </button>
+        <button
+          onClick={() => navigate('/calendar')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg ${window.location.pathname === '/calendar'
+            ? 'bg-blue-500 text-white shadow-blue-500/25'
+            : 'bg-white/90 hover:bg-white backdrop-blur-lg text-gray-700 hover:text-gray-900 border border-gray-200 hover:border-gray-300'
+            }`}
+        >
+          Calendar
         </button>
       </div>
-    );
-  }
+    </div>
+  );
+};
 
+// Enhanced Landing Page Wrapper
+const LandingPageWrapper = () => {
+  const navigate = useNavigate();
+  return <LandingPage onEnterDashboard={() => navigate('/dashboard')} />;
+};
+
+// Enhanced Dashboard Wrapper
+const DashboardWrapper = () => {
+  const navigate = useNavigate();
+  return <HealthcareDashboard onNavigateToCalendar={() => navigate('/calendar')} />;
+};
+
+// Enhanced Calendar Wrapper
+const CalendarWrapper = () => {
+  const navigate = useNavigate();
+  return <CalendarPage onNavigateToNewAppointment={() => navigate('/appointments/new')} />;
+};
+
+// Enhanced Patients Wrapper
+const PatientsWrapper = () => {
+  const navigate = useNavigate();
+  return (
+    <PatientsPage
+      onNavigateToPatient={(patientId) => navigate(`/patients/${patientId}`)}
+      onNavigateToNewPatient={() => navigate('/patients/new')}
+    />
+  );
+};
+
+function App() {
   return (
     <Router>
       <div className="App">
-        {user && (
-          <Header
-            user={user}
-            onLogout={handleLogout}
-          />
-        )}
+        <Routes>
+          {/* Landing Page */}
+          <Route path="/" element={<LandingPageWrapper />} />
 
-        <main className="main-content">
-          <Routes>
-            {/* Public routes */}
-            <Route
-              path="/"
-              element={
-                user ? (
-                  <Navigate to="/dashboard" replace />
-                ) : (
-                  <LandingPage />
-                )
-              }
-            />
+          {/* Dashboard and Main App Routes */}
+          <Route path="/dashboard" element={
+            <>
+              <Navigation />
+              <DashboardWrapper />
+            </>
+          } />
 
-            <Route
-              path="/login"
-              element={
-                user ? (
-                  <Navigate to="/dashboard" replace />
-                ) : (
-                  <LoginPage onLogin={handleLogin} />
-                )
-              }
-            />
+          {/* Calendar */}
+          <Route path="/calendar" element={
+            <>
+              <Navigation />
+              <CalendarWrapper />
+            </>
+          } />
 
-            {/* Protected routes */}
-            <Route
-              path="/dashboard"
-              element={
-                user ? (
-                  <DashboardPage user={user} />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
+          {/* Appointments */}
+          <Route path="/appointments/new" element={
+            <>
+              <Navigation />
+              <NewAppointmentPage />
+            </>
+          } />
 
-            <Route
-              path="/patients"
-              element={
-                user ? (
-                  <PatientsPage user={user} />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
+          {/* Patients */}
+          <Route path="/patients" element={
+            <>
+              <Navigation />
+              <PatientsWrapper />
+            </>
+          } />
 
-            <Route
-              path="/patients/new"
-              element={
-                user ? (
-                  <NewPatientPage user={user} />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
+          <Route path="/patients/new" element={
+            <>
+              <Navigation />
+              <NewPatientPage />
+            </>
+          } />
 
-            <Route
-              path="/calendar"
-              element={
-                user ? (
-                  <CalendarPage user={user} />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
+          <Route path="/patients/:id" element={
+            <>
+              <Navigation />
+              <PatientDetailPage />
+            </>
+          } />
 
-            <Route
-              path="/video-call/:appointmentId"
-              element={
-                user ? (
-                  <VideoCallPage user={user} />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
+          {/* NEW: Psychiatrist Application Route */}
+          <Route path="/apply-psychiatrist" element={<PsychiatristApplicationPage />} />
 
-            {/* Catch all route */}
-            <Route
-              path="*"
-              element={
-                <div className="not-found">
-                  <h2>Page Not Found</h2>
-                  <p>The page you're looking for doesn't exist.</p>
-                  {user ? (
-                    <Navigate to="/dashboard" replace />
-                  ) : (
-                    <Navigate to="/" replace />
-                  )}
-                </div>
-              }
-            />
-          </Routes>
-        </main>
+          {/* Catch all route - redirect to landing */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </div>
     </Router>
   );
