@@ -1,308 +1,283 @@
+// src/pages/LandingPage.js - Complete and Fixed
 import React, { useState } from 'react';
-import NewPatientForm from './NewPatientForm'; // You'll need to create this file
-// Add this import at the top of your LandingPage.js
 import { useNavigate } from 'react-router-dom';
+import './LandingPage.css';
 
-// Update your LandingPage component to include navigation
-const LandingPage = ({ onEnterDashboard }) => {
-    const navigate = useNavigate(); // Add this hook
-    const [showPatientForm, setShowPatientForm] = useState(false);
+const LandingPage = () => {
+    const navigate = useNavigate();
     const [currentTime, setCurrentTime] = useState(new Date());
 
-    const handlePatientSaved = (patientData) => {
-        console.log('New patient saved:', patientData);
-        // You can add logic here to save to your API or local storage
-        // For now, we'll just log it and close the form
-        setShowPatientForm(false);
+    // Update time every second
+    React.useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
 
-        // Optionally redirect to dashboard after registration
-        // onEnterDashboard();
+        return () => clearInterval(timer);
+    }, []);
+
+    const handleLogin = () => {
+        navigate('/login');
+    };
+
+    const handleLearnMore = () => {
+        // Scroll to features section
+        document.getElementById('features')?.scrollIntoView({
+            behavior: 'smooth'
+        });
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-            {/* Header */}
-            <div className="relative overflow-hidden">
-                <div className="absolute inset-0">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-700 mix-blend-multiply"></div>
+        <div className="landing-page">
+            {/* Hero Section */}
+            <div className="hero-section">
+                <div className="hero-background">
+                    <div className="hero-overlay"></div>
                 </div>
 
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-                    <div className="text-center">
-                        <div className="flex justify-center mb-8">
-                            <div className="relative">
-                                <div className="w-20 h-20 bg-white rounded-2xl shadow-2xl flex items-center justify-center">
-                                    <span className="text-3xl">🏥</span>
-                                </div>
-                                <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-white"></div>
-                            </div>
+                <div className="hero-content">
+                    <div className="hero-logo">
+                        <div className="logo-container">
+                            <span className="logo-icon">🏥</span>
+                            <div className="status-indicator"></div>
                         </div>
+                    </div>
 
-                        <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-                            Welcome to{' '}
-                            <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
-                                TelenosHealth
-                            </span>
-                        </h1>
+                    <h1 className="hero-title">
+                        Welcome to{' '}
+                        <span className="brand-gradient">TelenosHealth</span>
+                    </h1>
 
-                        <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-                            Modern healthcare management platform designed for healthcare providers.
-                            Manage patients, schedule appointments, and conduct secure video consultations.
-                        </p>
+                    <p className="hero-subtitle">
+                        Modern healthcare management platform designed for healthcare providers.
+                        Manage patients, schedule appointments, and conduct secure video consultations.
+                    </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <button
-                                onClick={onEnterDashboard}
-                                className="px-8 py-4 bg-white text-blue-600 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-                            >
-                                🚀 Enter Dashboard
-                            </button>
+                    <div className="hero-actions">
+                        <button
+                            onClick={handleLogin}
+                            className="cta-button primary"
+                        >
+                            <span className="button-icon">🔐</span>
+                            Sign In to Dashboard
+                        </button>
 
-                            <button
-                                onClick={() => setShowPatientForm(true)}
-                                className="px-8 py-4 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 border-2 border-white/20"
-                            >
-                                👤 Register New Patient
-                            </button>
+                        <button
+                            onClick={handleLearnMore}
+                            className="cta-button secondary"
+                        >
+                            <span className="button-icon">📋</span>
+                            Learn More
+                        </button>
+                    </div>
+
+                    <div className="hero-stats">
+                        <div className="stat-item">
+                            <span className="stat-number">24/7</span>
+                            <span className="stat-label">Available</span>
+                        </div>
+                        <div className="stat-item">
+                            <span className="stat-number">HIPAA</span>
+                            <span className="stat-label">Compliant</span>
+                        </div>
+                        <div className="stat-item">
+                            <span className="stat-number">Secure</span>
+                            <span className="stat-label">Platform</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Features Section */}
-            <div className="py-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <div id="features" className="features-section">
+                <div className="section-container">
+                    <div className="section-header">
+                        <h2 className="section-title">
                             Everything you need for modern healthcare
                         </h2>
-                        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                        <p className="section-subtitle">
                             Streamline your practice with our comprehensive healthcare management platform
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="features-grid">
                         {/* Patient Management */}
-                        <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
-                            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
-                                <span className="text-2xl">👥</span>
-                            </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Patient Management</h3>
-                            <p className="text-gray-600 mb-6">
-                                Comprehensive patient records, medical history tracking, and secure data management
+                        <div className="feature-card">
+                            <div className="feature-icon">👥</div>
+                            <h3 className="feature-title">Patient Management</h3>
+                            <p className="feature-description">
+                                Comprehensive patient records with secure data storage,
+                                medical history tracking, and HIPAA compliance.
                             </p>
-                            <button
-                                onClick={() => setShowPatientForm(true)}
-                                className="text-blue-600 font-medium hover:text-blue-700 transition-colors"
-                            >
-                                Add New Patient →
-                            </button>
+                            <div className="feature-benefits">
+                                <span className="benefit">✅ Secure Records</span>
+                                <span className="benefit">✅ Medical History</span>
+                                <span className="benefit">✅ Quick Search</span>
+                            </div>
                         </div>
 
                         {/* Appointment Scheduling */}
-                        <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
-                            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-6">
-                                <span className="text-2xl">📅</span>
-                            </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Smart Scheduling</h3>
-                            <p className="text-gray-600 mb-6">
-                                Advanced calendar management with automated reminders and flexible booking options
+                        <div className="feature-card">
+                            <div className="feature-icon">📅</div>
+                            <h3 className="feature-title">Smart Scheduling</h3>
+                            <p className="feature-description">
+                                Advanced calendar system with automated reminders,
+                                conflict detection, and flexible booking options.
                             </p>
-                            <button
-                                onClick={onEnterDashboard}
-                                className="text-green-600 font-medium hover:text-green-700 transition-colors"
-                            >
-                                View Calendar →
-                            </button>
+                            <div className="feature-benefits">
+                                <span className="benefit">✅ Calendar Integration</span>
+                                <span className="benefit">✅ Auto Reminders</span>
+                                <span className="benefit">✅ Time Management</span>
+                            </div>
                         </div>
 
                         {/* Video Consultations */}
-                        <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
-                            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
-                                <span className="text-2xl">🎥</span>
-                            </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Video Consultations</h3>
-                            <p className="text-gray-600 mb-6">
-                                HIPAA-compliant video calls with integrated patient records and secure messaging
+                        <div className="feature-card">
+                            <div className="feature-icon">🎥</div>
+                            <h3 className="feature-title">Video Consultations</h3>
+                            <p className="feature-description">
+                                Secure video calling with screen sharing,
+                                session recording, and high-quality audio/video.
                             </p>
-                            <button
-                                onClick={onEnterDashboard}
-                                className="text-purple-600 font-medium hover:text-purple-700 transition-colors"
-                            >
-                                Start Session →
-                            </button>
+                            <div className="feature-benefits">
+                                <span className="benefit">✅ HD Video/Audio</span>
+                                <span className="benefit">✅ Screen Share</span>
+                                <span className="benefit">✅ Secure Connection</span>
+                            </div>
+                        </div>
+
+                        {/* Analytics Dashboard */}
+                        <div className="feature-card">
+                            <div className="feature-icon">📊</div>
+                            <h3 className="feature-title">Analytics Dashboard</h3>
+                            <p className="feature-description">
+                                Real-time insights and statistics to help you
+                                make informed decisions about your practice.
+                            </p>
+                            <div className="feature-benefits">
+                                <span className="benefit">✅ Real-time Data</span>
+                                <span className="benefit">✅ Custom Reports</span>
+                                <span className="benefit">✅ Performance Metrics</span>
+                            </div>
+                        </div>
+
+                        {/* Security & Compliance */}
+                        <div className="feature-card">
+                            <div className="feature-icon">🔒</div>
+                            <h3 className="feature-title">Security & Compliance</h3>
+                            <p className="feature-description">
+                                Enterprise-grade security with end-to-end encryption,
+                                audit trails, and full HIPAA compliance.
+                            </p>
+                            <div className="feature-benefits">
+                                <span className="benefit">✅ End-to-End Encryption</span>
+                                <span className="benefit">✅ HIPAA Compliant</span>
+                                <span className="benefit">✅ Audit Trails</span>
+                            </div>
+                        </div>
+
+                        {/* Mobile Access */}
+                        <div className="feature-card">
+                            <div className="feature-icon">📱</div>
+                            <h3 className="feature-title">Mobile Access</h3>
+                            <p className="feature-description">
+                                Responsive design that works perfectly on all devices -
+                                desktop, tablet, and mobile.
+                            </p>
+                            <div className="feature-benefits">
+                                <span className="benefit">✅ Responsive Design</span>
+                                <span className="benefit">✅ Mobile Optimized</span>
+                                <span className="benefit">✅ Cross-Platform</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Quick Actions Section */}
-            <div className="bg-gray-50 py-20">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-8">
-                        Get Started Today
-                    </h2>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-white rounded-xl p-6 shadow-lg">
-                            <div className="text-4xl mb-4">🏥</div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">For Healthcare Providers</h3>
-                            <p className="text-gray-600 mb-4">
-                                Access your complete healthcare management dashboard
+            {/* Demo Section */}
+            <div className="demo-section">
+                <div className="section-container">
+                    <div className="demo-content">
+                        <div className="demo-text">
+                            <h2 className="demo-title">Ready to get started?</h2>
+                            <p className="demo-description">
+                                Try our platform with the demo account and see how TelenosHealth
+                                can transform your healthcare practice.
                             </p>
+
+                            <div className="demo-credentials">
+                                <h3>Demo Account:</h3>
+                                <div className="credential-item">
+                                    <strong>Email:</strong> demo@telenos.com
+                                </div>
+                                <div className="credential-item">
+                                    <strong>Password:</strong> demo123
+                                </div>
+                                <div className="credential-item">
+                                    <strong>Role:</strong> Doctor
+                                </div>
+                            </div>
+
                             <button
-                                onClick={onEnterDashboard}
-                                className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                onClick={handleLogin}
+                                className="demo-button"
                             >
-                                Enter Dashboard
+                                <span className="button-icon">🚀</span>
+                                Try Demo Now
                             </button>
                         </div>
 
-                        <div className="bg-white rounded-xl p-6 shadow-lg">
-                            <div className="text-4xl mb-4">👤</div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">New Patient Registration</h3>
-                            <p className="text-gray-600 mb-4">
-                                Quick and easy patient onboarding process
-                            </p>
-                            <button
-                                onClick={() => setShowPatientForm(true)}
-                                className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-                            >
-                                Register Patient
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Join Our Team Section - NEW */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 py-20">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-3xl font-bold text-white mb-8">
-                        Join Our Telemedicine Team
-                    </h2>
-                    <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
-                        We're looking for licensed psychiatrists to join our growing telemedicine practice.
-                        Work remotely with flexible hours and cutting-edge technology.
-                    </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-                            <div className="text-4xl mb-4">👩‍⚕️</div>
-                            <h3 className="text-xl font-semibold text-white mb-2">For Psychiatrists</h3>
-                            <p className="text-blue-100 mb-4">
-                                Apply to join our remote psychiatric practice
-                            </p>
-                            <button
-                                onClick={() => navigate('/apply-psychiatrist')}
-                                className="w-full px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium transform hover:scale-105 shadow-lg hover:shadow-xl"
-                            >
-                                Apply Now
-                            </button>
-                        </div>
-
-                        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-                            <div className="text-4xl mb-4">💼</div>
-                            <h3 className="text-xl font-semibold text-white mb-2">Why Join Us?</h3>
-                            <ul className="text-blue-100 text-left space-y-2">
-                                <li className="flex items-center">
-                                    <span className="text-green-300 mr-2">✓</span>
-                                    Flexible remote work
-                                </li>
-                                <li className="flex items-center">
-                                    <span className="text-green-300 mr-2">✓</span>
-                                    Competitive compensation
-                                </li>
-                                <li className="flex items-center">
-                                    <span className="text-green-300 mr-2">✓</span>
-                                    Modern telemedicine platform
-                                </li>
-                                <li className="flex items-center">
-                                    <span className="text-green-300 mr-2">✓</span>
-                                    Growing patient base
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    {/* Additional Benefits */}
-                    <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <span className="text-2xl">🏠</span>
+                        <div className="demo-visual">
+                            <div className="demo-dashboard">
+                                <div className="dashboard-header">
+                                    <div className="dashboard-title">TelenosHealth Dashboard</div>
+                                    <div className="dashboard-time">
+                                        {currentTime.toLocaleTimeString()}
+                                    </div>
+                                </div>
+                                <div className="dashboard-stats">
+                                    <div className="stat-card">
+                                        <div className="stat-value">24</div>
+                                        <div className="stat-label">Patients Today</div>
+                                    </div>
+                                    <div className="stat-card">
+                                        <div className="stat-value">8</div>
+                                        <div className="stat-label">Appointments</div>
+                                    </div>
+                                    <div className="stat-card">
+                                        <div className="stat-value">12</div>
+                                        <div className="stat-label">Completed</div>
+                                    </div>
+                                </div>
                             </div>
-                            <h4 className="text-white font-semibold mb-2">Work From Home</h4>
-                            <p className="text-blue-100 text-sm">Practice from the comfort of your own office</p>
-                        </div>
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <span className="text-2xl">⏰</span>
-                            </div>
-                            <h4 className="text-white font-semibold mb-2">Flexible Hours</h4>
-                            <p className="text-blue-100 text-sm">Choose your schedule and work-life balance</p>
-                        </div>
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <span className="text-2xl">🚀</span>
-                            </div>
-                            <h4 className="text-white font-semibold mb-2">Advanced Tech</h4>
-                            <p className="text-blue-100 text-sm">State-of-the-art telemedicine platform</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Footer */}
-            <div className="bg-gray-900 text-white py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                        <div className="col-span-2">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                                    <span className="text-white">🏥</span>
-                                </div>
-                                <span className="text-xl font-bold">TelenosHealth</span>
-                            </div>
-                            <p className="text-gray-400 mb-4">
-                                Empowering healthcare providers with modern, secure, and efficient practice management tools.
-                            </p>
+            <div className="footer-section">
+                <div className="section-container">
+                    <div className="footer-content">
+                        <div className="footer-logo">
+                            <span className="logo-icon">🏥</span>
+                            <span className="logo-text">TelenosHealth</span>
                         </div>
 
-                        <div>
-                            <h4 className="font-semibold mb-4">Features</h4>
-                            <ul className="space-y-2 text-gray-400">
-                                <li>Patient Management</li>
-                                <li>Appointment Scheduling</li>
-                                <li>Video Consultations</li>
-                                <li>Medical Records</li>
-                            </ul>
+                        <div className="footer-links">
+                            <a href="#features" className="footer-link">Features</a>
+                            <a href="#security" className="footer-link">Security</a>
+                            <a href="#support" className="footer-link">Support</a>
+                            <a href="#contact" className="footer-link">Contact</a>
                         </div>
 
-                        <div>
-                            <h4 className="font-semibold mb-4">Security</h4>
-                            <ul className="space-y-2 text-gray-400">
-                                <li>HIPAA Compliant</li>
-                                <li>End-to-End Encryption</li>
-                                <li>Secure Data Storage</li>
-                                <li>Access Controls</li>
-                            </ul>
+                        <div className="footer-info">
+                            <p>&copy; 2025 TelenosHealth. All rights reserved.</p>
+                            <p>HIPAA Compliant Healthcare Platform</p>
                         </div>
-                    </div>
-
-                    <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-                        <p>&copy; 2024 TelenosHealth. All rights reserved. HIPAA Compliant Healthcare Platform.</p>
                     </div>
                 </div>
             </div>
-
-            {/* New Patient Form Modal */}
-            {showPatientForm && (
-                <NewPatientForm
-                    onClose={() => setShowPatientForm(false)}
-                    onSave={handlePatientSaved}
-                    showCloseButton={true}
-                />
-            )}
         </div>
     );
 };

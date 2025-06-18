@@ -1,13 +1,13 @@
+// src/pages/LoginPage.js - Updated for TelenosHealth Backend
 import React, { useState } from 'react';
 import { authService } from '../services/auth';
+import './LoginPage.css';
 
 const LoginPage = ({ onLogin }) => {
     const [isLogin, setIsLogin] = useState(true);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('demo@telenos.com'); // Pre-fill demo email
+    const [password, setPassword] = useState('demo123');     // Pre-fill demo password
     const [name, setName] = useState('');
-    const [confirmationCode, setConfirmationCode] = useState('');
-    const [needsConfirmation, setNeedsConfirmation] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -17,127 +17,169 @@ const LoginPage = ({ onLogin }) => {
         setError('');
 
         try {
-            if (needsConfirmation) {
-                // Confirm sign up
-                await authService.confirmSignUp(email, confirmationCode);
-                const loginResult = await authService.signIn(email, password);
-                onLogin(loginResult.user);
-            } else if (isLogin) {
+            let result;
+
+            if (isLogin) {
                 // Sign in
-                const result = await authService.signIn(email, password);
+                result = await authService.signIn(email, password);
+                console.log('Login successful:', result);
                 onLogin(result.user);
             } else {
                 // Sign up
-                const result = await authService.signUp(email, password, name);
-                if (result.needsConfirmation) {
-                    setNeedsConfirmation(true);
+                result = await authService.signUp(email, password, name);
+                console.log('Registration successful:', result);
+
+                // After successful registration, automatically sign in
+                if (result.success) {
+                    const loginResult = await authService.signIn(email, password);
+                    onLogin(loginResult.user);
                 }
             }
         } catch (error) {
+            console.error('Authentication error:', error);
             setError(error.message);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleForgotPassword = async () => {
-        if (!email) {
-            setError('Please enter your email address');
-            return;
-        }
+    const handleDemoLogin = async () => {
+        setEmail('demo@telenos.com');
+        setPassword('demo123');
+        setError('');
+        setLoading(true);
 
         try {
-            setLoading(true);
-            await authService.forgotPassword(email);
-            alert('Password reset email sent! Check your inbox.');
+            const result = await authService.signIn('demo@telenos.com', 'demo123');
+            console.log('Demo login successful:', result);
+            onLogin(result.user);
         } catch (error) {
+            console.error('Demo login error:', error);
             setError(error.message);
         } finally {
             setLoading(false);
         }
+    };
+
+    const clearForm = () => {
+        setEmail('');
+        setPassword('');
+        setName('');
+        setError('');
     };
 
     return (
         <div className="login-container">
-            <div className="login-form">
-                <h2>
-                    {needsConfirmation ? 'Confirm Your Email' :
-                        isLogin ? 'Sign In' : 'Create Account'}
-                </h2>
+            <div className="login-card">
+                <div className="login-header">
+                    <h1>TelenosHealth</h1>
+                    <h2>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
+                    <p>{isLogin ? 'Sign in to access your dashboard' : 'Join our healthcare platform'}</p>
+                </div>
 
-                {error && <div className="error-message">{error}</div>}
+                {error && (
+                    <div className="error-message">
+                        <span>⚠️ {error}</span>
+                    </div>
+                )}
 
-                <form onSubmit={handleSubmit}>
-                    {needsConfirmation ? (
-                        <>
-                            <p>Please enter the confirmation code sent to {email}</p>
+                <form onSubmit={handleSubmit} className="login-form">
+                    {!isLogin && (
+                        <div className="form-group">
+                            <label htmlFor="name">Full Name</label>
                             <input
+                                id="name"
                                 type="text"
-                                placeholder="Confirmation Code"
-                                value={confirmationCode}
-                                onChange={(e) => setConfirmationCode(e.target.value)}
-                                required
+                                placeholder="Dr. John Smith"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required={!isLogin}
+                                disabled={loading}
                             />
-                        </>
-                    ) : (
-                        <>
-                            {!isLogin && (
-                                <input
-                                    type="text"
-                                    placeholder="Full Name"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    required
-                                />
-                            )}
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </>
+                        </div>
                     )}
 
-                    <button type="submit" disabled={loading}>
-                        {loading ? 'Loading...' :
-                            needsConfirmation ? 'Confirm Account' :
-                                isLogin ? 'Sign In' : 'Sign Up'}
+                    <div className="form-group">
+                        <label htmlFor="email">Email Address</label>
+                        <input
+                            id="email"
+                            type="email"
+                            placeholder="doctor@telenos.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            disabled={loading}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            placeholder="Enter your password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            disabled={loading}
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="login-button primary"
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <span>
+                                <span className="spinner"></span>
+                                {isLogin ? 'Signing In...' : 'Creating Account...'}
+                            </span>
+                        ) : (
+                            isLogin ? 'Sign In' : 'Create Account'
+                        )}
                     </button>
                 </form>
 
-                {!needsConfirmation && (
-                    <>
-                        <div className="form-toggle">
-                            <button
-                                type="button"
-                                onClick={() => setIsLogin(!isLogin)}
-                                className="link-button"
-                            >
-                                {isLogin ? 'Need an account? Sign Up' : 'Have an account? Sign In'}
-                            </button>
-                        </div>
+                <div className="login-divider">
+                    <span>or</span>
+                </div>
 
-                        {isLogin && (
-                            <button
-                                type="button"
-                                onClick={handleForgotPassword}
-                                className="link-button"
-                                disabled={loading}
-                            >
-                                Forgot Password?
-                            </button>
-                        )}
-                    </>
-                )}
+                <button
+                    type="button"
+                    onClick={handleDemoLogin}
+                    className="demo-button"
+                    disabled={loading}
+                >
+                    🚀 Try Demo Account
+                </button>
+
+                <div className="login-footer">
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setIsLogin(!isLogin);
+                            clearForm();
+                        }}
+                        className="link-button"
+                        disabled={loading}
+                    >
+                        {isLogin
+                            ? "Don't have an account? Sign Up"
+                            : 'Already have an account? Sign In'
+                        }
+                    </button>
+                </div>
+
+                {/* Demo Credentials Info */}
+                <div className="demo-info">
+                    <h3>Demo Credentials:</h3>
+                    <div className="demo-credentials">
+                        <div><strong>Email:</strong> demo@telenos.com</div>
+                        <div><strong>Password:</strong> demo123</div>
+                        <div><strong>Role:</strong> Doctor</div>
+                    </div>
+                </div>
             </div>
         </div>
     );
