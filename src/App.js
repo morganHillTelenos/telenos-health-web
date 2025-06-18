@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useParams } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
 import HealthcareDashboard from './pages/HealthcareDashboard';
 import CalendarPage from './pages/CalendarPage';
 import NewAppointmentPage from './pages/NewAppointmentPage';
 import PatientsPage from './pages/PatientsPage';
-import PsychiatristApplicationPage from './pages/PsychiatristApplicationPage'; // New import
+import PsychiatristApplicationPage from './pages/PsychiatristApplicationPage';
+import { authService } from './services/auth';
 
 // For now, we'll create a simple patient detail component inline
 const PatientDetailPage = () => {
@@ -112,10 +114,57 @@ const Navigation = () => {
   );
 };
 
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        if (authService.isAuthenticated()) {
+          const currentUser = await authService.getCurrentUser();
+          setUser(currentUser);
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        // User will remain null, redirecting to login
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  return user ? children : <Navigate to="/login" replace />;
+};
+
 // Enhanced Landing Page Wrapper
 const LandingPageWrapper = () => {
   const navigate = useNavigate();
   return <LandingPage onEnterDashboard={() => navigate('/dashboard')} />;
+};
+
+// Enhanced Login Page Wrapper
+const LoginPageWrapper = () => {
+  const navigate = useNavigate();
+
+  const handleLogin = (user) => {
+    console.log('User logged in:', user);
+    // Navigate to dashboard after successful login
+    navigate('/dashboard');
+  };
+
+  return <LoginPage onLogin={handleLogin} />;
 };
 
 // Enhanced Dashboard Wrapper
@@ -146,57 +195,55 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          {/* Landing Page */}
+          {/* Public Routes */}
           <Route path="/" element={<LandingPageWrapper />} />
+          <Route path="/login" element={<LoginPageWrapper />} />
 
-          {/* Dashboard and Main App Routes */}
+          {/* Psychiatrist Application Route (Public) */}
+          <Route path="/apply-psychiatrist" element={<PsychiatristApplicationPage />} />
+
+          {/* Protected Routes */}
           <Route path="/dashboard" element={
-            <>
+            <ProtectedRoute>
               <Navigation />
               <DashboardWrapper />
-            </>
+            </ProtectedRoute>
           } />
 
-          {/* Calendar */}
           <Route path="/calendar" element={
-            <>
+            <ProtectedRoute>
               <Navigation />
               <CalendarWrapper />
-            </>
+            </ProtectedRoute>
           } />
 
-          {/* Appointments */}
           <Route path="/appointments/new" element={
-            <>
+            <ProtectedRoute>
               <Navigation />
               <NewAppointmentPage />
-            </>
+            </ProtectedRoute>
           } />
 
-          {/* Patients */}
           <Route path="/patients" element={
-            <>
+            <ProtectedRoute>
               <Navigation />
               <PatientsWrapper />
-            </>
+            </ProtectedRoute>
           } />
 
           <Route path="/patients/new" element={
-            <>
+            <ProtectedRoute>
               <Navigation />
               <NewPatientPage />
-            </>
+            </ProtectedRoute>
           } />
 
           <Route path="/patients/:id" element={
-            <>
+            <ProtectedRoute>
               <Navigation />
               <PatientDetailPage />
-            </>
+            </ProtectedRoute>
           } />
-
-          {/* NEW: Psychiatrist Application Route */}
-          <Route path="/apply-psychiatrist" element={<PsychiatristApplicationPage />} />
 
           {/* Catch all route - redirect to landing */}
           <Route path="*" element={<Navigate to="/" replace />} />
