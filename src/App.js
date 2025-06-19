@@ -9,61 +9,38 @@ import PatientsPage from './pages/PatientsPage';
 import PsychiatristApplicationPage from './pages/PsychiatristApplicationPage';
 import { authService } from './services/auth';
 import TestAmplifyGen2 from './TestAmplifyGen2';
+import NewPatientForm from './pages/NewPatientForm';
+import { apiService } from './services/api'; // Add this import at the top
+import PatientDetailPage from './pages/PatientDetailPage';
 
-// For now, we'll create a simple patient detail component inline
-const PatientDetailPage = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="container mx-auto px-6 py-8 pt-20">
-        <div className="mb-8">
-          <button
-            onClick={() => navigate('/patients')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors group"
-          >
-            <span className="text-lg">←</span>
-            Back to Patients
-          </button>
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-8 shadow-lg">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Patient Details</h1>
-            <p className="text-gray-600">Patient ID: {id}</p>
-            <p className="text-sm text-gray-500 mt-4">
-              Replace this component with your PatientDetailPage artifact by creating:
-              <br />
-              <code className="bg-gray-100 px-2 py-1 rounded">src/pages/PatientDetailPage.js</code>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// New Patient Page Placeholder
+// Replace the existing NewPatientPage component with this:
 const NewPatientPage = () => {
   const navigate = useNavigate();
 
+  const handleSave = async (patientData) => {
+    try {
+      console.log('Patient saved successfully:', patientData);
+      // Navigate back to patients list to see the new patient
+      navigate('/patients');
+    } catch (error) {
+      console.error('Error in handleSave:', error);
+      // Let the form handle the error display
+    }
+  };
+
+  const handleClose = () => {
+    navigate('/patients');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-6 py-8 pt-20">
-        <div className="mb-8">
-          <button
-            onClick={() => navigate('/patients')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors group"
-          >
-            <span className="text-lg">←</span>
-            Back to Patients
-          </button>
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-8 shadow-lg">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Add New Patient</h1>
-            <p className="text-gray-600 mb-6">Create a new patient record in your system.</p>
-            <p className="text-sm text-gray-500">
-              This is a placeholder page. You can create a full patient form here or use your existing NewPatientPage component.
-            </p>
-          </div>
-        </div>
+        <NewPatientForm
+          onSave={handleSave}
+          onClose={handleClose}
+          showCloseButton={true}
+        />
       </div>
     </div>
   );

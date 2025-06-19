@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, Mail, Phone, Calendar, MapPin, AlertTriangle, Pill, Shield, Heart, Save, X, CheckCircle } from 'lucide-react';
+import { apiService } from '../services/api'; // Add this import at the top
 
 const NewPatientForm = ({ onClose, onSave, showCloseButton = true }) => {
     const [formData, setFormData] = useState({
@@ -64,99 +65,147 @@ const NewPatientForm = ({ onClose, onSave, showCloseButton = true }) => {
         }
     };
 
+    // 1. Replace your validateStep function with:
     const validateStep = (step) => {
         const newErrors = {};
 
-        switch (step) {
-            case 1:
-                if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
-                if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
-                if (!formData.email.trim()) newErrors.email = 'Email is required';
-                else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
-                if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
-                if (!formData.dob) newErrors.dob = 'Date of birth is required';
-                if (!formData.gender) newErrors.gender = 'Gender is required';
-                break;
+        if (step === 1) {
+            // Step 1: Personal Information - Only essential fields required
+            if (!formData.firstName.trim()) {
+                newErrors.firstName = 'First name is required';
+            }
+            if (!formData.lastName.trim()) {
+                newErrors.lastName = 'Last name is required';
+            }
+            if (!formData.email.trim()) {
+                newErrors.email = 'Email is required';
+            } else {
+                // Email format validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(formData.email)) {
+                    newErrors.email = 'Please enter a valid email address';
+                }
+            }
+            if (!formData.dob) {
+                newErrors.dob = 'Date of birth is required';
+            } else {
+                // Age validation
+                const birthDate = new Date(formData.dob);
+                const today = new Date();
+                const age = today.getFullYear() - birthDate.getFullYear();
 
-            case 2:
-                if (!formData.address.trim()) newErrors.address = 'Address is required';
-                if (!formData.city.trim()) newErrors.city = 'City is required';
-                if (!formData.state.trim()) newErrors.state = 'State is required';
-                if (!formData.zipCode.trim()) newErrors.zipCode = 'ZIP code is required';
-                if (!formData.emergencyContactName.trim()) newErrors.emergencyContactName = 'Emergency contact name is required';
-                if (!formData.emergencyContactPhone.trim()) newErrors.emergencyContactPhone = 'Emergency contact phone is required';
-                break;
+                if (birthDate > today) {
+                    newErrors.dob = 'Date of birth cannot be in the future';
+                } else if (age < 1) {
+                    newErrors.dob = 'Patient must be at least 1 year old';
+                } else if (age > 120) {
+                    newErrors.dob = 'Please enter a valid date of birth';
+                }
+            }
 
-            case 3:
-                if (!formData.insuranceProvider.trim()) newErrors.insuranceProvider = 'Insurance provider is required';
-                break;
-
-            case 4:
-                // Medical history is optional, no required validation
-                break;
+            // Optional phone validation (only if provided)
+            if (formData.phone && formData.phone.trim()) {
+                const phoneRegex = /^[\+]?[\s\-\(\)]?[\d\s\-\(\)]{10,}$/;
+                if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+                    newErrors.phone = 'Please enter a valid phone number';
+                }
+            }
         }
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        // Step 2 - Optional validations
+        if (step === 2) {
+            if (formData.emergencyContactPhone && formData.emergencyContactPhone.trim()) {
+                const phoneRegex = /^[\+]?[\s\-\(\)]?[\d\s\-\(\)]{10,}$/;
+                if (!phoneRegex.test(formData.emergencyContactPhone.replace(/\s/g, ''))) {
+                    newErrors.emergencyContactPhone = 'Please enter a valid phone number';
+                }
+            }
+
+            if (formData.zipCode && formData.zipCode.trim()) {
+                const zipRegex = /^\d{5}(-\d{4})?$/;
+                if (!zipRegex.test(formData.zipCode)) {
+                    newErrors.zipCode = 'Please enter a valid ZIP code (e.g., 12345 or 12345-6789)';
+                }
+            }
+        }
+
+        return newErrors;
     };
 
+    // 2. Update your nextStep function:
     const nextStep = () => {
-        if (validateStep(currentStep)) {
-            setCurrentStep(prev => Math.min(prev + 1, 4));
+        const errors = validateStep(currentStep);
+
+        if (Object.keys(errors).length > 0) {
+            setErrors(errors);
+            return;
         }
+
+        setErrors({});
+        setCurrentStep(prev => Math.min(prev + 1, steps.length));
     };
 
+    // 3. Update your prevStep function:
     const prevStep = () => {
+        setErrors({}); // Clear errors when going back
         setCurrentStep(prev => Math.max(prev - 1, 1));
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateStep(currentStep)) {
+        if (currentStep < steps.length) {
+            nextStep();
             return;
         }
 
         setIsSubmitting(true);
+        setErrors({});
 
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Debug: Log the raw form data
+            console.log('Raw form data:', formData);
 
+            // Create minimal patient data - ONLY required fields
             const patientData = {
-                id: Date.now().toString(),
-                name: `${formData.firstName} ${formData.lastName}`,
-                email: formData.email,
-                phone: formData.phone,
-                dob: formData.dob,
-                address: `${formData.address}, ${formData.city}, ${formData.state} ${formData.zipCode}`,
-                emergencyContact: formData.emergencyContactName,
-                emergencyPhone: formData.emergencyContactPhone,
-                insurance: formData.insuranceProvider,
-                allergies: formData.allergies || 'None reported',
-                medications: formData.currentMedications || 'None reported',
-                status: 'Active',
-                createdAt: new Date().toISOString(),
-                lastVisit: null
+                firstName: formData.firstName.trim(),
+                lastName: formData.lastName.trim(),
+                email: formData.email.trim(),
+                dateOfBirth: formData.dob
             };
 
-            setShowSuccess(true);
+            console.log('Sending to API:', patientData);
 
-            // Call onSave if provided (for integration with parent components)
-            if (onSave) {
-                onSave(patientData);
-            }
+            // Save to AWS via GraphQL API
+            const result = await apiService.createPatient(patientData);
+            console.log('Full API response:', JSON.stringify(result, null, 2));
 
-            // Auto close after success
-            setTimeout(() => {
-                if (onClose) {
-                    onClose();
+            // Check if we got a valid response
+            if (result && result.data && !result.errors) {
+                console.log('Success! Patient created:', result.data);
+                setShowSuccess(true);
+
+                if (onSave) {
+                    onSave(result.data);
                 }
-            }, 2000);
+
+                setTimeout(() => {
+                    if (onClose) {
+                        onClose();
+                    }
+                }, 1500);
+            } else {
+                // Handle GraphQL errors
+                const errorMessage = result.errors ? result.errors[0].message : 'Unknown error occurred';
+                throw new Error(errorMessage);
+            }
 
         } catch (error) {
             console.error('Error saving patient:', error);
-            setErrors({ submit: 'Failed to save patient. Please try again.' });
+            setErrors({
+                submit: error.message || 'Failed to save patient. Please try again.'
+            });
         } finally {
             setIsSubmitting(false);
         }
@@ -380,11 +429,16 @@ const NewPatientForm = ({ onClose, onSave, showCloseButton = true }) => {
                     {currentStep === 2 && (
                         <div className="space-y-6">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">Address & Emergency Contact</h3>
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                                <p className="text-sm text-blue-700">
+                                    <span className="font-medium">Optional:</span> All fields in this section are optional but recommended for emergency situations and appointment scheduling.
+                                </p>
+                            </div>
 
                             <div className="space-y-6">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Street Address *
+                                        Street Address 
                                     </label>
                                     <input
                                         type="text"
@@ -403,7 +457,7 @@ const NewPatientForm = ({ onClose, onSave, showCloseButton = true }) => {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            City *
+                                            City 
                                         </label>
                                         <input
                                             type="text"
@@ -421,7 +475,7 @@ const NewPatientForm = ({ onClose, onSave, showCloseButton = true }) => {
 
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            State *
+                                            State 
                                         </label>
                                         <input
                                             type="text"
@@ -439,7 +493,7 @@ const NewPatientForm = ({ onClose, onSave, showCloseButton = true }) => {
 
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            ZIP Code *
+                                            ZIP Code 
                                         </label>
                                         <input
                                             type="text"
@@ -462,7 +516,7 @@ const NewPatientForm = ({ onClose, onSave, showCloseButton = true }) => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Full Name *
+                                                Full Name 
                                             </label>
                                             <input
                                                 type="text"
@@ -480,7 +534,7 @@ const NewPatientForm = ({ onClose, onSave, showCloseButton = true }) => {
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Phone Number *
+                                                Phone Number 
                                             </label>
                                             <input
                                                 type="tel"
@@ -529,7 +583,7 @@ const NewPatientForm = ({ onClose, onSave, showCloseButton = true }) => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Insurance Provider *
+                                        Insurance Provider 
                                     </label>
                                     <select
                                         name="insuranceProvider"
@@ -739,6 +793,19 @@ const NewPatientForm = ({ onClose, onSave, showCloseButton = true }) => {
                     </div>
                 </div>
             </div>
+            {/* Success Message */}
+            {showSuccess && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
+                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <CheckCircle className="w-8 h-8 text-green-600" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Patient Added Successfully!</h3>
+                        <p className="text-gray-600 mb-4">The new patient record has been saved to your database.</p>
+                        <div className="animate-pulse text-sm text-gray-500">Redirecting...</div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
