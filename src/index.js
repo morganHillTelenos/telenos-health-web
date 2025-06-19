@@ -1,13 +1,12 @@
-// src/index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Amplify } from 'aws-amplify';
+import outputs from './amplify_outputs.json'; // Changed from '../amplify_outputs.json'
 import App from './App';
-// import { Amplify } from 'aws-amplify';
-// import awsExports from './aws-exports';
-import './styles/globals.css';
+import './index.css';
 
-// Configure Amplify
-// Amplify.configure(awsExports);
+// Configure Amplify with your backend
+Amplify.configure(outputs);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

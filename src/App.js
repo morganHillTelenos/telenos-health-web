@@ -8,6 +8,7 @@ import NewAppointmentPage from './pages/NewAppointmentPage';
 import PatientsPage from './pages/PatientsPage';
 import PsychiatristApplicationPage from './pages/PsychiatristApplicationPage';
 import { authService } from './services/auth';
+import TestAmplifyGen2 from './TestAmplifyGen2';
 
 // For now, we'll create a simple patient detail component inline
 const PatientDetailPage = () => {
@@ -247,6 +248,9 @@ function App() {
 
           {/* Catch all route - redirect to landing */}
           <Route path="*" element={<Navigate to="/" replace />} />
+
+          <Route path="/test-amplify" element={<TestAmplifyGen2 />} />
+
         </Routes>
       </div>
     </Router>

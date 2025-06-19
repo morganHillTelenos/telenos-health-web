@@ -1,246 +1,130 @@
-class ApiService {
-    constructor() {
-        this.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-    }
+import { generateClient } from 'aws-amplify/data';
 
-    async request(endpoint, options = {}) {
-        const token = localStorage.getItem('auth_token');
+// Generate the client with auto-generated types from your backend
+const client = generateClient();
 
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token && { Authorization: `Bearer ${token}` }),
-                ...options.headers,
-            },
-            ...options,
-        };
-
+export class ApiService {
+    // Patient operations
+    async createPatient(patientData) {
         try {
-            const response = await fetch(`${this.baseURL}${endpoint}`, config);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            return await response.json();
+            const result = await client.models.Patient.create({
+                ...patientData,
+            });
+            return result;
         } catch (error) {
-            console.error('API request failed:', error);
+            console.error('Error creating patient:', error);
             throw error;
         }
     }
 
-    // Patient methods
     async getPatients() {
         try {
-            return await this.request('/patients');
+            const result = await client.models.Patient.list();
+            return result;
         } catch (error) {
-            // Return mock data if API fails
-            return this.getMockPatients();
+            console.error('Error fetching patients:', error);
+            throw error;
         }
     }
 
     async getPatient(id) {
         try {
-            return await this.request(`/patients/${id}`);
+            const result = await client.models.Patient.get({ id });
+            return result;
         } catch (error) {
-            const patients = this.getMockPatients();
-            return patients.find(p => p.id === id);
+            console.error('Error fetching patient:', error);
+            throw error;
         }
     }
 
-    async savePatient(patientData) {
+    async updatePatient(id, patientData) {
         try {
-            return await this.request('/patients', {
-                method: 'POST',
-                body: JSON.stringify(patientData),
-            });
-        } catch (error) {
-            // Mock save for development
-            const newPatient = {
-                id: Date.now().toString(),
+            const result = await client.models.Patient.update({
+                id,
                 ...patientData,
-                createdAt: new Date().toISOString(),
-            };
-
-            const patients = this.getMockPatients();
-            patients.push(newPatient);
-            localStorage.setItem('patients', JSON.stringify(patients));
-
-            return { success: true, patient: newPatient };
+            });
+            return result;
+        } catch (error) {
+            console.error('Error updating patient:', error);
+            throw error;
         }
     }
 
-    // Appointment methods
+    async deletePatient(id) {
+        try {
+            const result = await client.models.Patient.delete({ id });
+            return result;
+        } catch (error) {
+            console.error('Error deleting patient:', error);
+            throw error;
+        }
+    }
+
+    // Appointment operations
+    async createAppointment(appointmentData) {
+        try {
+            const result = await client.models.Appointment.create({
+                ...appointmentData,
+                status: appointmentData.status || 'scheduled',
+            });
+            return result;
+        } catch (error) {
+            console.error('Error creating appointment:', error);
+            throw error;
+        }
+    }
+
     async getAppointments() {
         try {
-            return await this.request('/appointments');
+            const result = await client.models.Appointment.list();
+            return result;
         } catch (error) {
-            return this.getMockAppointments();
+            console.error('Error fetching appointments:', error);
+            throw error;
         }
     }
 
-    async getAppointment(id) {
+    async getAppointmentsByPatient(patientId) {
         try {
-            return await this.request(`/appointments/${id}`);
-        } catch (error) {
-            const appointments = this.getMockAppointments();
-            return appointments.find(a => a.id === id);
-        }
-    }
-
-    async saveAppointment(appointmentData) {
-        try {
-            return await this.request('/appointments', {
-                method: 'POST',
-                body: JSON.stringify(appointmentData),
+            const result = await client.models.Appointment.list({
+                filter: {
+                    patientId: { eq: patientId }
+                }
             });
+            return result;
         } catch (error) {
-            const newAppointment = {
-                id: Date.now().toString(),
-                ...appointmentData,
-                createdAt: new Date().toISOString(),
-                status: 'scheduled',
-            };
-
-            const appointments = this.getMockAppointments();
-            appointments.push(newAppointment);
-            localStorage.setItem('appointments', JSON.stringify(appointments));
-
-            return { success: true, appointment: newAppointment };
+            console.error('Error fetching patient appointments:', error);
+            throw error;
         }
     }
 
-    async updateAppointment(id, updates) {
+    // Medical Records operations
+    async createMedicalRecord(recordData) {
         try {
-            return await this.request(`/appointments/${id}`, {
-                method: 'PUT',
-                body: JSON.stringify(updates),
+            const result = await client.models.MedicalRecord.create({
+                ...recordData,
             });
+            return result;
         } catch (error) {
-            const appointments = this.getMockAppointments();
-            const index = appointments.findIndex(a => a.id === id);
-
-            if (index !== -1) {
-                appointments[index] = { ...appointments[index], ...updates };
-                localStorage.setItem('appointments', JSON.stringify(appointments));
-                return { success: true, appointment: appointments[index] };
-            }
-
-            throw new Error('Appointment not found');
+            console.error('Error creating medical record:', error);
+            throw error;
         }
     }
 
-    // Mock data methods
-    getMockPatients() {
-        const stored = localStorage.getItem('patients');
-        if (stored) {
-            return JSON.parse(stored);
+    async getMedicalRecordsByPatient(patientId) {
+        try {
+            const result = await client.models.MedicalRecord.list({
+                filter: {
+                    patientId: { eq: patientId }
+                }
+            });
+            return result;
+        } catch (error) {
+            console.error('Error fetching medical records:', error);
+            throw error;
         }
-
-        const defaultPatients = [
-            {
-                id: '1',
-                name: 'John Smith',
-                email: 'john.smith@email.com',
-                phone: '(555) 123-4567',
-                dob: '1985-06-15',
-                address: '123 Main St, Anytown, ST 12345',
-                emergencyContact: 'Jane Smith',
-                emergencyPhone: '(555) 987-6543',
-                insurance: 'Blue Cross Blue Shield',
-                allergies: 'None known',
-                medications: 'Lisinopril 10mg daily',
-                createdAt: '2024-12-01T10:00:00Z',
-            },
-            {
-                id: '2',
-                name: 'Sarah Johnson',
-                email: 'sarah.johnson@email.com',
-                phone: '(555) 234-5678',
-                dob: '1990-03-22',
-                address: '456 Oak Ave, Somewhere, ST 67890',
-                emergencyContact: 'Mike Johnson',
-                emergencyPhone: '(555) 876-5432',
-                insurance: 'Aetna',
-                allergies: 'Penicillin',
-                medications: 'Birth control',
-                createdAt: '2024-12-02T14:30:00Z',
-            },
-            {
-                id: '3',
-                name: 'Michael Brown',
-                email: 'michael.brown@email.com',
-                phone: '(555) 345-6789',
-                dob: '1978-11-08',
-                address: '789 Pine Dr, Elsewhere, ST 13579',
-                emergencyContact: 'Lisa Brown',
-                emergencyPhone: '(555) 765-4321',
-                insurance: 'UnitedHealth',
-                allergies: 'Shellfish',
-                medications: 'Metformin 500mg twice daily',
-                createdAt: '2024-12-03T09:15:00Z',
-            },
-        ];
-
-        localStorage.setItem('patients', JSON.stringify(defaultPatients));
-        return defaultPatients;
-    }
-
-    getMockAppointments() {
-        const stored = localStorage.getItem('appointments');
-        if (stored) {
-            return JSON.parse(stored);
-        }
-
-        const today = new Date();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1);
-
-        const defaultAppointments = [
-            {
-                id: '1',
-                patient: 'John Smith',
-                patientId: '1',
-                date: today.toISOString().split('T')[0],
-                time: '10:00',
-                duration: 30,
-                reason: 'Annual checkup',
-                status: 'scheduled',
-                videoCallEnabled: true,
-                hipaaCompliant: true,
-                createdAt: new Date().toISOString(),
-            },
-            {
-                id: '2',
-                patient: 'Sarah Johnson',
-                patientId: '2',
-                date: today.toISOString().split('T')[0],
-                time: '14:30',
-                duration: 45,
-                reason: 'Follow-up consultation',
-                status: 'scheduled',
-                videoCallEnabled: true,
-                hipaaCompliant: true,
-                createdAt: new Date().toISOString(),
-            },
-            {
-                id: '3',
-                patient: 'Michael Brown',
-                patientId: '3',
-                date: tomorrow.toISOString().split('T')[0],
-                time: '09:00',
-                duration: 30,
-                reason: 'Diabetes management',
-                status: 'scheduled',
-                videoCallEnabled: true,
-                hipaaCompliant: true,
-                createdAt: new Date().toISOString(),
-            },
-        ];
-
-        localStorage.setItem('appointments', JSON.stringify(defaultAppointments));
-        return defaultAppointments;
     }
 }
 
 export const apiService = new ApiService();
+export default apiService;
