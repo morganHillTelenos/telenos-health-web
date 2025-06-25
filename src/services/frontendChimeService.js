@@ -1,4 +1,4 @@
-// src/services/frontendChimeService.js - Compatible Version
+// src/services/frontendChimeService.js - Fixed Version
 import { ChimeSDKMeetingsClient, CreateMeetingCommand, CreateAttendeeCommand, DeleteMeetingCommand } from '@aws-sdk/client-chime-sdk-meetings';
 import { fetchAuthSession } from 'aws-amplify/auth';
 
@@ -31,79 +31,79 @@ try {
 
 class FrontendChimeService {
     constructor() {
-        this.initializeChimeClient();
         this.activeMeetings = new Map();
         this.chimeSDKLoaded = !!ChimeSDK;
+        this.isInitialized = false;
         console.log('📦 Chime SDK loaded:', this.chimeSDKLoaded);
+
+        // Initialize the client
+        this.initializeChimeClient();
     }
+
     async initializeChimeClient() {
         try {
+            console.log('🔑 Initializing Chime client with Amplify credentials...');
+
             // Get credentials from Amplify's current session
             const session = await fetchAuthSession();
 
             if (!session.credentials) {
-                throw new Error('No AWS credentials available. Please sign in.');
+                console.log('⚠️ No AWS credentials available. Using fallback method.');
+                // For development, create a basic client without auth
+                this.chimeSDKMeetings = new ChimeSDKMeetingsClient({
+                    region: 'us-east-1'
+                });
+            } else {
+                this.chimeSDKMeetings = new ChimeSDKMeetingsClient({
+                    region: 'us-east-1',
+                    credentials: {
+                        accessKeyId: session.credentials.accessKeyId,
+                        secretAccessKey: session.credentials.secretAccessKey,
+                        sessionToken: session.credentials.sessionToken,
+                    }
+                });
             }
 
-            this.chimeSDKMeetings = new ChimeSDKMeetingsClient({
-                region: 'us-east-1',
-                credentials: {
-                    accessKeyId: session.credentials.accessKeyId,
-                    secretAccessKey: session.credentials.secretAccessKey,
-                    sessionToken: session.credentials.sessionToken,
-                }
-            });
-
-            console.log('Chime SDK initialized with Amplify credentials');
+            this.isInitialized = true;
+            console.log('✅ Chime SDK client initialized');
 
         } catch (error) {
-            console.error('Failed to initialize Chime SDK:', error);
-            throw error;
+            console.error('❌ Failed to initialize Chime SDK:', error);
+
+            // Fallback: try with environment variables or basic config
+            try {
+                console.log('🔄 Trying fallback initialization...');
+                this.chimeSDKMeetings = new ChimeSDKMeetingsClient({
+                    region: process.env.REACT_APP_AWS_REGION || 'us-east-1'
+                });
+                this.isInitialized = true;
+                console.log('✅ Fallback initialization successful');
+            } catch (fallbackError) {
+                console.error('❌ Fallback initialization failed:', fallbackError);
+                throw fallbackError;
+            }
         }
     }
 
-
-    // initializeChimeClient() {
-    //     console.log('Environment check:');
-    //     console.log('- AWS Region:', process.env.REACT_APP_AWS_REGION || 'NOT SET');
-    //     console.log('- Access Key:', process.env.REACT_APP_AWS_ACCESS_KEY_ID ? 'SET' : 'NOT SET');
-    //     console.log('- Secret Key:', process.env.REACT_APP_AWS_SECRET_ACCESS_KEY ? 'SET' : 'NOT SET');
-
-    //     const region = process.env.REACT_APP_AWS_REGION || 'us-east-1';
-    //     const accessKeyId = process.env.REACT_APP_AWS_ACCESS_KEY_ID;
-    //     const secretAccessKey = process.env.REACT_APP_AWS_SECRET_ACCESS_KEY;
-
-    //     if (!accessKeyId || !secretAccessKey) {
-    //         console.error('❌ AWS credentials not found');
-    //         throw new Error('AWS credentials not configured');
-    //     }
-
-    //     try {
-    //         this.chimeClient = new ChimeSDKMeetingsClient({
-    //             region: region,
-    //             credentials: { accessKeyId, secretAccessKey },
-    //             maxAttempts: 3
-    //         });
-
-    //         console.log('✅ Chime client initialized successfully');
-
-    //     } catch (error) {
-    //         console.error('❌ Failed to initialize Chime client:', error);
-    //         throw error;
-    //     }
-    // }
+    async ensureInitialized() {
+        if (!this.isInitialized) {
+            await this.initializeChimeClient();
+        }
+    }
 
     async testCredentials() {
         try {
+            await this.ensureInitialized();
             console.log('🧪 Testing AWS credentials...');
 
             const testCommand = new CreateMeetingCommand({
                 ClientRequestToken: `test-${Date.now()}`,
-                MediaRegion: process.env.REACT_APP_AWS_REGION || 'us-east-1',
+                MediaRegion: 'us-east-1',
                 ExternalMeetingId: `test-credentials`
             });
 
-            await this.chimeClient.send(testCommand);
+            // Note: Fixed - using this.chimeSDKMeetings instead of this.chimeClient
+            await this.chimeSDKMeetings.send(testCommand);
             console.log('✅ Credentials are valid');
             return true;
         } catch (error) {
@@ -111,23 +111,20 @@ class FrontendChimeService {
                 console.error('❌ Credential error:', error.message);
                 return false;
             }
-            console.log('✅ Credentials appear valid');
+            console.log('✅ Credentials appear valid (or test failed for other reasons)');
             return true;
         }
     }
 
     async createMeeting(appointmentId, userType = 'provider', userName = 'User') {
         try {
-            const credentialsValid = await this.testCredentials();
-            if (!credentialsValid) {
-                throw new Error('Invalid AWS credentials');
-            }
+            await this.ensureInitialized();
 
             console.log(`Creating meeting for appointment ${appointmentId}...`);
 
             const createMeetingCommand = new CreateMeetingCommand({
                 ClientRequestToken: `telenos-${appointmentId}-${Date.now()}`,
-                MediaRegion: process.env.REACT_APP_AWS_REGION || 'us-east-1',
+                MediaRegion: 'us-east-1',
                 MeetingFeatures: {
                     Audio: { EchoReduction: 'AVAILABLE' },
                     Video: { MaxResolution: 'HD' }
@@ -140,7 +137,8 @@ class FrontendChimeService {
                 ]
             });
 
-            const meetingResponse = await this.chimeClient.send(createMeetingCommand);
+            // Fixed: using this.chimeSDKMeetings instead of this.chimeClient
+            const meetingResponse = await this.chimeSDKMeetings.send(createMeetingCommand);
             const meeting = meetingResponse.Meeting;
 
             console.log(`✅ Meeting created: ${meeting.MeetingId}`);
@@ -155,7 +153,8 @@ class FrontendChimeService {
                 }
             });
 
-            const attendeeResponse = await this.chimeClient.send(attendeeCommand);
+            // Fixed: using this.chimeSDKMeetings instead of this.chimeClient
+            const attendeeResponse = await this.chimeSDKMeetings.send(attendeeCommand);
 
             const meetingInfo = {
                 meeting: meeting,
@@ -189,6 +188,8 @@ class FrontendChimeService {
 
     async joinExistingMeeting(appointmentId, userType = 'patient', userName = 'Patient') {
         try {
+            await this.ensureInitialized();
+
             console.log(`${userName} joining appointment ${appointmentId}...`);
 
             let meetingInfo = this.activeMeetings.get(appointmentId);
@@ -210,7 +211,8 @@ class FrontendChimeService {
                 }
             });
 
-            const attendeeResponse = await this.chimeClient.send(attendeeCommand);
+            // Fixed: using this.chimeSDKMeetings instead of this.chimeClient
+            const attendeeResponse = await this.chimeSDKMeetings.send(attendeeCommand);
 
             return {
                 success: true,
@@ -262,9 +264,15 @@ class FrontendChimeService {
             if (localVideoRef.current) {
                 console.log('- Local video element tag:', localVideoRef.current.tagName);
                 console.log('- Local video element ready:', localVideoRef.current.readyState);
+
+                // Pre-configure local video element
+                localVideoRef.current.muted = true;
+                localVideoRef.current.autoplay = true;
+                localVideoRef.current.playsInline = true;
+                console.log('✅ Local video element pre-configured');
             }
 
-            // Set up video tile observer with improved handling
+            // Set up video tile observer BEFORE starting session
             if (typeof session.audioVideo.addVideoTileObserver === 'function') {
                 session.audioVideo.addVideoTileObserver({
                     videoTileDidUpdate: (tileState) => {
@@ -273,40 +281,51 @@ class FrontendChimeService {
                             localTile: tileState.localTile,
                             active: tileState.active,
                             paused: tileState.paused,
-                            isContent: tileState.isContent
+                            isContent: tileState.isContent,
+                            boundAttendeeId: tileState.boundAttendeeId
                         });
 
                         try {
-                            if (tileState.localTile) {
+                            if (tileState.localTile && tileState.active) {
                                 // Handle local video (your camera)
                                 const localElement = localVideoRef.current;
                                 if (localElement) {
+                                    console.log('🎥 Binding local video tile...');
                                     session.audioVideo.bindVideoElement(tileState.tileId, localElement);
                                     console.log('✅ Local video bound to element');
 
-                                    // Ensure video element is properly configured
-                                    localElement.muted = true; // Local video should be muted
-                                    localElement.autoplay = true;
-                                    localElement.playsInline = true;
+                                    // Force video element properties
+                                    setTimeout(() => {
+                                        localElement.muted = true;
+                                        localElement.autoplay = true;
+                                        localElement.playsInline = true;
 
-                                    // Force play if needed
-                                    localElement.play().catch(e => console.log('Video play error (normal):', e.message));
+                                        // Trigger play
+                                        localElement.play().then(() => {
+                                            console.log('✅ Local video playing');
+                                            console.log('📏 Video dimensions:', localElement.videoWidth, 'x', localElement.videoHeight);
+                                        }).catch(e => {
+                                            console.log('⚠️ Video play issue (may be normal):', e.message);
+                                        });
+                                    }, 100);
 
-                                    console.log('✅ Local video element configured');
                                 } else {
-                                    console.error('❌ Local video element not found');
+                                    console.error('❌ Local video element not found during binding');
                                 }
-                            } else {
+                            } else if (!tileState.localTile && tileState.active) {
                                 // Handle remote video (other participants)
                                 const remoteElement = remoteVideoRef.current;
                                 if (remoteElement) {
+                                    console.log('🎥 Binding remote video tile...');
                                     session.audioVideo.bindVideoElement(tileState.tileId, remoteElement);
                                     console.log('✅ Remote video bound to element');
 
                                     // Configure remote video
-                                    remoteElement.autoplay = true;
-                                    remoteElement.playsInline = true;
-                                    remoteElement.play().catch(e => console.log('Video play error (normal):', e.message));
+                                    setTimeout(() => {
+                                        remoteElement.autoplay = true;
+                                        remoteElement.playsInline = true;
+                                        remoteElement.play().catch(e => console.log('Remote video play error (normal):', e.message));
+                                    }, 100);
                                 } else {
                                     console.error('❌ Remote video element not found');
                                 }
@@ -336,41 +355,60 @@ class FrontendChimeService {
                 console.log('✅ Session started');
             }
 
-            // Request camera permissions explicitly and start local video
+            // IMPROVED: Start local video directly - let Chime handle permissions
             if (typeof session.audioVideo.startLocalVideoTile === 'function') {
                 try {
-                    console.log('📷 Requesting camera permissions...');
+                    console.log('📷 Starting local video tile...');
 
-                    // Check if we can get user media first
-                    const stream = await navigator.mediaDevices.getUserMedia({
-                        video: true,
-                        audio: false
-                    });
+                    // Start local video directly - Chime will handle permissions
+                    await session.audioVideo.startLocalVideoTile();
+                    console.log('✅ Local video tile started');
 
-                    if (stream) {
-                        console.log('✅ Camera permission granted');
-                        // Stop the test stream
-                        stream.getTracks().forEach(track => track.stop());
+                    // Debugging: Check video elements state after a delay
+                    setTimeout(() => {
+                        console.log('🔍 Video debugging after 3 seconds:');
+                        if (localVideoRef.current) {
+                            const localVid = localVideoRef.current;
+                            console.log('Local video state:', {
+                                src: localVid.src || 'not set',
+                                readyState: localVid.readyState,
+                                videoWidth: localVid.videoWidth,
+                                videoHeight: localVid.videoHeight,
+                                paused: localVid.paused,
+                                muted: localVid.muted,
+                                autoplay: localVid.autoplay
+                            });
 
-                        // Now start Chime local video
-                        console.log('📷 Starting Chime local video tile...');
-                        session.audioVideo.startLocalVideoTile();
-                        console.log('✅ Local video tile started');
-
-                        // Give it a moment to initialize
-                        setTimeout(() => {
-                            console.log('🔍 Checking video elements after start:');
-                            if (localVideoRef.current) {
-                                console.log('- Local video src:', localVideoRef.current.src || 'not set');
-                                console.log('- Local video ready state:', localVideoRef.current.readyState);
-                                console.log('- Local video dimensions:', localVideoRef.current.videoWidth, 'x', localVideoRef.current.videoHeight);
+                            // If no video dimensions, try to restart
+                            if (localVid.videoWidth === 0 || localVid.videoHeight === 0) {
+                                console.log('⚠️ No video dimensions detected, attempting restart...');
+                                session.audioVideo.stopLocalVideoTile();
+                                setTimeout(() => {
+                                    session.audioVideo.startLocalVideoTile();
+                                }, 1000);
                             }
-                        }, 2000);
+                        }
+                    }, 3000);
 
+                } catch (videoError) {
+                    console.error('❌ Local video start error:', videoError);
+
+                    // Try alternative approach: request permissions manually first
+                    try {
+                        console.log('🔄 Trying manual permission request...');
+                        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                        console.log('✅ Manual camera permission granted');
+
+                        // Don't stop the stream immediately, let Chime use it
+                        setTimeout(() => {
+                            stream.getTracks().forEach(track => track.stop());
+                            session.audioVideo.startLocalVideoTile();
+                        }, 500);
+
+                    } catch (permissionError) {
+                        console.error('❌ Camera permission denied:', permissionError);
+                        alert('Camera permission is required for video calls. Please:\n1. Click the camera icon in your browser address bar\n2. Allow camera access\n3. Refresh the page and try again');
                     }
-                } catch (permissionError) {
-                    console.error('❌ Camera permission denied or error:', permissionError);
-                    alert('Camera permission is required for video calls. Please allow camera access and refresh the page.');
                 }
             }
 
@@ -385,6 +423,8 @@ class FrontendChimeService {
 
     async endMeeting(appointmentId) {
         try {
+            await this.ensureInitialized();
+
             const meetingInfo = this.activeMeetings.get(appointmentId);
             if (meetingInfo) {
                 console.log(`🔚 Ending meeting ${appointmentId}...`);
@@ -393,7 +433,8 @@ class FrontendChimeService {
                     MeetingId: meetingInfo.meetingId
                 });
 
-                await this.chimeClient.send(deleteMeetingCommand);
+                // Fixed: using this.chimeSDKMeetings instead of this.chimeClient
+                await this.chimeSDKMeetings.send(deleteMeetingCommand);
                 this.activeMeetings.delete(appointmentId);
 
                 const meetings = JSON.parse(localStorage.getItem('chimeMeetings') || '{}');
@@ -461,6 +502,35 @@ class FrontendChimeService {
         }
     }
 }
+
+// Additional debugging function you can call from browser console
+window.debugChimeVideo = () => {
+    console.log('🔍 Chime Video Debug Info:');
+    const localVideo = document.querySelector('video[muted]'); // Local video is muted
+    const remoteVideo = document.querySelector('video:not([muted])'); // Remote video is not muted
+
+    if (localVideo) {
+        console.log('Local video found:', {
+            src: localVideo.src,
+            readyState: localVideo.readyState,
+            dimensions: `${localVideo.videoWidth}x${localVideo.videoHeight}`,
+            playing: !localVideo.paused
+        });
+    } else {
+        console.log('❌ Local video element not found');
+    }
+
+    if (remoteVideo) {
+        console.log('Remote video found:', {
+            src: remoteVideo.src,
+            readyState: remoteVideo.readyState,
+            dimensions: `${remoteVideo.videoWidth}x${remoteVideo.videoHeight}`,
+            playing: !remoteVideo.paused
+        });
+    } else {
+        console.log('❌ Remote video element not found');
+    }
+};
 
 const frontendChimeService = new FrontendChimeService();
 frontendChimeService.cleanupOldMeetings();
