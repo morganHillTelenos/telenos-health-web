@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import frontendChimeService from '../services/frontendChimeService';
+import videoService from '../services/mockVideoService';
 
 const VideoCallPage = ({ mode = 'provider' }) => {
     const { appointmentId } = useParams();
@@ -20,7 +21,7 @@ const VideoCallPage = ({ mode = 'provider' }) => {
 
     useEffect(() => {
         if (appointmentId) {
-            frontendChimeService.loadMeetingFromStorage(appointmentId);
+            videoService.loadMeetingFromStorage(appointmentId);
 
             if (mode === 'provider') {
                 initializeProviderCall();
@@ -49,7 +50,7 @@ const VideoCallPage = ({ mode = 'provider' }) => {
             setCallStatus('joining');
             console.log('🎥 Provider starting video call...');
 
-            const result = await frontendChimeService.createMeeting(
+            const result = await videoService.createMeeting(
                 appointmentId,
                 'provider',
                 'Dr. Smith'
@@ -62,7 +63,7 @@ const VideoCallPage = ({ mode = 'provider' }) => {
             console.log('✅ Meeting created, setting up video session...');
 
             // Save meeting to storage
-            frontendChimeService.saveMeetingToStorage(appointmentId, {
+            videoService.saveMeetingToStorage(appointmentId, {
                 meeting: result.meeting,
                 meetingId: result.meeting.MeetingId,
                 appointmentId: appointmentId,
@@ -74,7 +75,7 @@ const VideoCallPage = ({ mode = 'provider' }) => {
             setShareableLink(result.joinUrl);
 
             // Use the NPM-based setup method from the service
-            const session = await frontendChimeService.setupChimeSession(
+            const session = await videoService.setupChimeSession(
                 result.meeting,
                 result.attendee,
                 localVideoRef,
@@ -98,7 +99,7 @@ const VideoCallPage = ({ mode = 'provider' }) => {
             setCallStatus('joining');
             console.log('🎥 Patient joining video call...');
 
-            const result = await frontendChimeService.joinExistingMeeting(
+            const result = await videoService.joinExistingMeeting(
                 appointmentId,
                 'patient',
                 participantName
@@ -111,7 +112,7 @@ const VideoCallPage = ({ mode = 'provider' }) => {
             console.log('✅ Patient joined meeting, setting up video session...');
 
             // Use the NPM-based setup method from the service
-            const session = await frontendChimeService.setupChimeSession(
+            const session = await videoService.setupChimeSession(
                 result.meeting,
                 result.attendee,
                 localVideoRef,
@@ -166,7 +167,7 @@ const VideoCallPage = ({ mode = 'provider' }) => {
 
         if (mode === 'provider') {
             try {
-                await frontendChimeService.endMeeting(appointmentId);
+                await videoService.endMeeting(appointmentId);
                 console.log('✅ Meeting ended successfully');
             } catch (error) {
                 console.error('Error ending meeting:', error);
