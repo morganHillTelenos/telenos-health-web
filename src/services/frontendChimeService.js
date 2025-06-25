@@ -1,6 +1,6 @@
 // src/services/frontendChimeService.js - Compatible Version
 import { ChimeSDKMeetingsClient, CreateMeetingCommand, CreateAttendeeCommand, DeleteMeetingCommand } from '@aws-sdk/client-chime-sdk-meetings';
-import { Auth } from 'aws-amplify';
+import { fetchAuthSession } from 'aws-amplify/auth';
 
 // Try multiple import approaches for compatibility
 let ChimeSDK = null;
@@ -30,26 +30,38 @@ try {
 }
 
 class FrontendChimeService {
-    async initializeChimeClient() {
-        try {
-            // Use Amplify's credentials instead of hardcoded ones
-            const credentials = await Auth.currentCredentials();
-
-            this.chimeSDKMeetings = new ChimeSDKMeetingsClient({
-                region: 'us-east-1',
-                credentials: credentials
-            });
-
-        } catch (error) {
-            console.error('Failed to initialize Chime with Amplify credentials:', error);
-        }
-    }
     constructor() {
         this.initializeChimeClient();
         this.activeMeetings = new Map();
         this.chimeSDKLoaded = !!ChimeSDK;
         console.log('📦 Chime SDK loaded:', this.chimeSDKLoaded);
     }
+    async initializeChimeClient() {
+        try {
+            // Get credentials from Amplify's current session
+            const session = await fetchAuthSession();
+
+            if (!session.credentials) {
+                throw new Error('No AWS credentials available. Please sign in.');
+            }
+
+            this.chimeSDKMeetings = new ChimeSDKMeetingsClient({
+                region: 'us-east-1',
+                credentials: {
+                    accessKeyId: session.credentials.accessKeyId,
+                    secretAccessKey: session.credentials.secretAccessKey,
+                    sessionToken: session.credentials.sessionToken,
+                }
+            });
+
+            console.log('Chime SDK initialized with Amplify credentials');
+
+        } catch (error) {
+            console.error('Failed to initialize Chime SDK:', error);
+            throw error;
+        }
+    }
+
 
     // initializeChimeClient() {
     //     console.log('Environment check:');
