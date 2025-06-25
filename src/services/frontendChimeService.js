@@ -1,5 +1,6 @@
 // src/services/frontendChimeService.js - Compatible Version
 import { ChimeSDKMeetingsClient, CreateMeetingCommand, CreateAttendeeCommand, DeleteMeetingCommand } from '@aws-sdk/client-chime-sdk-meetings';
+import { Auth } from 'aws-amplify';
 
 // Try multiple import approaches for compatibility
 let ChimeSDK = null;
@@ -29,6 +30,20 @@ try {
 }
 
 class FrontendChimeService {
+    async initializeChimeClient() {
+        try {
+            // Use Amplify's credentials instead of hardcoded ones
+            const credentials = await Auth.currentCredentials();
+
+            this.chimeSDKMeetings = new ChimeSDKMeetingsClient({
+                region: 'us-east-1',
+                credentials: credentials
+            });
+
+        } catch (error) {
+            console.error('Failed to initialize Chime with Amplify credentials:', error);
+        }
+    }
     constructor() {
         this.initializeChimeClient();
         this.activeMeetings = new Map();
@@ -36,35 +51,35 @@ class FrontendChimeService {
         console.log('📦 Chime SDK loaded:', this.chimeSDKLoaded);
     }
 
-    initializeChimeClient() {
-        console.log('Environment check:');
-        console.log('- AWS Region:', process.env.REACT_APP_AWS_REGION || 'NOT SET');
-        console.log('- Access Key:', process.env.REACT_APP_AWS_ACCESS_KEY_ID ? 'SET' : 'NOT SET');
-        console.log('- Secret Key:', process.env.REACT_APP_AWS_SECRET_ACCESS_KEY ? 'SET' : 'NOT SET');
+    // initializeChimeClient() {
+    //     console.log('Environment check:');
+    //     console.log('- AWS Region:', process.env.REACT_APP_AWS_REGION || 'NOT SET');
+    //     console.log('- Access Key:', process.env.REACT_APP_AWS_ACCESS_KEY_ID ? 'SET' : 'NOT SET');
+    //     console.log('- Secret Key:', process.env.REACT_APP_AWS_SECRET_ACCESS_KEY ? 'SET' : 'NOT SET');
 
-        const region = process.env.REACT_APP_AWS_REGION || 'us-east-1';
-        const accessKeyId = process.env.REACT_APP_AWS_ACCESS_KEY_ID;
-        const secretAccessKey = process.env.REACT_APP_AWS_SECRET_ACCESS_KEY;
+    //     const region = process.env.REACT_APP_AWS_REGION || 'us-east-1';
+    //     const accessKeyId = process.env.REACT_APP_AWS_ACCESS_KEY_ID;
+    //     const secretAccessKey = process.env.REACT_APP_AWS_SECRET_ACCESS_KEY;
 
-        if (!accessKeyId || !secretAccessKey) {
-            console.error('❌ AWS credentials not found');
-            throw new Error('AWS credentials not configured');
-        }
+    //     if (!accessKeyId || !secretAccessKey) {
+    //         console.error('❌ AWS credentials not found');
+    //         throw new Error('AWS credentials not configured');
+    //     }
 
-        try {
-            this.chimeClient = new ChimeSDKMeetingsClient({
-                region: region,
-                credentials: { accessKeyId, secretAccessKey },
-                maxAttempts: 3
-            });
+    //     try {
+    //         this.chimeClient = new ChimeSDKMeetingsClient({
+    //             region: region,
+    //             credentials: { accessKeyId, secretAccessKey },
+    //             maxAttempts: 3
+    //         });
 
-            console.log('✅ Chime client initialized successfully');
+    //         console.log('✅ Chime client initialized successfully');
 
-        } catch (error) {
-            console.error('❌ Failed to initialize Chime client:', error);
-            throw error;
-        }
-    }
+    //     } catch (error) {
+    //         console.error('❌ Failed to initialize Chime client:', error);
+    //         throw error;
+    //     }
+    // }
 
     async testCredentials() {
         try {
