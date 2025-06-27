@@ -1,8 +1,11 @@
+// src/pages/LoginPage.js - Real AWS Cognito Implementation
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/auth';
 import './LoginPage.css';
 
 const LoginPage = ({ onLogin }) => {
+    const navigate = useNavigate();
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -11,7 +14,7 @@ const LoginPage = ({ onLogin }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [needsConfirmation, setNeedsConfirmation] = useState(false);
-    const [userEmail, setUserEmail] = useState(''); // Store email for confirmation
+    const [userEmail, setUserEmail] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,9 +26,9 @@ const LoginPage = ({ onLogin }) => {
 
             if (isLogin) {
                 // Sign in with AWS Cognito
-                result = await authService.signIn(email, password);
+                result = await authService.login({ email, password });
                 console.log('Login successful:', result);
-                onLogin(result.user);
+                onLogin(result);
             } else {
                 // Sign up with AWS Cognito
                 result = await authService.signUp(email, password, name);
@@ -38,8 +41,8 @@ const LoginPage = ({ onLogin }) => {
                     setError(''); // Clear any previous errors
                 } else {
                     // Registration complete, try to sign in
-                    const loginResult = await authService.signIn(email, password);
-                    onLogin(loginResult.user);
+                    const loginResult = await authService.login({ email, password });
+                    onLogin(loginResult);
                 }
             }
         } catch (error) {
@@ -59,9 +62,9 @@ const LoginPage = ({ onLogin }) => {
             await authService.confirmSignUp(userEmail, confirmationCode);
 
             // Now try to sign in
-            const result = await authService.signIn(userEmail, password);
+            const result = await authService.login({ email: userEmail, password });
             console.log('Confirmation and login successful:', result);
-            onLogin(result.user);
+            onLogin(result);
         } catch (error) {
             console.error('Confirmation error:', error);
             setError(error.message);
@@ -87,14 +90,14 @@ const LoginPage = ({ onLogin }) => {
 
     const handleSignOut = async () => {
         try {
-            await authService.signOut();
+            await authService.logout();
             setError('');
             alert('Signed out successfully. You can now sign in again.');
         } catch (error) {
             console.error('Sign out error:', error);
             setError(error.message);
         }
-      };
+    };
 
     // Show confirmation form if user needs to verify email
     if (needsConfirmation) {
@@ -133,12 +136,11 @@ const LoginPage = ({ onLogin }) => {
                     </form>
 
                     <div className="login-footer">
-                        <button
-                            onClick={() => setNeedsConfirmation(false)}
-                            className="link-button"
-                        >
-                            Back to Sign Up
-                        </button>
+                        <p>
+                            <button onClick={switchMode} className="link-button">
+                                Back to Sign In
+                            </button>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -236,10 +238,10 @@ const LoginPage = ({ onLogin }) => {
                     </p>
                 </div>
 
-                {/* Demo credentials info for testing */}
+                {/* Real AWS info */}
                 <div className="demo-info">
-                    <p><strong>For Testing:</strong></p>
-                    <p>Use your real email for sign up, or test with the account you created earlier</p>
+                    <p><strong>Real AWS Backend:</strong></p>
+                    <p>Using AWS Cognito authentication and DynamoDB storage</p>
                 </div>
             </div>
         </div>

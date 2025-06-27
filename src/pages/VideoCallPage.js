@@ -1,41 +1,60 @@
-// src/pages/VideoCallPage.js - Fixed to use NPM imports properly
+// src/pages/VideoCallPage.js - Fixed Video Elements
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Mic, MicOff, Video, VideoOff, Phone, PhoneOff, Share, Settings, Users } from 'lucide-react';
 import frontendChimeService from '../services/frontendChimeService';
-import videoService from '../services/mockVideoService';
+import './VideoCallPage.css';
 
 const VideoCallPage = ({ mode = 'provider' }) => {
     const { appointmentId } = useParams();
     const navigate = useNavigate();
-    const [callStatus, setCallStatus] = useState('joining');
+
+    // State management
+    const [callStatus, setCallStatus] = useState('initializing');
     const [isAudioMuted, setIsAudioMuted] = useState(false);
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [error, setError] = useState(null);
     const [meetingSession, setMeetingSession] = useState(null);
     const [participantName, setParticipantName] = useState('');
     const [shareableLink, setShareableLink] = useState('');
+    const [participants, setParticipants] = useState([]);
+    const [connectionStatus, setConnectionStatus] = useState('Connecting...');
+    const [callDuration, setCallDuration] = useState(0);
+    const [devices, setDevices] = useState({ audioInput: [], videoInput: [], audioOutput: [] });
 
+    // Refs for video elements
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
     const audioElementRef = useRef(null);
+    const callStartTime = useRef(null);
 
+    // Initialize call on component mount - FIXED with proper timing
     useEffect(() => {
-        if (appointmentId) {
-            videoService.loadMeetingFromStorage(appointmentId);
+        // Wait for video elements to be mounted before initializing
+        const timer = setTimeout(() => {
+            initializeCall();
+        }, 100);
 
-            if (mode === 'provider') {
-                initializeProviderCall();
-            } else {
-                setCallStatus('waiting_for_name');
-            }
-        }
-
+        // Cleanup on unmount
         return () => {
+            clearTimeout(timer);
             if (meetingSession) {
-                endCall(false);
+                endMeeting();
             }
         };
     }, [appointmentId, mode]);
+
+    // Timer for call duration
+    useEffect(() => {
+        let interval;
+        if (callStatus === 'connected' && callStartTime.current) {
+            interval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - callStartTime.current) / 1000);
+                setCallDuration(elapsed);
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [callStatus]);
 
     // Initialize audio element
     useEffect(() => {
@@ -45,74 +64,49 @@ const VideoCallPage = ({ mode = 'provider' }) => {
         }
     }, []);
 
-    const initializeProviderCall = async () => {
+    const initializeCall = async () => {
         try {
-            setCallStatus('joining');
-            console.log('🎥 Provider starting video call...');
-
-            const result = await videoService.createMeeting(
-                appointmentId,
-                'provider',
-                'Dr. Smith'
-            );
-
-            if (!result.success) {
-                throw new Error(result.error);
-            }
-
-            console.log('✅ Meeting created, setting up video session...');
-
-            // Save meeting to storage
-            videoService.saveMeetingToStorage(appointmentId, {
-                meeting: result.meeting,
-                meetingId: result.meeting.MeetingId,
-                appointmentId: appointmentId,
-                createdAt: new Date(),
-                createdBy: 'provider',
-                userName: 'Dr. Smith'
+            console.log('🎥 Initializing call with video refs:', {
+                localVideo: !!localVideoRef.current,
+                remoteVideo: !!remoteVideoRef.current,
+                audio: !!audioElementRef.current
             });
 
-            setShareableLink(result.joinUrl);
+            setCallStatus('connecting');
+            setError(null);
 
-            // Use the NPM-based setup method from the service
-            const session = await videoService.setupChimeSession(
-                result.meeting,
-                result.attendee,
-                localVideoRef,
-                remoteVideoRef,
-                audioElementRef
-            );
+            // Load available devices
+            const availableDevices = await frontendChimeService.getDevices();
+            setDevices(availableDevices);
 
-            setMeetingSession(session);
-            setCallStatus('connected');
-            console.log('✅ Video call ready!');
+            let result;
 
-        } catch (error) {
-            console.error('❌ Failed to initialize provider call:', error);
-            setError(error.message);
-            setCallStatus('error');
-        }
-    };
+            if (mode === 'provider') {
+                console.log('🩺 Provider starting video call...');
+                setParticipantName('Dr. Provider');
+                result = await frontendChimeService.createMeeting(appointmentId, 'provider', 'Dr. Provider');
 
-    const initializePatientCall = async () => {
-        try {
-            setCallStatus('joining');
-            console.log('🎥 Patient joining video call...');
-
-            const result = await videoService.joinExistingMeeting(
-                appointmentId,
-                'patient',
-                participantName
-            );
+                if (result.success) {
+                    setShareableLink(result.joinUrl);
+                }
+            } else {
+                console.log('👤 Patient joining video call...');
+                if (!participantName) {
+                    setCallStatus('waiting_for_name');
+                    return;
+                }
+                result = await frontendChimeService.joinExistingMeeting(appointmentId, 'patient', participantName);
+            }
 
             if (!result.success) {
                 throw new Error(result.error);
             }
 
-            console.log('✅ Patient joined meeting, setting up video session...');
+            console.log('✅ Meeting joined, setting up video session...');
+            setConnectionStatus('Setting up video...');
 
-            // Use the NPM-based setup method from the service
-            const session = await videoService.setupChimeSession(
+            // Setup video session with proper refs
+            const session = await frontendChimeService.setupChimeSession(
                 result.meeting,
                 result.attendee,
                 localVideoRef,
@@ -122,296 +116,271 @@ const VideoCallPage = ({ mode = 'provider' }) => {
 
             setMeetingSession(session);
             setCallStatus('connected');
-            console.log('✅ Patient video call ready!');
+            setConnectionStatus('Connected');
+            callStartTime.current = Date.now();
+
+            console.log('✅ Video call connected!');
 
         } catch (error) {
-            console.error('❌ Failed to initialize patient call:', error);
+            console.error('❌ Failed to initialize call:', error);
+            setError(error.message);
+            setCallStatus('error');
+            setConnectionStatus('Connection failed');
+        }
+    };
+
+    const handleJoinAsPatient = async (name) => {
+        setParticipantName(name);
+        setCallStatus('connecting');
+
+        try {
+            const result = await frontendChimeService.joinExistingMeeting(appointmentId, 'patient', name);
+
+            if (!result.success) {
+                throw new Error(result.error);
+            }
+
+            const session = await frontendChimeService.setupChimeSession(
+                result.meeting,
+                result.attendee,
+                localVideoRef,
+                remoteVideoRef,
+                audioElementRef
+            );
+
+            setMeetingSession(session);
+            setCallStatus('connected');
+            setConnectionStatus('Connected');
+            callStartTime.current = Date.now();
+
+        } catch (error) {
+            console.error('❌ Failed to join as patient:', error);
             setError(error.message);
             setCallStatus('error');
         }
     };
 
-    const toggleMute = () => {
-        if (meetingSession) {
-            if (isAudioMuted) {
-                meetingSession.audioVideo.realtimeUnmuteLocalAudio();
-                console.log('🎤 Audio unmuted');
-            } else {
-                meetingSession.audioVideo.realtimeMuteLocalAudio();
-                console.log('🔇 Audio muted');
-            }
-            setIsAudioMuted(!isAudioMuted);
+    const toggleAudio = async () => {
+        try {
+            const result = await frontendChimeService.toggleAudio();
+            setIsAudioMuted(result.audioMuted);
+        } catch (error) {
+            console.error('Error toggling audio:', error);
         }
     };
 
-    const toggleVideo = () => {
-        if (meetingSession) {
-            if (isVideoEnabled) {
-                meetingSession.audioVideo.stopLocalVideoTile();
-                console.log('📷 Video stopped');
-            } else {
-                meetingSession.audioVideo.startLocalVideoTile();
-                console.log('📹 Video started');
-            }
-            setIsVideoEnabled(!isVideoEnabled);
+    const toggleVideo = async () => {
+        try {
+            const result = await frontendChimeService.toggleVideo();
+            setIsVideoEnabled(result.videoEnabled);
+        } catch (error) {
+            console.error('Error toggling video:', error);
         }
     };
 
-    const endCall = async (shouldNavigate = true) => {
-        console.log('📞 Ending call...');
+    const endMeeting = async () => {
+        try {
+            await frontendChimeService.endCall(appointmentId);
+            setCallStatus('ended');
+            setConnectionStatus('Call ended');
 
-        if (meetingSession) {
-            meetingSession.audioVideo.stop();
-            setMeetingSession(null);
-        }
-
-        if (mode === 'provider') {
-            try {
-                await videoService.endMeeting(appointmentId);
-                console.log('✅ Meeting ended successfully');
-            } catch (error) {
-                console.error('Error ending meeting:', error);
-            }
-        }
-
-        setCallStatus('ended');
-
-        if (shouldNavigate) {
+            // Navigate back after a short delay
             setTimeout(() => {
-                if (mode === 'provider') {
-                    navigate('/dashboard');
-                } else {
-                    navigate('/');
-                }
-            }, 3000);
+                navigate('/dashboard');
+            }, 2000);
+        } catch (error) {
+            console.error('Error ending meeting:', error);
+            // Still navigate back even if there's an error
+            setTimeout(() => {
+                navigate('/dashboard');
+            }, 2000);
         }
     };
 
     const copyShareableLink = () => {
-        if (shareableLink) {
-            navigator.clipboard.writeText(shareableLink).then(() => {
-                alert('📋 Patient join link copied to clipboard!');
-            }).catch(() => {
-                alert(`Share this link with your patient:\n${shareableLink}`);
-            });
-        }
+        navigator.clipboard.writeText(shareableLink);
+        alert('Meeting link copied to clipboard!');
     };
 
-    // Patient name input screen
-    if (mode === 'patient' && callStatus === 'waiting_for_name') {
+    const formatDuration = (seconds) => {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    };
+
+    // Render patient name input
+    if (callStatus === 'waiting_for_name') {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 flex items-center justify-center">
-                <div className="bg-white/95 backdrop-blur-lg rounded-2xl p-8 shadow-2xl max-w-md w-full mx-4">
-                    <div className="text-center mb-6">
-                        <div className="text-4xl mb-4">🏥</div>
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">Join Video Consultation</h1>
-                        <p className="text-gray-600">Please enter your name to continue</p>
-                    </div>
-
-                    <input
-                        type="text"
-                        placeholder="Enter your full name"
-                        value={participantName}
-                        onChange={(e) => setParticipantName(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        onKeyPress={(e) => e.key === 'Enter' && participantName.trim() && initializePatientCall()}
-                    />
-
-                    <button
-                        onClick={initializePatientCall}
-                        disabled={!participantName.trim()}
-                        className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium transition-colors"
-                    >
-                        Join Video Call
-                    </button>
-
-                    <div className="mt-6 text-center text-sm text-gray-500">
-                        🔒 HIPAA Compliant • 🔐 End-to-End Encrypted<br />
-                        Powered by AWS Chime SDK
-                    </div>
+            <div className="video-call-container">
+                <div className="name-input-card">
+                    <h2>Join Video Call</h2>
+                    <p>Please enter your name to join the healthcare consultation</p>
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        const name = e.target.patientName.value.trim();
+                        if (name) handleJoinAsPatient(name);
+                    }}>
+                        <input
+                            name="patientName"
+                            type="text"
+                            placeholder="Enter your full name"
+                            required
+                            className="name-input"
+                        />
+                        <button type="submit" className="join-button">
+                            Join Call
+                        </button>
+                    </form>
                 </div>
             </div>
         );
     }
 
-    // Loading/connecting screen
-    if (callStatus === 'joining') {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 flex items-center justify-center">
-                <div className="text-center text-white">
-                    <div className="text-6xl mb-6 animate-pulse">⏳</div>
-                    <h2 className="text-2xl font-bold mb-2">
-                        {mode === 'provider' ? 'Starting your consultation...' : 'Connecting to your healthcare provider...'}
-                    </h2>
-                    <p className="text-blue-200 mb-4">Setting up secure video connection</p>
-                    <div className="bg-white/10 rounded-lg p-4 max-w-md mx-4">
-                        <p className="text-sm text-blue-100">
-                            📦 Using NPM Chime SDK<br />
-                            🔐 HIPAA Compliant Infrastructure<br />
-                            {mode === 'provider' && '🔗 Patient link will be generated'}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Error screen
+    // Render error state
     if (callStatus === 'error') {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-red-900 via-red-800 to-purple-900 flex items-center justify-center">
-                <div className="bg-white/95 backdrop-blur-lg rounded-2xl p-8 shadow-2xl max-w-md w-full mx-4 text-center">
-                    <div className="text-4xl mb-4">❌</div>
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Connection Failed</h1>
-                    <p className="text-gray-600 mb-6">{error}</p>
-
-                    <div className="space-y-3">
-                        <button
-                            onClick={() => {
-                                setCallStatus('joining');
-                                setError(null);
-                                if (mode === 'provider') {
-                                    initializeProviderCall();
-                                } else {
-                                    initializePatientCall();
-                                }
-                            }}
-                            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                        >
-                            🔄 Try Again
-                        </button>
-                        <button
-                            onClick={() => navigate(mode === 'provider' ? '/dashboard' : '/')}
-                            className="w-full bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                        >
-                            ← Go Back
-                        </button>
-                    </div>
-
-                    <div className="mt-6 text-xs text-gray-500">
-                        Check browser console for detailed error information
-                    </div>
+            <div className="video-call-container">
+                <div className="error-card">
+                    <h2>Connection Error</h2>
+                    <p>{error}</p>
+                    <button onClick={() => navigate('/dashboard')} className="back-button">
+                        Back to Dashboard
+                    </button>
                 </div>
             </div>
         );
     }
 
-    // Call ended screen
+    // Render call ended state
     if (callStatus === 'ended') {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-blue-900 flex items-center justify-center">
-                <div className="bg-white/95 backdrop-blur-lg rounded-2xl p-8 shadow-2xl max-w-md w-full mx-4 text-center">
-                    <div className="text-4xl mb-4">✅</div>
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Session Ended</h1>
-                    <p className="text-gray-600 mb-6">
-                        Thank you for using our secure healthcare platform.
-                    </p>
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                        <p className="text-sm text-green-800">
-                            🔒 Session was HIPAA compliant<br />
-                            📊 All data secured by AWS infrastructure
-                        </p>
-                    </div>
-                    <p className="text-sm text-gray-500">Redirecting in 3 seconds...</p>
+            <div className="video-call-container">
+                <div className="call-ended-card">
+                    <h2>Call Ended</h2>
+                    <p>Thank you for using TelenosHealth</p>
+                    <p>Call duration: {formatDuration(callDuration)}</p>
+                    <button onClick={() => navigate('/dashboard')} className="back-button">
+                        Back to Dashboard
+                    </button>
                 </div>
             </div>
         );
     }
 
-    // Active video call interface
+    // Main video call interface
     return (
-        <div className="min-h-screen bg-black relative overflow-hidden">
-            {/* Remote video (full screen) */}
-            <video
-                ref={remoteVideoRef}
-                autoPlay
-                playsInline
-                className="w-full h-full object-cover"
-            />
-
-            {/* Local video (picture-in-picture) */}
-            <video
-                ref={localVideoRef}
-                autoPlay
-                playsInline
-                muted
-                className="absolute top-4 right-4 w-48 h-36 object-cover rounded-lg border-2 border-white/30 shadow-lg"
-                style={{ transform: 'scaleX(-1)' }} // Mirror local video
-            />
-
-            {/* Header with session info */}
-            <div className="absolute top-4 left-4 bg-black/50 text-white px-4 py-2 rounded-lg backdrop-blur-sm">
-                <div className="text-sm font-medium">
-                    {mode === 'provider' ? '🩺 Healthcare Provider Session' : '🧑‍💼 Patient Consultation'}
+        <div className="video-call-container">
+            {/* Header */}
+            <div className="call-header">
+                <div className="call-info">
+                    <h3>Healthcare Video Consultation</h3>
+                    <p>{connectionStatus}</p>
+                    {callStatus === 'connected' && (
+                        <span className="call-duration">{formatDuration(callDuration)}</span>
+                    )}
                 </div>
-                <div className="text-xs text-gray-300">
-                    ID: {appointmentId} • NPM SDK
+
+                {mode === 'provider' && shareableLink && (
+                    <div className="share-section">
+                        <button onClick={copyShareableLink} className="share-button">
+                            <Share size={16} />
+                            Share Link
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            {/* Video Grid - FIXED: No more duplicate video elements */}
+            <div className="video-grid">
+                {/* Remote Video (Other Participant) */}
+                <div className="video-container remote-video-container">
+                    <video
+                        ref={remoteVideoRef}
+                        className="remote-video-element"
+                        autoPlay={true}
+                        playsInline={true}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: '#000',
+                            objectFit: 'cover'
+                        }}
+                    />
+                    <div className="video-overlay">
+                        <span className="participant-name">
+                            {mode === 'provider' ? 'Patient' : 'Healthcare Provider'}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Local Video (Your Camera) */}
+                <div className="video-container local-video-container">
+                    <video
+                        ref={localVideoRef}
+                        className="local-video-element"
+                        autoPlay={true}
+                        muted={true}
+                        playsInline={true}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: '#000',
+                            objectFit: 'cover',
+                            border: '2px solid #3b82f6',
+                            borderRadius: '8px'
+                        }}
+                    />
+                    <div className="video-overlay">
+                        <span className="participant-name">You ({participantName})</span>
+                    </div>
                 </div>
             </div>
 
-            {/* Provider controls - patient link sharing */}
-            {mode === 'provider' && shareableLink && (
-                <div className="absolute top-4 right-52 bg-black/50 text-white px-4 py-2 rounded-lg backdrop-blur-sm">
-                    <button
-                        onClick={copyShareableLink}
-                        className="text-sm hover:text-blue-300 transition-colors flex items-center gap-2"
-                    >
-                        📋 Copy Patient Link
-                    </button>
+            {/* Controls */}
+            <div className="call-controls">
+                <button
+                    onClick={toggleAudio}
+                    className={`control-button ${isAudioMuted ? 'muted' : ''}`}
+                    title={isAudioMuted ? 'Unmute' : 'Mute'}
+                >
+                    {isAudioMuted ? <MicOff size={24} /> : <Mic size={24} />}
+                </button>
+
+                <button
+                    onClick={toggleVideo}
+                    className={`control-button ${!isVideoEnabled ? 'disabled' : ''}`}
+                    title={isVideoEnabled ? 'Turn off camera' : 'Turn on camera'}
+                >
+                    {isVideoEnabled ? <Video size={24} /> : <VideoOff size={24} />}
+                </button>
+
+                <button
+                    onClick={endMeeting}
+                    className="control-button end-call"
+                    title="End call"
+                >
+                    <PhoneOff size={24} />
+                </button>
+            </div>
+
+            {/* Status Messages */}
+            {callStatus === 'connecting' && (
+                <div className="status-overlay">
+                    <div className="status-message">
+                        <div className="loading-spinner"></div>
+                        <p>Connecting to video call...</p>
+                    </div>
                 </div>
             )}
 
-            {/* Call controls */}
-            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-4">
-                {/* Mute/Unmute button */}
-                <button
-                    onClick={toggleMute}
-                    className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl transition-all duration-200 shadow-lg ${isAudioMuted
-                        ? 'bg-red-500 hover:bg-red-600 text-white'
-                        : 'bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border border-white/30'
-                        }`}
-                    title={isAudioMuted ? 'Unmute' : 'Mute'}
-                >
-                    {isAudioMuted ? '🔇' : '🎤'}
-                </button>
-
-                {/* Video on/off button */}
-                <button
-                    onClick={toggleVideo}
-                    className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl transition-all duration-200 shadow-lg ${!isVideoEnabled
-                        ? 'bg-red-500 hover:bg-red-600 text-white'
-                        : 'bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border border-white/30'
-                        }`}
-                    title={isVideoEnabled ? 'Turn off video' : 'Turn on video'}
-                >
-                    {isVideoEnabled ? '📹' : '📷'}
-                </button>
-
-                {/* End call button */}
-                <button
-                    onClick={() => endCall()}
-                    className="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center text-2xl transition-all duration-200 shadow-lg"
-                    title="End call"
-                >
-                    📞
-                </button>
-            </div>
-
-            {/* Security/status indicator */}
-            <div className="absolute bottom-4 right-4 bg-green-500/80 text-white px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
-                🔒 NPM SDK • Secure & Encrypted
-            </div>
-
-            {/* Connection status (only show if needed) */}
-            <div className="absolute bottom-4 left-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs backdrop-blur-sm">
-                📡 Connected • {mode === 'provider' ? 'Host' : 'Guest'}
-            </div>
+            {/* Hidden audio element for remote audio */}
+            <audio
+                ref={audioElementRef}
+                autoPlay={true}
+                style={{ display: 'none' }}
+            />
         </div>
     );
-
-    
 };
-
-
 
 export default VideoCallPage;

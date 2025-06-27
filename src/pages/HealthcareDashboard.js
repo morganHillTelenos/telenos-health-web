@@ -1,14 +1,17 @@
-// src/pages/HealthcareDashboard.js - Updated with Video Call Integration
+// src/pages/HealthcareDashboard.js - Updated with Proper Routing
 import React, { useState, useEffect } from 'react';
 
-const HealthcareDashboard = ({ onNavigateToCalendar, onStartVideoCall }) => {
+const HealthcareDashboard = ({
+    onNavigateToCalendar,
+    onStartVideoCall,
+    onNavigateToPatients,
+    onNavigateToNewPatient,
+    onNavigateToNewAppointment
+}) => {
     const [stats, setStats] = useState({});
     const [recentActivity, setRecentActivity] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(new Date());
-    const [showPatientsModal, setShowPatientsModal] = useState(false);
-    const [selectedPatientId, setSelectedPatientId] = useState(null);
-    const [showNewPatientForm, setShowNewPatientForm] = useState(false);
 
     useEffect(() => {
         const loadDashboardData = async () => {
@@ -37,7 +40,7 @@ const HealthcareDashboard = ({ onNavigateToCalendar, onStartVideoCall }) => {
                     icon: '🎥',
                     color: '#3B82F6',
                     priority: 'high',
-                    appointmentId: 'apt-123', // Add appointment ID for video calls
+                    appointmentId: 'apt-123',
                     hasVideoCall: true
                 },
                 {
@@ -77,7 +80,14 @@ const HealthcareDashboard = ({ onNavigateToCalendar, onStartVideoCall }) => {
             icon: '📅',
             gradient: 'from-blue-500 to-blue-600',
             bgPattern: 'bg-blue-50',
-            action: () => alert('Navigate to New Appointment form')
+            action: () => {
+                console.log('📅 Navigate to New Appointment clicked');
+                if (onNavigateToNewAppointment) {
+                    onNavigateToNewAppointment();
+                } else {
+                    alert('Navigate to New Appointment form - Navigation not configured');
+                }
+            }
         },
         {
             title: 'New Patient',
@@ -85,7 +95,14 @@ const HealthcareDashboard = ({ onNavigateToCalendar, onStartVideoCall }) => {
             icon: '👤',
             gradient: 'from-green-500 to-green-600',
             bgPattern: 'bg-green-50',
-            action: () => setShowNewPatientForm(true)
+            action: () => {
+                console.log('👤 Navigate to New Patient clicked');
+                if (onNavigateToNewPatient) {
+                    onNavigateToNewPatient();
+                } else {
+                    alert('Navigate to New Patient form - Navigation not configured');
+                }
+            }
         },
         {
             title: 'Patients',
@@ -93,15 +110,29 @@ const HealthcareDashboard = ({ onNavigateToCalendar, onStartVideoCall }) => {
             icon: '📋',
             gradient: 'from-purple-500 to-purple-600',
             bgPattern: 'bg-purple-50',
-            action: () => setShowPatientsModal(true)
+            action: () => {
+                console.log('📋 Navigate to Patients clicked');
+                if (onNavigateToPatients) {
+                    onNavigateToPatients();
+                } else {
+                    alert('Navigate to Patients list - Navigation not configured');
+                }
+            }
         },
         {
-            title: 'Start Video Call',
-            subtitle: 'Begin consultation',
-            icon: '🎥',
-            gradient: 'from-cyan-500 to-cyan-600',
-            bgPattern: 'bg-cyan-50',
-            action: onStartVideoCall // Use the passed function
+            title: 'Calendar',
+            subtitle: 'View schedule',
+            icon: '🗓️',
+            gradient: 'from-indigo-500 to-indigo-600',
+            bgPattern: 'bg-indigo-50',
+            action: () => {
+                console.log('🗓️ Navigate to Calendar clicked');
+                if (onNavigateToCalendar) {
+                    onNavigateToCalendar();
+                } else {
+                    alert('Navigate to Calendar - Navigation not configured');
+                }
+            }
         }
     ];
 
@@ -136,8 +167,11 @@ const HealthcareDashboard = ({ onNavigateToCalendar, onStartVideoCall }) => {
     ];
 
     const handleJoinVideoCall = (appointmentId) => {
+        console.log('🎥 Join Video Call clicked for appointment:', appointmentId);
         if (onStartVideoCall) {
-            // For existing appointments, we can navigate directly
+            onStartVideoCall(appointmentId);
+        } else {
+            // Fallback to direct navigation
             window.location.href = `/video-call/${appointmentId}`;
         }
     };
@@ -215,7 +249,14 @@ const HealthcareDashboard = ({ onNavigateToCalendar, onStartVideoCall }) => {
                         color="#3B82F6"
                         trend={12}
                         clickable={true}
-                        onClick={() => setShowPatientsModal(true)}
+                        onClick={() => {
+                            console.log('📊 Total Patients metric clicked');
+                            if (onNavigateToPatients) {
+                                onNavigateToPatients();
+                            } else {
+                                alert('Navigate to Patients - Navigation not configured');
+                            }
+                        }}
                     />
                     <MetricCard
                         title="Today's Appointments"
@@ -224,7 +265,14 @@ const HealthcareDashboard = ({ onNavigateToCalendar, onStartVideoCall }) => {
                         color="#10B981"
                         percentage={75}
                         clickable={true}
-                        onClick={onNavigateToCalendar}
+                        onClick={() => {
+                            console.log('📅 Today\'s Appointments metric clicked');
+                            if (onNavigateToCalendar) {
+                                onNavigateToCalendar();
+                            } else {
+                                alert('Navigate to Calendar - Navigation not configured');
+                            }
+                        }}
                     />
                     <MetricCard
                         title="Upcoming This Week"
@@ -232,6 +280,15 @@ const HealthcareDashboard = ({ onNavigateToCalendar, onStartVideoCall }) => {
                         icon="📊"
                         color="#8B5CF6"
                         trend={8}
+                        clickable={true}
+                        onClick={() => {
+                            console.log('📊 Upcoming This Week metric clicked');
+                            if (onNavigateToCalendar) {
+                                onNavigateToCalendar();
+                            } else {
+                                alert('Navigate to Calendar - Navigation not configured');
+                            }
+                        }}
                     />
                     <MetricCard
                         title="Completed Today"
@@ -288,8 +345,8 @@ const HealthcareDashboard = ({ onNavigateToCalendar, onStartVideoCall }) => {
                                                     <div className="flex items-center justify-between mb-1">
                                                         <p className="font-semibold text-gray-900 text-sm truncate">{item.title}</p>
                                                         <span className={`px-2 py-1 text-xs font-bold rounded-full ${item.priority === 'urgent' ? 'bg-red-100 text-red-700' :
-                                                                item.priority === 'high' ? 'bg-orange-100 text-orange-700' :
-                                                                    'bg-gray-100 text-gray-700'
+                                                            item.priority === 'high' ? 'bg-orange-100 text-orange-700' :
+                                                                'bg-gray-100 text-gray-700'
                                                             }`}>
                                                             {item.priority.toUpperCase()}
                                                         </span>
@@ -334,8 +391,8 @@ const HealthcareDashboard = ({ onNavigateToCalendar, onStartVideoCall }) => {
                                                 <div className="font-bold text-lg text-blue-600">{appointment.time}</div>
                                                 <div className="flex items-center gap-2">
                                                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${appointment.status === 'confirmed'
-                                                            ? 'bg-green-100 text-green-700'
-                                                            : 'bg-yellow-100 text-yellow-700'
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : 'bg-yellow-100 text-yellow-700'
                                                         }`}>
                                                         {appointment.status.toUpperCase()}
                                                     </span>
