@@ -1,277 +1,254 @@
-// src/services/auth.js - Real AWS Cognito Implementation
-import { signIn, signUp, signOut, getCurrentUser, confirmSignUp, fetchAuthSession } from 'aws-amplify/auth';
-
+// src/services/auth.js - Simplified version for demo login
 class AuthService {
     constructor() {
-        this.tokenKey = 'telenos_auth_token';
-        this.userKey = 'telenos_auth_user';
-        this.isInitialized = false;
-        this.currentUser = null;
+        this.tokenKey = 'healthcare_token';
+        this.userKey = 'healthcare_user';
+
+        // Demo user accounts
+        this.demoUsers = {
+            'demo@telenos.com': {
+                id: '1',
+                email: 'demo@telenos.com',
+                password: 'demo123',
+                name: 'Dr. Smith',
+                firstName: 'Dr.',
+                lastName: 'Smith',
+                role: 'provider',
+                type: 'provider',
+                permissions: ['all'],
+                isProvider: true,
+                isPatient: false
+            },
+            'provider@telenos.com': {
+                id: '2',
+                email: 'provider@telenos.com',
+                password: 'provider123',
+                name: 'Dr. Johnson',
+                firstName: 'Dr.',
+                lastName: 'Johnson',
+                role: 'provider',
+                type: 'provider',
+                permissions: ['all'],
+                isProvider: true,
+                isPatient: false
+            },
+            'patient@telenos.com': {
+                id: '3',
+                email: 'patient@telenos.com',
+                password: 'patient123',
+                name: 'John Doe',
+                firstName: 'John',
+                lastName: 'Doe',
+                role: 'patient',
+                type: 'patient',
+                permissions: ['limited'],
+                isProvider: false,
+                isPatient: true
+            }
+        };
     }
 
-    async initialize() {
-        if (this.isInitialized) return;
-
+    // Simple sign in for demo
+    async signIn(email, password) {
         try {
-            console.log('🔐 Initializing real AWS Cognito auth service...');
+            console.log('Attempting login with:', email);
 
-            // Check if user is already authenticated with AWS Cognito
-            const user = await this.getCurrentUser();
-            if (user) {
-                this.currentUser = user;
-                console.log('✅ Found existing AWS session:', user.username);
-            }
-        } catch (error) {
-            console.log('ℹ️ No existing AWS session found');
-            this.currentUser = null;
-        } finally {
-            this.isInitialized = true;
-        }
-    }
+            // Ensure email is a string and handle edge cases
+            const emailStr = String(email || '').toLowerCase().trim();
 
-    async login(credentials) {
-        try {
-            console.log('🔐 Processing AWS Cognito login for:', credentials.email);
-
-            // Clear any existing session first
-            this.logout();
-
-            // Simple validation
-            if (!credentials.email || !credentials.password) {
-                throw new Error('Email and password are required');
+            if (!emailStr) {
+                throw new Error('Email is required');
             }
 
-            // Sign in with AWS Cognito
-            const result = await signIn({
-                username: credentials.email,
-                password: credentials.password,
-            });
+            const user = this.demoUsers[emailStr];
 
-            console.log('AWS Cognito sign in result:', result);
-
-            if (result.isSignedIn) {
-                // Get the authenticated user details
-                const user = await this.getCurrentUser();
-                console.log('✅ AWS Cognito login successful:', user.username);
-
-                // Store user session
-                this.currentUser = user;
-                localStorage.setItem(this.userKey, JSON.stringify({
-                    id: user.userId,
-                    email: user.username,
-                    name: this.getDisplayName(user.username),
-                    role: 'doctor', // Default role for now
-                    loginTime: new Date().toISOString(),
-                    provider: 'cognito'
-                }));
-
-                return this.currentUser;
-            } else {
-                throw new Error('Sign in not complete - may need additional steps');
-            }
-
-        } catch (error) {
-            console.error('❌ AWS Cognito login failed:', error);
-
-            // Handle specific AWS Cognito errors
-            if (error.name === 'UserNotConfirmedException') {
-                throw new Error('Please check your email and confirm your account');
-            } else if (error.name === 'NotAuthorizedException') {
-                throw new Error('Invalid email or password');
-            } else if (error.name === 'UserNotFoundException') {
+            if (!user) {
                 throw new Error('User not found');
-            } else if (error.name === 'TooManyFailedAttemptsException') {
-                throw new Error('Too many failed attempts. Please try again later.');
-            } else if (error.name === 'LimitExceededException') {
-                throw new Error('Attempt limit exceeded. Please try again later.');
             }
 
-            throw error;
-        }
-    }
+            if (user.password !== password) {
+                throw new Error('Invalid password');
+            }
 
-    async signUp(email, password, name) {
-        try {
-            console.log('📝 Creating AWS Cognito account for:', email);
+            // Create user session (remove password from stored data)
+            const userSession = {
+                ...user,
+                loginTime: new Date().toISOString(),
+                sessionId: `session_${Date.now()}`
+            };
+            delete userSession.password;
 
-            const result = await signUp({
-                username: email,
-                password: password,
-                attributes: {
-                    email: email,
-                    name: name
-                },
-                autoSignIn: {
-                    enabled: true,
-                }
-            });
+            // Store session
+            localStorage.setItem(this.userKey, JSON.stringify(userSession));
+            localStorage.setItem(this.tokenKey, `demo_token_${Date.now()}`);
 
-            console.log('AWS Cognito sign up result:', result);
+            console.log('✅ Login successful as:', userSession.role);
 
             return {
                 success: true,
-                needsConfirmation: !result.isSignUpComplete,
-                user: result.user,
-                nextStep: result.nextStep
+                user: userSession
             };
 
         } catch (error) {
-            console.error('❌ AWS Cognito sign up failed:', error);
-
-            // Handle specific AWS Cognito errors
-            if (error.name === 'UsernameExistsException') {
-                throw new Error('An account with this email already exists');
-            } else if (error.name === 'InvalidPasswordException') {
-                throw new Error('Password does not meet requirements');
-            } else if (error.name === 'InvalidParameterException') {
-                throw new Error('Invalid email address');
-            }
-
+            console.error('❌ Login error:', error);
             throw error;
         }
     }
 
-    async confirmSignUp(email, confirmationCode) {
-        try {
-            console.log('✅ Confirming AWS Cognito account for:', email);
-
-            const result = await confirmSignUp({
-                username: email,
-                confirmationCode: confirmationCode
-            });
-
-            console.log('AWS Cognito confirmation result:', result);
-            return result;
-
-        } catch (error) {
-            console.error('❌ AWS Cognito confirmation failed:', error);
-
-            if (error.name === 'CodeMismatchException') {
-                throw new Error('Invalid confirmation code');
-            } else if (error.name === 'ExpiredCodeException') {
-                throw new Error('Confirmation code has expired');
-            } else if (error.name === 'LimitExceededException') {
-                throw new Error('Too many attempts. Please try again later.');
-            }
-
-            throw error;
-        }
+    // Alternative method name for compatibility
+    async login(email, password) {
+        return this.signIn(email, password);
     }
 
-    async logout() {
-        try {
-            console.log('🚪 Logging out from AWS Cognito...');
-
-            // Clear local state first
-            this.currentUser = null;
-            localStorage.removeItem(this.userKey);
-            localStorage.removeItem(this.tokenKey);
-
-            // Sign out from AWS Cognito
-            await signOut();
-
-            console.log('✅ AWS Cognito logout complete');
-        } catch (error) {
-            console.error('❌ AWS Cognito logout error:', error);
-            // Even if AWS logout fails, clear local state
-            this.currentUser = null;
-            localStorage.removeItem(this.userKey);
-            localStorage.removeItem(this.tokenKey);
-        }
-    }
-
+    // Check if user is authenticated
     isAuthenticated() {
         try {
-            if (!this.isInitialized) {
-                // Synchronously check localStorage as fallback
-                const stored = localStorage.getItem(this.userKey);
-                return !!stored;
-            }
-            return !!this.currentUser;
+            const token = localStorage.getItem(this.tokenKey);
+            const user = localStorage.getItem(this.userKey);
+            return !!(token && user);
         } catch (error) {
-            console.error('❌ Auth check error:', error);
             return false;
         }
     }
 
+    // Get current user
     async getCurrentUser() {
         try {
-            // Get current user from AWS Cognito
-            const user = await getCurrentUser();
+            const userStr = localStorage.getItem(this.userKey);
+            if (!userStr) {
+                throw new Error('No user session found');
+            }
+
+            const user = JSON.parse(userStr);
+            console.log('Current user:', user);
             return user;
         } catch (error) {
-            // If no AWS session, check localStorage
-            const stored = localStorage.getItem(this.userKey);
-            if (stored) {
-                return JSON.parse(stored);
-            }
-            throw new Error('No authenticated user');
+            console.error('Error getting current user:', error);
+            throw error;
         }
     }
 
-    async getAuthToken() {
+    // Get user role
+    getUserRole() {
         try {
-            const session = await fetchAuthSession();
-            return session.tokens?.idToken?.toString();
+            const user = JSON.parse(localStorage.getItem(this.userKey) || '{}');
+            return user.role || 'unknown';
         } catch (error) {
-            console.error('❌ Failed to get auth token:', error);
-            return null;
+            return 'unknown';
         }
     }
 
-    getDisplayName(email) {
-        if (!email) return 'User';
-
-        // Extract name from email or use email
-        if (email.includes('@')) {
-            const username = email.split('@')[0];
-            return username.charAt(0).toUpperCase() + username.slice(1);
-        }
-        return email;
-    }
-
-    getUserRole(email) {
-        // For now, all users are doctors - you can enhance this later
-        return 'doctor';
-    }
-
-    // Utility method to check if user has specific role
-    hasRole(requiredRole) {
+    // Check if user is provider
+    isProvider() {
         try {
-            const user = this.getUserInfo();
-            if (!user) return false;
-            return user.role === requiredRole || user.role === 'admin';
+            const user = JSON.parse(localStorage.getItem(this.userKey) || '{}');
+            return user.role === 'provider' || user.isProvider === true;
         } catch (error) {
             return false;
         }
     }
 
-    // Get user info safely
-    getUserInfo() {
-        if (this.currentUser) {
-            return { ...this.currentUser };
-        }
-
-        // Fallback to localStorage
+    // Check if user is patient
+    isPatient() {
         try {
-            const stored = localStorage.getItem(this.userKey);
-            return stored ? JSON.parse(stored) : null;
+            const user = JSON.parse(localStorage.getItem(this.userKey) || '{}');
+            return user.role === 'patient' || user.isPatient === true;
         } catch (error) {
-            return null;
+            return false;
         }
     }
 
-    // Add compatibility method for existing code
-    async signIn(email, password) {
-        console.log('🔧 signIn called - redirecting to login method');
-        return this.login({ email, password });
+    // Sign out
+    async signOut() {
+        try {
+            localStorage.removeItem(this.userKey);
+            localStorage.removeItem(this.tokenKey);
+            console.log('✅ Signed out successfully');
+            return { success: true };
+        } catch (error) {
+            console.error('Sign out error:', error);
+            throw error;
+        }
+    }
+
+    // Alternative method name for compatibility
+    async logout() {
+        return this.signOut();
+    }
+
+    // Register new user (for demo)
+    async signUp(email, password, name) {
+        try {
+            // Ensure email is a string
+            const emailStr = String(email || '').toLowerCase().trim();
+
+            if (!emailStr) {
+                throw new Error('Email is required');
+            }
+
+            // For demo, just create a new patient user
+            const newUser = {
+                id: `user_${Date.now()}`,
+                email: emailStr,
+                password: password,
+                name: name,
+                firstName: name.split(' ')[0] || name,
+                lastName: name.split(' ').slice(1).join(' ') || '',
+                role: 'patient',
+                type: 'patient',
+                permissions: ['limited'],
+                isProvider: false,
+                isPatient: true,
+                createdAt: new Date().toISOString()
+            };
+
+            // For demo purposes, add to demo users
+            this.demoUsers[emailStr] = newUser;
+
+            console.log('✅ Demo registration successful');
+
+            return {
+                success: true,
+                user: { ...newUser, password: undefined },
+                needsConfirmation: false
+            };
+
+        } catch (error) {
+            console.error('Registration error:', error);
+            throw error;
+        }
+    }
+
+    // Alternative method name for compatibility
+    async register(userData) {
+        const { email, password, firstName, lastName } = userData;
+        const name = `${firstName} ${lastName}`.trim();
+        return this.signUp(email, password, name);
+    }
+
+    // Get demo accounts info
+    getDemoAccounts() {
+        return {
+            provider: {
+                email: 'demo@telenos.com',
+                password: 'demo123',
+                role: 'Provider/Doctor'
+            },
+            alternativeProvider: {
+                email: 'provider@telenos.com',
+                password: 'provider123',
+                role: 'Provider/Doctor'
+            },
+            patient: {
+                email: 'patient@telenos.com',
+                password: 'patient123',
+                role: 'Patient'
+            }
+        };
     }
 }
 
 // Create and export singleton instance
-export const authService = new AuthService();
-
-// Initialize immediately
-authService.initialize();
-
+const authService = new AuthService();
+export { authService };
 export default authService;

@@ -16,33 +16,50 @@ const LoginPage = ({ onLogin }) => {
     const [needsConfirmation, setNeedsConfirmation] = useState(false);
     const [userEmail, setUserEmail] = useState('');
 
+    // Add this to your LoginPage.js handleSubmit function to debug the issue
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
         try {
+            // Debug: Log the values being passed
+            console.log('Form submission values:');
+            console.log('Email:', email, 'Type:', typeof email);
+            console.log('Password:', password, 'Type:', typeof password);
+
+            // Ensure we have valid strings
+            const emailValue = String(email || '').trim();
+            const passwordValue = String(password || '').trim();
+
+            if (!emailValue) {
+                throw new Error('Please enter your email');
+            }
+
+            if (!passwordValue) {
+                throw new Error('Please enter your password');
+            }
+
             let result;
 
             if (isLogin) {
-                // Sign in with AWS Cognito
-                result = await authService.login({ email, password });
+                // Sign in with the fixed auth service
+                result = await authService.signIn(emailValue, passwordValue);
                 console.log('Login successful:', result);
-                onLogin(result);
+                onLogin(result.user);
             } else {
-                // Sign up with AWS Cognito
-                result = await authService.signUp(email, password, name);
+                // Sign up logic
+                result = await authService.signUp(emailValue, passwordValue, name);
                 console.log('Registration successful:', result);
 
                 if (result.needsConfirmation) {
-                    // User needs to confirm email
                     setNeedsConfirmation(true);
-                    setUserEmail(email);
-                    setError(''); // Clear any previous errors
+                    setUserEmail(emailValue);
+                    setError('');
                 } else {
-                    // Registration complete, try to sign in
-                    const loginResult = await authService.login({ email, password });
-                    onLogin(loginResult);
+                    const loginResult = await authService.signIn(emailValue, passwordValue);
+                    onLogin(loginResult.user);
                 }
             }
         } catch (error) {
