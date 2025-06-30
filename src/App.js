@@ -35,6 +35,7 @@ const NewAppointmentWrapper = () => {
     loadUser();
   }, []);
 
+
   const handleLogout = () => {
     authService.logout();
     navigate('/login');
@@ -49,6 +50,7 @@ const NewAppointmentWrapper = () => {
     console.log('❌ Appointment creation cancelled');
     navigate('/calendar');
   };
+
 
   return (
     <div>
@@ -427,6 +429,19 @@ const VideoCallWrapper = () => {
   return <VideoCallPage />;
 };
 
+// Patient Video Call Wrapper (No authentication required)
+const PatientVideoCallWrapper = () => {
+  const location = useLocation();
+  const { appointmentId, patientToken } = useParams();
+
+  console.log('👤 Patient video call page loaded');
+  console.log('- URL:', location.pathname);
+  console.log('- Appointment ID:', appointmentId);
+  console.log('- Patient Token:', patientToken);
+
+  return <VideoCallPage isPatient={true} />;
+};
+
 // Main App Component
 const App = () => {
   return (
@@ -438,84 +453,23 @@ const App = () => {
           <Route path="/login" element={<LoginPageWrapper />} />
 
           {/* Protected Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardWrapper />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/patients"
-            element={
-              <ProtectedRoute>
-                <PatientsWrapper />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/patients/new"
-            element={
-              <ProtectedRoute>
-                <NewPatientWrapper />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/patients/:id"
-            element={
-              <ProtectedRoute>
-                <PatientDetailWrapper />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/appointments/new"
-            element={
-              <ProtectedRoute>
-                <NewAppointmentWrapper />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/calendar"
-            element={
-              <ProtectedRoute>
-                <CalendarWrapper />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardWrapper /></ProtectedRoute>} />
+          <Route path="/patients" element={<ProtectedRoute><PatientsWrapper /></ProtectedRoute>} />
+          <Route path="/patients/new" element={<ProtectedRoute><NewPatientWrapper /></ProtectedRoute>} />
+          <Route path="/patients/:id" element={<ProtectedRoute><PatientDetailWrapper /></ProtectedRoute>} />
+          <Route path="/appointments/new" element={<ProtectedRoute><NewAppointmentWrapper /></ProtectedRoute>} />
+          <Route path="/calendar" element={<ProtectedRoute><CalendarWrapper /></ProtectedRoute>} />
 
           {/* Video Call Routes */}
-          <Route
-            path="/video-call/start/:appointmentId"
-            element={
-              <ProtectedRoute>
-                <VideoCallWrapper />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/video-call/start/:appointmentId" element={<ProtectedRoute><VideoCallWrapper /></ProtectedRoute>} />
+          <Route path="/video-call/:appointmentId" element={<ProtectedRoute><VideoCallWrapper /></ProtectedRoute>} />
 
-          <Route
-            path="/video-call/:appointmentId"
-            element={
-              <ProtectedRoute>
-                <VideoCallWrapper />
-              </ProtectedRoute>
-            }
-          />
+          {/* Patient Video Call Routes - NO AUTHENTICATION REQUIRED */}
+          <Route path="/join/:appointmentId" element={<PatientVideoCallWrapper />} />
+          <Route path="/join/:appointmentId/:patientToken" element={<PatientVideoCallWrapper />} />
 
           {/* Catch all - redirect to login */}
-          <Route
-            path="*"
-            element={<Navigate to="/login" replace />}
-          />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
     </Router>
