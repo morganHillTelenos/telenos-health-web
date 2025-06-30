@@ -1,7 +1,7 @@
 import React from 'react';
 const { useState, useEffect } = React;
 
-const CalendarPage = ({ onNavigateToNewAppointment }) => {
+const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVideoCall }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [viewMode, setViewMode] = useState('month');
@@ -446,9 +446,12 @@ const CalendarPage = ({ onNavigateToNewAppointment }) => {
 
                                             <div className="flex gap-3">
                                                 {appointment.type === 'video' && (
-                                                    <button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105 shadow-md">
+                                                    <button
+                                                        onClick={() => onJoinVideoCall(appointment.id)}
+                                                        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105 shadow-md"
+                                                    >
                                                         <span>🎥</span>
-                                                        Join Video
+                                                        Start Video Call
                                                     </button>
                                                 )}
                                                 <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-semibold transition-all duration-200 hover:scale-105">

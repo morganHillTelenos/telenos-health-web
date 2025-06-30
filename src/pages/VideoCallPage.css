@@ -1,4 +1,4 @@
-/* src/pages/VideoCallPage.css - Updated for Doxy.me */
+/* src/pages/VideoCallPage.css */
 
 .video-call-page {
     min-height: 100vh;
@@ -52,50 +52,7 @@
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 
-.name-input-content h2 {
-    color: #333;
-    margin-bottom: 1rem;
-    font-size: 1.8rem;
-}
-
-.name-input-content p {
-    color: #666;
-    margin-bottom: 2rem;
-    line-height: 1.6;
-}
-
-.name-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.name-input {
-    padding: 1rem;
-    font-size: 1.1rem;
-    border: 2px solid #e1e5e9;
-    border-radius: 10px;
-    transition: border-color 0.3s ease;
-}
-
-.name-input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-/* Join Screen */
-.join-screen {
-    background: white;
-    border-radius: 20px;
-    padding: 3rem;
-    max-width: 600px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-}
-
-.join-content {
+.name-input-content {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -107,74 +64,126 @@
     margin-bottom: 1rem;
 }
 
-.join-content h2 {
+.name-input-content h2 {
     color: #333;
     margin: 0;
     font-size: 1.8rem;
     font-weight: 600;
 }
 
-.provider-info,
-.patient-info {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 12px;
-    margin: 1rem 0;
-    width: 100%;
-}
-
-.provider-info p,
-.patient-info p {
-    color: #555;
-    margin: 0.5rem 0;
+.name-input-content p {
+    color: #666;
+    margin: 0;
     line-height: 1.6;
 }
 
-/* Shareable Link Section */
-.shareable-link-section {
-    margin-top: 1.5rem;
-}
-
-.shareable-link-section label {
-    display: block;
-    color: #333;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    text-align: left;
-}
-
-.link-container {
+.name-form {
     display: flex;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
 }
 
-.shareable-link {
-    flex: 1;
-    padding: 0.75rem;
+.name-input {
+    padding: 1rem;
+    font-size: 1.1rem;
     border: 2px solid #e1e5e9;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    background: white;
-    color: #555;
+    border-radius: 10px;
+    transition: border-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.copy-btn {
-    padding: 0.75rem 1.5rem;
-    background: #28a745;
+.name-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Video Grid for Connected State */
+.video-grid-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.video-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex: 1;
+}
+
+.video-container.local,
+.video-container.remote {
+    position: relative;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+    min-height: 300px;
+}
+
+.video-element {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-label {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
     color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 14px;
 }
 
-.copy-btn:hover {
-    background: #218838;
+/* Video Controls */
+.video-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.control-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+.control-btn.muted {
+    background: #dc3545;
+}
+
+.control-btn.muted:hover {
+    background: #c82333;
 }
 
 /* Buttons */
-.join-btn,
 .join-call-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -188,10 +197,15 @@
     min-width: 200px;
 }
 
-.join-btn:hover,
-.join-call-btn:hover {
+.join-call-btn:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.join-call-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .end-call-btn {
@@ -199,15 +213,16 @@
     color: white;
     border: none;
     padding: 1rem 2rem;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
-    border-radius: 12px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .end-call-btn:hover {
     background: #c82333;
+    transform: scale(1.05);
 }
 
 .back-btn {
@@ -226,18 +241,7 @@
     background: #5a6268;
 }
 
-/* Security Info */
-.security-info {
-    color: #666;
-    font-size: 0.9rem;
-    margin-top: 1.5rem;
-    padding: 1rem;
-    background: rgba(102, 126, 234, 0.1);
-    border-radius: 8px;
-    border: 1px solid rgba(102, 126, 234, 0.2);
-}
-
-/* Loading Screen */
+/* Loading States */
 .loading-screen {
     text-align: center;
     color: white;
@@ -259,56 +263,25 @@
     animation: spin 1s linear infinite;
 }
 
+.loading-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-}
-
-.loading-content h2 {
-    color: white;
-    margin: 0;
-    font-size: 1.5rem;
-}
-
-.loading-content p {
-    color: rgba(255, 255, 255, 0.8);
-    margin: 0;
-    font-size: 1rem;
-}
-
-/* In Call Screen */
-.in-call-screen {
-    background: white;
-    border-radius: 20px;
-    padding: 3rem;
-    max-width: 500px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-}
-
-.in-call-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.call-icon {
-    font-size: 4rem;
-    color: #28a745;
-}
-
-.in-call-content h2 {
-    color: #333;
-    margin: 0;
-    font-size: 1.8rem;
-}
-
-.in-call-content p {
-    color: #666;
-    margin: 0.5rem 0;
-    line-height: 1.6;
 }
 
 /* Error Screen */
@@ -316,7 +289,7 @@
     background: white;
     border-radius: 20px;
     padding: 3rem;
-    max-width: 500px;
+    max-width: 600px;
     width: 100%;
     text-align: center;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
@@ -346,39 +319,48 @@
     line-height: 1.6;
 }
 
-/* Call Ended Screen */
-.call-ended-screen {
-    background: white;
-    border-radius: 20px;
-    padding: 3rem;
-    max-width: 500px;
+.installation-help {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: left;
     width: 100%;
+    margin: 1rem 0;
+}
+
+.installation-help ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.installation-help code {
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.9rem;
+}
+
+/* Call Info */
+.call-info {
     text-align: center;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
 }
 
-.call-ended-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
+.call-info p {
+    margin: 0.25rem 0;
 }
 
-.call-ended-icon {
-    font-size: 4rem;
-    color: #28a745;
-}
-
-.call-ended-content h2 {
-    color: #333;
-    margin: 0;
-    font-size: 1.8rem;
-}
-
-.call-ended-content p {
+/* Security Info */
+.security-info {
     color: #666;
-    margin: 0;
-    line-height: 1.6;
+    font-size: 0.9rem;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(102, 126, 234, 0.2);
 }
 
 /* Responsive Design */
@@ -394,28 +376,33 @@
         font-size: 1.2rem;
     }
 
-    .video-container {
+    .video-grid-container {
         padding: 1rem;
     }
 
-    .join-screen,
+    .video-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
     .name-input-screen,
-    .in-call-screen,
-    .error-screen,
-    .call-ended-screen {
+    .error-screen {
         padding: 2rem 1.5rem;
         margin: 0 1rem;
     }
 
-    .link-container {
-        flex-direction: column;
+    .video-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
     }
 
-    .shareable-link {
-        font-size: 0.8rem;
+    .control-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
     }
 
-    .join-btn,
     .join-call-btn,
     .end-call-btn,
     .back-btn {
@@ -436,18 +423,13 @@
         padding: 0.3rem 0.8rem;
     }
 
-    .join-content h2,
     .name-input-content h2,
-    .in-call-content h2,
-    .error-content h2,
-    .call-ended-content h2 {
+    .error-content h2 {
         font-size: 1.5rem;
     }
 
     .video-icon,
-    .call-icon,
-    .error-icon,
-    .call-ended-icon {
+    .error-icon {
         font-size: 3rem;
     }
 }

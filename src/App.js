@@ -9,9 +9,9 @@ import HealthcareDashboard from './pages/HealthcareDashboard';
 import PatientsPage from './pages/PatientsPage';
 import NewPatientForm from './pages/NewPatientForm';
 import CalendarPage from './pages/CalendarPage';
-import VideoCallPage from './pages/VideoCallPage';
+import VideoCallPage from './pages/VideoCallPage'; // Import the separate file
 import Header from './components/Header';
-import NewAppointmentPage from './pages/NewAppointmentPage'; 
+import NewAppointmentPage from './pages/NewAppointmentPage';
 
 // Import services
 import { authService } from './services/auth';
@@ -72,8 +72,7 @@ const NewAppointmentWrapper = () => {
       </div>
     </div>
   );
-};// src/App.js - Complete Rewrite
-
+};
 
 // Loading Spinner Component
 const LoadingSpinner = () => (
@@ -87,29 +86,33 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Landing Page Wrapper
 const LandingPageWrapper = () => {
   const navigate = useNavigate();
 
+  // Temporarily comment this out to prevent auto-redirect
+  /*
   useEffect(() => {
     if (authService.isAuthenticated()) {
       navigate('/dashboard');
     }
   }, [navigate]);
+  */
 
   return <LandingPage onEnterDashboard={() => navigate('/dashboard')} />;
 };
 
-// Login Page Wrapper
 const LoginPageWrapper = () => {
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState(null);
 
+  // Temporarily comment this out too
+  /*
   useEffect(() => {
     if (authService.isAuthenticated()) {
       navigate('/dashboard');
     }
   }, [navigate]);
+  */
 
   const handleLogin = async (user) => {
     try {
@@ -411,7 +414,7 @@ const PatientDetailWrapper = () => {
   );
 };
 
-// Video Call Wrapper
+// Video Call Wrapper - SIMPLIFIED
 const VideoCallWrapper = () => {
   const location = useLocation();
   const isProviderStart = location.pathname.includes('/start/');
@@ -420,6 +423,7 @@ const VideoCallWrapper = () => {
   console.log('- URL:', location.pathname);
   console.log('- Provider start:', isProviderStart);
 
+  // Simply return the imported VideoCallPage component
   return <VideoCallPage />;
 };
 
