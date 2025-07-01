@@ -2,6 +2,9 @@
   "name": "telenos-health-web-backend",
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "build": "npx ampx generate outputs --app-id $AWS_APP_ID --branch $AWS_BRANCH",
     "deploy": "npx ampx pipeline-deploy --branch $AWS_BRANCH",
@@ -15,7 +18,6 @@
     "typescript": "^5.0.0"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
-    "tsx": "^4.0.0"
+    "@types/node": "^20.0.0"
   }
 }
