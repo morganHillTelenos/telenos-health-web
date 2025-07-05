@@ -560,3 +560,328 @@
         width: 100%;
     }
 }
+
+/* Additional CSS for VideoCallPage.css - Add these styles to your existing CSS file */
+
+/* Video Grid and Call Interface */
+.video-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    height: 400px;
+}
+
+@media (max-width: 768px) {
+    .video-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+}
+
+.local-video-container,
+.remote-video-container {
+    position: relative;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.local-video,
+.remote-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.local-video video,
+.remote-video video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.participant-label {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Call Controls */
+.call-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.control-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: #4F46E5;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn:hover {
+    background: #3730A3;
+    transform: scale(1.05);
+}
+
+.control-btn.disabled {
+    background: #DC2626;
+}
+
+.control-btn.disabled:hover {
+    background: #B91C1C;
+}
+
+.end-call-btn {
+    background: #DC2626;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.end-call-btn:hover {
+    background: #B91C1C;
+}
+
+/* Call Info */
+.call-info {
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.call-info p {
+    margin: 0.25rem 0;
+}
+
+/* Enhanced Loading Screen */
+.loading-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    min-height: 400px;
+}
+
+.loading-content {
+    max-width: 400px;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 2rem auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Enhanced Error Screen */
+.error-screen {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.error-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.error-icon {
+    font-size: 4rem;
+    color: #DC2626;
+}
+
+/* Form Styles */
+.name-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+.name-input {
+    padding: 1rem;
+    font-size: 1.1rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+}
+
+.name-input:focus {
+    outline: none;
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Button States */
+.join-btn:disabled {
+    background: #9CA3AF;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.join-btn:disabled:hover {
+    background: #9CA3AF;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Provider Info Styling */
+.provider-info,
+.patient-info {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    width: 100%;
+    text-align: left;
+}
+
+.provider-info p,
+.patient-info p {
+    margin: 0.5rem 0;
+    color: #475569;
+    line-height: 1.5;
+}
+
+.provider-info strong,
+.patient-info strong {
+    color: #1E293B;
+}
+
+/* Shareable Link Section */
+.shareable-link-section {
+    margin: 1.5rem 0;
+    width: 100%;
+}
+
+.shareable-link-section label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    text-align: left;
+}
+
+.link-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.shareable-link {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: #F9FAFB;
+    color: #6B7280;
+}
+
+.copy-btn {
+    padding: 0.75rem 1.5rem;
+    background: #10B981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.copy-btn:hover {
+    background: #059669;
+}
+
+/* Security Info */
+.security-info {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 8px;
+    color: #065F46;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Enhanced In-Call Screen */
+.in-call-screen {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 900px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .in-call-screen {
+        padding: 1rem;
+        margin: 0 1rem;
+    }
+    
+    .video-grid {
+        height: 300px;
+    }
+    
+    .call-controls {
+        gap: 0.5rem;
+    }
+    
+    .control-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+    
+    .link-container {
+        flex-direction: column;
+    }
+}
