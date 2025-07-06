@@ -447,12 +447,12 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
                                             <div className="flex gap-3">
                                                 {appointment.type === 'video' && (
                                                     <button
-                                                        onClick={() => onJoinVideoCall(appointment.id)}
+                                                        onClick={() => onStartVideoCall(appointment.id)}
                                                         className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105 shadow-md"
                                                     >
                                                         <span>🎥</span>
                                                         Start Video Call
-                                                    </button>
+                                                </button>
                                                 )}
                                                 <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-semibold transition-all duration-200 hover:scale-105">
                                                     View Details
