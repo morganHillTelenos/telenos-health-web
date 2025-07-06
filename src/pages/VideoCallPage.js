@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './VideoCallPage.css';
 
-const VideoCallPage = () => {
+const VideoCallPage = ({ isPatient = false }) => {  // Added isPatient prop
     const { appointmentId } = useParams();
     const navigate = useNavigate();
 
@@ -350,8 +350,8 @@ const VideoCallPage = () => {
 
     // Copy room link
     const copyRoomLink = () => {
-        const roomLink = window.location.href;
-        navigator.clipboard.writeText(roomLink).then(() => {
+        const shareableLink = getShareableLink();
+        navigator.clipboard.writeText(shareableLink).then(() => {
             alert('Room link copied to clipboard!');
         });
     };
@@ -381,6 +381,7 @@ const VideoCallPage = () => {
     // Render join screen
     const renderJoinScreen = () => {
         const isProviderStart = window.location.pathname.includes('/start/');
+        const shouldShowShareableLink = isProviderStart && !isPatient; // Hide for patients
 
         return (
             <div className="join-screen">
@@ -388,7 +389,7 @@ const VideoCallPage = () => {
                     <div className="video-icon">🎥</div>
                     <h2>{isProviderStart ? 'Start Video Consultation' : 'Join Video Consultation'}</h2>
 
-                    {isProviderStart && (
+                    {isProviderStart && !isPatient && (
                         <div className="provider-info">
                             <p><strong>Provider:</strong> Dr. Smith</p>
                             <p><strong>Appointment:</strong> {appointmentId}</p>
@@ -396,14 +397,15 @@ const VideoCallPage = () => {
                         </div>
                     )}
 
-                    {!isProviderStart && (
+                    {(!isProviderStart || isPatient) && (
                         <div className="patient-info">
                             <p><strong>Appointment ID:</strong> {appointmentId}</p>
                             <p>Please enter your name to join the video consultation.</p>
                         </div>
                     )}
 
-                    {isProviderStart && (
+                    {/* Only show shareable link section for providers, not patients */}
+                    {shouldShowShareableLink && (
                         <div className="shareable-link-section">
                             <label>Share this link with your patient:</label>
                             <div className="link-container">
@@ -425,12 +427,12 @@ const VideoCallPage = () => {
                             type="text"
                             value={nameInputValue}
                             onChange={(e) => setNameInputValue(e.target.value)}
-                            placeholder={isProviderStart ? "Dr. Smith" : "Enter your name"}
+                            placeholder={isProviderStart && !isPatient ? "Dr. Smith" : "Enter your name"}
                             className="name-input"
                             required
                         />
                         <button type="submit" className="join-btn" disabled={isConnecting}>
-                            {isConnecting ? 'Connecting...' : (isProviderStart ? 'Start Call' : 'Join Call')}
+                            {isConnecting ? 'Connecting...' : (isProviderStart && !isPatient ? 'Start Call' : 'Join Call')}
                         </button>
                     </form>
 
