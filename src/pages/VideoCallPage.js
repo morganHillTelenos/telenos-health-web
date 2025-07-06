@@ -1,4 +1,4 @@
-// src/pages/VideoCallPage.js - Updated for Real Twilio Integration
+// src/pages/VideoCallPage.js - Fixed Local Video Track Issue
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './VideoCallPage.css';
@@ -8,7 +8,7 @@ const VideoCallPage = () => {
     const navigate = useNavigate();
 
     // State management
-    const [currentScreen, setCurrentScreen] = useState('join'); // 'join', 'loading', 'in-call', 'ended', 'error'
+    const [currentScreen, setCurrentScreen] = useState('join');
     const [participantName, setParticipantName] = useState('');
     const [nameInputValue, setNameInputValue] = useState('');
     const [room, setRoom] = useState(null);
@@ -31,7 +31,7 @@ const VideoCallPage = () => {
         setConnectionLog(prev => [...prev.slice(-10), { time: new Date().toISOString(), message }]);
     };
 
-    // Enhanced token service with better error handling and logging
+    // Enhanced token service
     const getVideoToken = async (identity, roomName) => {
         try {
             addToLog(`🔍 Attempting to get token for identity: ${identity}, room: ${roomName}`);
@@ -58,7 +58,6 @@ const VideoCallPage = () => {
             });
 
             console.log('📨 Response status:', response.status);
-            console.log('📨 Response headers:', response.headers);
 
             if (!response.ok) {
                 const errorText = await response.text();
@@ -78,7 +77,6 @@ const VideoCallPage = () => {
 
             addToLog(`✅ Token received - isDemoToken: ${tokenData.isDemoToken || 'false'}`);
 
-            // Log if it's still using demo mode (shouldn't happen with real Lambda)
             if (tokenData.isDemoToken) {
                 console.warn('⚠️  Still receiving demo token - check Lambda function');
                 addToLog('⚠️  WARNING: Still receiving demo token');
@@ -94,7 +92,7 @@ const VideoCallPage = () => {
         }
     };
 
-    // Join video call function
+    // Join video call function - FIXED LOCAL VIDEO HANDLING
     const joinVideoCall = async (identity) => {
         try {
             setIsConnecting(true);
@@ -128,16 +126,40 @@ const VideoCallPage = () => {
             setRoom(connectedRoom);
             setCurrentScreen('in-call');
 
-            // Handle local tracks
+            // FIXED: Handle local tracks properly
             connectedRoom.localParticipant.tracks.forEach(publication => {
-                if (publication.isSubscribed) {
-                    const track = publication.track;
+                const track = publication.track;
+                if (track) {
                     if (track.kind === 'video' && localVideoRef.current) {
-                        localVideoRef.current.appendChild(track.attach());
+                        console.log('📹 Attaching local video track');
+                        const videoElement = track.attach();
+                        videoElement.style.width = '100%';
+                        videoElement.style.height = '100%';
+                        videoElement.style.objectFit = 'cover';
+                        localVideoRef.current.appendChild(videoElement);
                         setLocalVideoTrack(track);
+                        addToLog('📹 Local video track attached');
                     } else if (track.kind === 'audio') {
+                        console.log('🎤 Setting local audio track');
                         setLocalAudioTrack(track);
+                        addToLog('🎤 Local audio track set');
                     }
+                }
+            });
+
+            // Listen for track events on local participant
+            connectedRoom.localParticipant.on('trackPublished', publication => {
+                console.log('📤 Local track published:', publication.kind);
+                const track = publication.track;
+                if (track && track.kind === 'video' && localVideoRef.current && !localVideoTrack) {
+                    console.log('📹 Late attaching local video track');
+                    const videoElement = track.attach();
+                    videoElement.style.width = '100%';
+                    videoElement.style.height = '100%';
+                    videoElement.style.objectFit = 'cover';
+                    localVideoRef.current.appendChild(videoElement);
+                    setLocalVideoTrack(track);
+                    addToLog('📹 Local video track attached (late)');
                 }
             });
 
@@ -204,8 +226,14 @@ const VideoCallPage = () => {
     // Handle track subscribed
     const handleTrackSubscribed = (track, participant) => {
         if (track.kind === 'video' && remoteVideoRef.current) {
-            remoteVideoRef.current.appendChild(track.attach());
+            console.log('📹 Attaching remote video track from:', participant.identity);
+            const videoElement = track.attach();
+            videoElement.style.width = '100%';
+            videoElement.style.height = '100%';
+            videoElement.style.objectFit = 'cover';
+            remoteVideoRef.current.appendChild(videoElement);
         } else if (track.kind === 'audio') {
+            console.log('🎤 Attaching remote audio track from:', participant.identity);
             track.attach();
         }
     };
@@ -222,27 +250,37 @@ const VideoCallPage = () => {
         setCurrentScreen('ended');
     };
 
-    // Toggle audio
+    // Toggle audio - IMPROVED
     const toggleAudio = () => {
         if (localAudioTrack) {
             if (isAudioEnabled) {
                 localAudioTrack.disable();
+                addToLog('🎤 Audio disabled');
             } else {
                 localAudioTrack.enable();
+                addToLog('🎤 Audio enabled');
             }
             setIsAudioEnabled(!isAudioEnabled);
+        } else {
+            console.warn('No local audio track available');
+            addToLog('⚠️ No local audio track available');
         }
     };
 
-    // Toggle video
+    // Toggle video - IMPROVED
     const toggleVideo = () => {
         if (localVideoTrack) {
             if (isVideoEnabled) {
                 localVideoTrack.disable();
+                addToLog('📹 Video disabled');
             } else {
                 localVideoTrack.enable();
+                addToLog('📹 Video enabled');
             }
             setIsVideoEnabled(!isVideoEnabled);
+        } else {
+            console.warn('No local video track available');
+            addToLog('⚠️ No local video track available');
         }
     };
 
