@@ -153,34 +153,59 @@ const VideoCallPage = () => {
             setRoom(connectedRoom);
             setCurrentScreen('in-call');
 
-            // STEP 4: Attach local tracks to DOM immediately
-            localTracks.forEach(track => {
-                if (track.kind === 'video') {
-                    console.log('📹 Attaching local video track immediately');
-                    if (localVideoRef.current) {
-                        // Clear any existing content
-                        localVideoRef.current.innerHTML = '';
+            // Replace the local track attachment section in your joinVideoCall function:
 
-                        const videoElement = track.attach();
-                        videoElement.style.width = '100%';
-                        videoElement.style.height = '100%';
-                        videoElement.style.objectFit = 'cover';
-                        videoElement.style.borderRadius = '12px';
+            // STEP 4: Attach local tracks to DOM with proper timing
+            setTimeout(() => {
+                console.log('🔍 Checking DOM refs after screen change...');
+                console.log('localVideoRef.current:', localVideoRef.current);
 
-                        localVideoRef.current.appendChild(videoElement);
-                        setLocalVideoTrack(track);
-                        addToLog('📹 Local video attached to DOM');
-                        console.log('✅ Video element created and attached:', videoElement);
-                    } else {
-                        console.error('❌ localVideoRef is null');
-                        addToLog('❌ Video container not found');
+                localTracks.forEach(track => {
+                    if (track.kind === 'video') {
+                        console.log('📹 Attaching local video track with delay');
+                        if (localVideoRef.current) {
+                            // Clear any existing content
+                            localVideoRef.current.innerHTML = '';
+
+                            const videoElement = track.attach();
+                            videoElement.style.width = '100%';
+                            videoElement.style.height = '100%';
+                            videoElement.style.objectFit = 'cover';
+                            videoElement.style.borderRadius = '12px';
+                            videoElement.autoplay = true;
+                            videoElement.playsInline = true;
+
+                            localVideoRef.current.appendChild(videoElement);
+                            setLocalVideoTrack(track);
+                            addToLog('📹 Local video attached to DOM (delayed)');
+                            console.log('✅ Video element created and attached:', videoElement);
+                        } else {
+                            console.error('❌ localVideoRef is still null after delay');
+                            addToLog('❌ Video container still not found after delay');
+
+                            // Try finding it by class name as fallback
+                            const videoContainer = document.querySelector('.local-video');
+                            if (videoContainer) {
+                                console.log('📹 Found video container by class, attaching...');
+                                videoContainer.innerHTML = '';
+                                const videoElement = track.attach();
+                                videoElement.style.width = '100%';
+                                videoElement.style.height = '100%';
+                                videoElement.style.objectFit = 'cover';
+                                videoElement.autoplay = true;
+                                videoElement.playsInline = true;
+                                videoContainer.appendChild(videoElement);
+                                setLocalVideoTrack(track);
+                                addToLog('📹 Video attached via fallback method');
+                            }
+                        }
+                    } else if (track.kind === 'audio') {
+                        console.log('🎤 Setting local audio track');
+                        setLocalAudioTrack(track);
+                        addToLog('🎤 Local audio track ready');
                     }
-                } else if (track.kind === 'audio') {
-                    console.log('🎤 Setting local audio track');
-                    setLocalAudioTrack(track);
-                    addToLog('🎤 Local audio track ready');
-                }
-            });
+                });
+            }, 500); // Wait 500ms for DOM to be ready
 
             // Handle existing participants
             connectedRoom.participants.forEach(participant => {
