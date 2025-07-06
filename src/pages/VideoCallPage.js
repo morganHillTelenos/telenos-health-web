@@ -92,7 +92,8 @@ const VideoCallPage = () => {
         }
     };
 
-    // Join video call function - FIXED LOCAL VIDEO HANDLING
+    // Replace your joinVideoCall function with this version that explicitly gets camera access:
+
     const joinVideoCall = async (identity) => {
         try {
             setIsConnecting(true);
@@ -106,15 +107,41 @@ const VideoCallPage = () => {
             const roomName = `telenos-room-${appointmentId}`;
             addToLog(`🏠 Room name: ${roomName}`);
 
-            // Get access token
+            // STEP 1: Explicitly get camera and microphone access FIRST
+            addToLog('📹 Requesting camera and microphone access...');
+            let localTracks;
+            try {
+                localTracks = await Video.createLocalTracks({
+                    audio: true,
+                    video: {
+                        width: 640,
+                        height: 480,
+                        facingMode: 'user'
+                    }
+                });
+                console.log('✅ Local tracks created:', localTracks);
+                addToLog(`✅ Created ${localTracks.length} local tracks`);
+
+                // Check what tracks we got
+                localTracks.forEach((track, index) => {
+                    console.log(`Track ${index}:`, track.kind, track);
+                    addToLog(`📱 Track ${index}: ${track.kind}`);
+                });
+
+            } catch (trackError) {
+                console.error('❌ Failed to create local tracks:', trackError);
+                addToLog(`❌ Camera access failed: ${trackError.message}`);
+                throw new Error(`Cannot access camera/microphone: ${trackError.message}`);
+            }
+
+            // STEP 2: Get access token
             const token = await getVideoToken(identity, roomName);
             addToLog('🎫 Token obtained, connecting to room...');
 
-            // Connect to room
+            // STEP 3: Connect to room WITH the pre-created tracks
             const connectedRoom = await Video.connect(token, {
                 name: roomName,
-                audio: true,
-                video: { width: 640, height: 480 },
+                tracks: localTracks,  // Use our pre-created tracks
                 dominantSpeaker: true,
                 networkQuality: true
             });
@@ -126,40 +153,32 @@ const VideoCallPage = () => {
             setRoom(connectedRoom);
             setCurrentScreen('in-call');
 
-            // FIXED: Handle local tracks properly
-            connectedRoom.localParticipant.tracks.forEach(publication => {
-                const track = publication.track;
-                if (track) {
-                    if (track.kind === 'video' && localVideoRef.current) {
-                        console.log('📹 Attaching local video track');
+            // STEP 4: Attach local tracks to DOM immediately
+            localTracks.forEach(track => {
+                if (track.kind === 'video') {
+                    console.log('📹 Attaching local video track immediately');
+                    if (localVideoRef.current) {
+                        // Clear any existing content
+                        localVideoRef.current.innerHTML = '';
+
                         const videoElement = track.attach();
                         videoElement.style.width = '100%';
                         videoElement.style.height = '100%';
                         videoElement.style.objectFit = 'cover';
+                        videoElement.style.borderRadius = '12px';
+
                         localVideoRef.current.appendChild(videoElement);
                         setLocalVideoTrack(track);
-                        addToLog('📹 Local video track attached');
-                    } else if (track.kind === 'audio') {
-                        console.log('🎤 Setting local audio track');
-                        setLocalAudioTrack(track);
-                        addToLog('🎤 Local audio track set');
+                        addToLog('📹 Local video attached to DOM');
+                        console.log('✅ Video element created and attached:', videoElement);
+                    } else {
+                        console.error('❌ localVideoRef is null');
+                        addToLog('❌ Video container not found');
                     }
-                }
-            });
-
-            // Listen for track events on local participant
-            connectedRoom.localParticipant.on('trackPublished', publication => {
-                console.log('📤 Local track published:', publication.kind);
-                const track = publication.track;
-                if (track && track.kind === 'video' && localVideoRef.current && !localVideoTrack) {
-                    console.log('📹 Late attaching local video track');
-                    const videoElement = track.attach();
-                    videoElement.style.width = '100%';
-                    videoElement.style.height = '100%';
-                    videoElement.style.objectFit = 'cover';
-                    localVideoRef.current.appendChild(videoElement);
-                    setLocalVideoTrack(track);
-                    addToLog('📹 Local video track attached (late)');
+                } else if (track.kind === 'audio') {
+                    console.log('🎤 Setting local audio track');
+                    setLocalAudioTrack(track);
+                    addToLog('🎤 Local audio track ready');
                 }
             });
 
