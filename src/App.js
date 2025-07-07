@@ -298,7 +298,7 @@ const PatientDetailWrapper = () => {
   );
 };
 
-// Calendar Wrapper
+// Calendar Wrapper - FIXED VERSION
 const CalendarWrapper = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -322,11 +322,21 @@ const CalendarWrapper = () => {
     navigate('/login');
   };
 
-  const handleNewAppointment = () => {
+  // This should match the prop name expected by CalendarPage
+  const handleNavigateToNewAppointment = () => {
+    console.log('📅 Navigating to new appointment...');
     navigate('/appointments/new');
   };
 
-  const handleVideoCallStart = (appointmentId) => {
+  // This should match the prop name expected by CalendarPage  
+  const handleJoinVideoCall = (appointmentId) => {
+    console.log('🎥 Joining video call for appointment:', appointmentId);
+    navigate(`/video-call/${appointmentId}`);
+  };
+
+  // This should match the prop name expected by CalendarPage
+  const handleStartVideoCall = (appointmentId) => {
+    console.log('🎥 Starting video call for appointment:', appointmentId);
     navigate(`/video-call/start/${appointmentId}`);
   };
 
@@ -335,8 +345,9 @@ const CalendarWrapper = () => {
       <Header user={user} onLogout={handleLogout} />
       <div className="pt-20">
         <CalendarPage
-          onNewAppointment={handleNewAppointment}
-          onVideoCallStart={handleVideoCallStart}
+          onNavigateToNewAppointment={handleNavigateToNewAppointment}
+          onJoinVideoCall={handleJoinVideoCall}
+          onStartVideoCall={handleStartVideoCall}
         />
       </div>
     </div>
