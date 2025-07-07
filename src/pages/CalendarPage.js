@@ -231,11 +231,12 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
                                 </button>
                             </div>
 
+                            {/* New Appointment Button */}
                             <button
+                                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-2 rounded-xl font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105 shadow-lg"
                                 onClick={onNavigateToNewAppointment}
-                                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-2 rounded-xl font-semibold flex items-center gap-2 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 hover:scale-105"
                             >
-                                <span className="text-lg">+</span>
+                                <span>+</span>
                                 New Appointment
                             </button>
                         </div>
@@ -243,8 +244,7 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto p-6">
-                {/* Calendar View */}
+            <div className="max-w-7xl mx-auto px-6 py-8">
                 {viewMode === 'month' ? (
                     <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 overflow-hidden shadow-xl mb-8">
                         {/* Month Navigation */}
@@ -289,33 +289,24 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
                                         className={`min-h-[120px] p-3 border-b border-r border-gray-200/50 cursor-pointer transition-all duration-200 group ${!isCurrentMonth
                                             ? 'bg-gray-50/50 text-gray-400'
                                             : isToday
-                                                ? 'bg-gradient-to-br from-blue-50 to-blue-100'
+                                                ? 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200'
                                                 : isSelected
-                                                    ? 'bg-gradient-to-br from-blue-100 to-blue-200'
-                                                    : 'bg-white hover:bg-gray-50'
+                                                    ? 'bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200'
+                                                    : 'bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-blue-50'
                                             }`}
                                         onClick={() => handleDateClick(day)}
                                     >
-                                        <div className={`font-semibold mb-2 ${isToday ? 'text-blue-600' : isCurrentMonth ? 'text-gray-900' : 'text-gray-400'
-                                            }`}>
+                                        <div className={`text-sm font-semibold mb-2 ${isToday ? 'text-blue-700' : isSelected ? 'text-purple-700' : ''}`}>
                                             {day.getDate()}
                                         </div>
-                                        <div className="space-y-1">
-                                            {dayAppointments.slice(0, 3).map((apt, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className={`text-xs bg-gradient-to-r ${getPriorityColor(apt.priority)} text-white p-1 rounded truncate hover:scale-105 transition-transform duration-200`}
-                                                    title={`${apt.time} - ${apt.patient} (${apt.reason})`}
-                                                >
-                                                    {formatTime(apt.time)} {apt.patient}
-                                                </div>
-                                            ))}
-                                            {dayAppointments.length > 3 && (
-                                                <div className="text-xs text-gray-500 font-medium">
-                                                    +{dayAppointments.length - 3} more
-                                                </div>
-                                            )}
-                                        </div>
+                                        {dayAppointments.map((apt, aptIndex) => (
+                                            <div
+                                                key={aptIndex}
+                                                className={`text-xs p-1 mb-1 rounded text-white truncate ${apt.type === 'video' ? 'bg-blue-500' : 'bg-green-500'}`}
+                                            >
+                                                {formatTime(apt.time)} - {apt.patient}
+                                            </div>
+                                        ))}
                                     </div>
                                 );
                             })}
@@ -341,98 +332,77 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
                                 <span className="text-xl text-gray-600 group-hover:text-gray-900 group-hover:scale-110 transition-all duration-200">›</span>
                             </button>
                         </div>
-                        <div className="p-6">
-                            <div className="text-center text-gray-500">
-                                Day view appointments will be listed below in the appointments section
-                            </div>
-                        </div>
                     </div>
                 )}
 
-                {/* Appointments Section */}
-                <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 shadow-xl">
+                {/* Appointments List */}
+                <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 overflow-hidden shadow-xl">
                     <div className="bg-gradient-to-r from-gray-50 to-blue-50 px-6 py-4 border-b border-gray-200/50">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h2 className="text-2xl font-bold text-gray-900">
-                                    {viewMode === 'day' ? `Appointments for ${formatDate(selectedDate)}` : 'Upcoming Appointments'}
-                                </h2>
-                                <p className="text-gray-600 text-sm">
-                                    {filteredAppointments.length} appointment{filteredAppointments.length !== 1 ? 's' : ''} scheduled
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                                    <span>Normal</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                    <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                                    <span>High</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                                    <span>Urgent</span>
-                                </div>
-                            </div>
-                        </div>
+                        <h3 className="text-xl font-bold text-gray-900">
+                            {viewMode === 'day' ? 'Today\'s Appointments' : 'Upcoming Appointments'}
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                            {filteredAppointments.length} appointment{filteredAppointments.length !== 1 ? 's' : ''} scheduled
+                        </p>
                     </div>
 
                     {filteredAppointments.length === 0 ? (
                         <div className="p-12 text-center">
-                            <div className="text-6xl mb-4 opacity-30">📅</div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">No appointments scheduled</h3>
+                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span className="text-2xl">📅</span>
+                            </div>
+                            <h4 className="text-lg font-semibold text-gray-700 mb-2">No appointments scheduled</h4>
                             <p className="text-gray-500 mb-6">
-                                {viewMode === 'day' ? 'for this day' : 'in the coming days'}
+                                {viewMode === 'day' ? 'No appointments for this day.' : 'You have no upcoming appointments.'}
                             </p>
                             <button
+                                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-200 hover:scale-105"
                                 onClick={onNavigateToNewAppointment}
-                                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 hover:scale-105 shadow-lg"
                             >
-                                Schedule First Appointment
+                                Schedule Appointment
                             </button>
                         </div>
                     ) : (
-                        <div className="p-6 space-y-4">
+                        <div className="p-6">
                             {filteredAppointments.map((appointment) => {
                                 const priorityBadge = getPriorityBadge(appointment.priority);
-
                                 return (
                                     <div
                                         key={appointment.id}
-                                        className="group bg-gradient-to-r from-white to-gray-50 rounded-xl border border-gray-200 hover:border-gray-300 p-6 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+                                        className="bg-gradient-to-r from-white to-gray-50 rounded-xl border border-gray-200/50 p-6 mb-4 last:mb-0 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] group"
                                     >
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div className="flex items-center gap-4">
-                                                <div className={`bg-gradient-to-r ${getPriorityColor(appointment.priority)} text-white px-4 py-2 rounded-lg font-bold shadow-lg`}>
-                                                    {formatTime(appointment.time)}
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div className="flex items-center">
+                                                <div className={`w-12 h-12 bg-gradient-to-r ${getPriorityColor(appointment.priority)} rounded-xl flex items-center justify-center mr-4 shadow-md group-hover:scale-110 transition-transform duration-200`}>
+                                                    <span className="text-white text-xl">
+                                                        {appointment.type === 'video' ? '🎥' : '🏥'}
+                                                    </span>
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                                        {appointment.patient}
-                                                    </h3>
-                                                    <p className="text-gray-500 text-sm">{appointment.reason}</p>
+                                                    <h4 className="text-xl font-bold text-gray-900 mb-1">{appointment.patient}</h4>
+                                                    <p className="text-gray-600 text-sm font-medium">{appointment.reason}</p>
                                                 </div>
                                             </div>
 
                                             <div className="flex items-center gap-3">
                                                 {priorityBadge && (
-                                                    <span className={`${priorityBadge.bg} ${priorityBadge.text} px-3 py-1 rounded-full text-xs font-bold`}>
+                                                    <span className={`${priorityBadge.bg} ${priorityBadge.text} px-3 py-1 rounded-full text-xs font-bold tracking-wide`}>
                                                         {priorityBadge.label}
                                                     </span>
                                                 )}
-                                                <div className="flex items-center gap-2">
-                                                    {appointment.type === 'video' && (
-                                                        <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
-                                                            🎥 Video
-                                                        </span>
-                                                    )}
-                                                    {appointment.type === 'in-person' && (
-                                                        <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
-                                                            🏥 In-Person
-                                                        </span>
-                                                    )}
-                                                    <div className={`w-3 h-3 rounded-full ${appointment.status === 'confirmed' ? 'bg-green-500' :
+                                                <div className={`px-3 py-1 rounded-full text-xs font-semibold ${appointment.type === 'video' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
+                                                    {appointment.type === 'video' ? 'Video Call' : 'In-Person'}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center text-gray-600 text-sm">
+                                                <span className="mr-4">⏰ {formatTime(appointment.time)}</span>
+                                                <span className="mr-4">⏱️ {appointment.duration} min</span>
+                                                <div className="flex items-center">
+                                                    <span className="mr-2">Status:</span>
+                                                    <div className={`w-3 h-3 rounded-full mr-1 ${appointment.status === 'confirmed' ? 'bg-green-500' :
                                                         appointment.status === 'pending' ? 'bg-yellow-500' : 'bg-gray-400'
                                                         }`}></div>
                                                 </div>
@@ -447,12 +417,12 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
                                             <div className="flex gap-3">
                                                 {appointment.type === 'video' && (
                                                     <button
-                                                        onClick={() => onStartVideoCall(appointment.id)}
+                                                        onClick={() => onJoinVideoCall(appointment.id)}
                                                         className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105 shadow-md"
                                                     >
                                                         <span>🎥</span>
                                                         Start Video Call
-                                                </button>
+                                                    </button>
                                                 )}
                                                 <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-semibold transition-all duration-200 hover:scale-105">
                                                     View Details
