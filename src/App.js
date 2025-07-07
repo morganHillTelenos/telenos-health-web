@@ -330,8 +330,8 @@ const CalendarWrapper = () => {
 
   // This should match the prop name expected by CalendarPage  
   const handleJoinVideoCall = (appointmentId) => {
-    console.log('🎥 Joining video call for appointment:', appointmentId);
-    navigate(`/video-call/${appointmentId}`);
+    console.log('🎥 Going to video call start page for appointment:', appointmentId);
+    navigate(`/video-call/start/${appointmentId}`);
   };
 
   // This should match the prop name expected by CalendarPage
