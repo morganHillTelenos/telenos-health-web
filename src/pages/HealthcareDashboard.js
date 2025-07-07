@@ -153,10 +153,17 @@ const HealthcareDashboard = () => {
             action: () => navigate('/appointments/new')
         },
         {
+            title: 'Clinical Notes',
+            description: 'Document patient encounters',
+            icon: '📝',
+            color: 'from-purple-500 to-purple-600',
+            action: () => navigate('/notes')
+        },
+        {
             title: 'View Calendar',
             description: 'Check today\'s schedule',
             icon: '🗓️',
-            color: 'from-purple-500 to-purple-600',
+            color: 'from-teal-500 to-teal-600',
             action: () => navigate('/calendar')
         },
         {

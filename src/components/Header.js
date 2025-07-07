@@ -3,30 +3,37 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../services/auth';
 
-const Header = () => {
+const Header = ({ user: propUser, onLogout }) => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(propUser);
     const [showUserMenu, setShowUserMenu] = useState(false);
 
     useEffect(() => {
-        const loadUser = async () => {
-            try {
-                if (authService.isAuthenticated()) {
-                    const currentUser = await authService.getCurrentUser();
-                    setUser(currentUser);
+        if (propUser) {
+            setUser(propUser);
+        } else {
+            const loadUser = async () => {
+                try {
+                    if (authService.isAuthenticated()) {
+                        const currentUser = await authService.getCurrentUser();
+                        setUser(currentUser);
+                    }
+                } catch (error) {
+                    console.error('Failed to load user:', error);
                 }
-            } catch (error) {
-                console.error('Failed to load user:', error);
-            }
-        };
-
-        loadUser();
-    }, []);
+            };
+            loadUser();
+        }
+    }, [propUser]);
 
     const handleLogout = () => {
-        authService.logout();
-        navigate('/login');
+        if (onLogout) {
+            onLogout();
+        } else {
+            authService.logout();
+            navigate('/login');
+        }
     };
 
     const isActive = (path) => {
@@ -34,9 +41,9 @@ const Header = () => {
     };
 
     const getNavButtonClass = (path) => {
-        return `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isActive(path)
-                ? 'bg-blue-500 text-white shadow-lg'
-                : 'bg-white/90 hover:bg-white text-gray-700 hover:text-gray-900 border border-gray-200 hover:border-gray-300'
+        return `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${isActive(path)
+            ? 'bg-blue-500 text-white shadow-lg'
+            : 'bg-white/90 hover:bg-white text-gray-700 hover:text-gray-900 border border-gray-200 hover:border-gray-300'
             }`;
     };
 
@@ -59,7 +66,7 @@ const Header = () => {
                     </div>
 
                     {/* Navigation */}
-                    <nav className="hidden md:flex items-center gap-2">
+                    <nav className="hidden lg:flex items-center gap-2">
                         <button
                             onClick={() => navigate('/dashboard')}
                             className={getNavButtonClass('/dashboard')}
@@ -77,6 +84,12 @@ const Header = () => {
                             className={getNavButtonClass('/calendar')}
                         >
                             📅 Calendar
+                        </button>
+                        <button
+                            onClick={() => navigate('/notes')}
+                            className={getNavButtonClass('/notes')}
+                        >
+                            📝 Notes
                         </button>
                     </nav>
 
@@ -99,21 +112,16 @@ const Header = () => {
                             </div>
                             <svg
                                 className={`w-4 h-4 text-gray-500 transition-transform ${showUserMenu ? 'rotate-180' : ''}`}
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
                             >
-                                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
 
-                        {/* Dropdown Menu */}
                         {showUserMenu && (
-                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                                <div className="px-4 py-2 border-b border-gray-100">
-                                    <div className="text-sm font-medium text-gray-900">{user?.name}</div>
-                                    <div className="text-xs text-gray-500">{user?.email}</div>
-                                </div>
-
+                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
                                 <button
                                     onClick={() => {
                                         setShowUserMenu(false);
@@ -127,15 +135,54 @@ const Header = () => {
                                 <button
                                     onClick={() => {
                                         setShowUserMenu(false);
-                                        // Add profile/settings functionality here
-                                        alert('Profile settings coming soon!');
+                                        navigate('/patients');
                                     }}
                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                                 >
-                                    ⚙️ Settings
+                                    👥 Patients
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        setShowUserMenu(false);
+                                        navigate('/calendar');
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                >
+                                    📅 Calendar
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        setShowUserMenu(false);
+                                        navigate('/notes');
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                >
+                                    📝 Clinical Notes
                                 </button>
 
                                 <div className="border-t border-gray-100 mt-2 pt-2">
+                                    <button
+                                        onClick={() => {
+                                            setShowUserMenu(false);
+                                            // Add profile navigation when ready
+                                        }}
+                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                    >
+                                        👤 Profile
+                                    </button>
+
+                                    <button
+                                        onClick={() => {
+                                            setShowUserMenu(false);
+                                            // Add settings navigation when ready
+                                        }}
+                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                    >
+                                        ⚙️ Settings
+                                    </button>
+
                                     <button
                                         onClick={() => {
                                             setShowUserMenu(false);
@@ -152,7 +199,7 @@ const Header = () => {
                 </div>
 
                 {/* Mobile Navigation */}
-                <nav className="md:hidden mt-4 flex items-center gap-2 overflow-x-auto pb-2">
+                <nav className="lg:hidden mt-4 flex items-center gap-2 overflow-x-auto pb-2">
                     <button
                         onClick={() => navigate('/dashboard')}
                         className={getNavButtonClass('/dashboard')}
@@ -170,6 +217,12 @@ const Header = () => {
                         className={getNavButtonClass('/calendar')}
                     >
                         📅 Calendar
+                    </button>
+                    <button
+                        onClick={() => navigate('/notes')}
+                        className={getNavButtonClass('/notes')}
+                    >
+                        📝 Notes
                     </button>
                 </nav>
             </div>
