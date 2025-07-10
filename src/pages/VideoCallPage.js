@@ -2,6 +2,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './VideoCallPage.css';
+import RecordingControls from '../components/RecordingControls';
+import '../components/RecordingControls.css';
+
 
 const VideoCallPage = ({ isPatient = false }) => {  // Added isPatient prop
     const { appointmentId } = useParams();
@@ -20,6 +23,7 @@ const VideoCallPage = ({ isPatient = false }) => {  // Added isPatient prop
     const [localAudioTrack, setLocalAudioTrack] = useState(null);
     const [localVideoTrack, setLocalVideoTrack] = useState(null);
     const [connectionLog, setConnectionLog] = useState([]);
+    const [roomSid, setRoomSid] = useState(null);
 
     // Refs for video elements
     const localVideoRef = useRef(null);
@@ -149,6 +153,10 @@ const VideoCallPage = ({ isPatient = false }) => {  // Added isPatient prop
             addToLog(`🎉 Successfully connected to room: ${connectedRoom.name}`);
             console.log('📹 Connected to room:', connectedRoom.name);
             console.log('👤 Local participant:', connectedRoom.localParticipant.identity);
+
+            // Save the room SID for recording
+            setRoomSid(connectedRoom.sid);
+            addToLog(`📝 Room SID saved: ${connectedRoom.sid}`);
 
             setRoom(connectedRoom);
             setCurrentScreen('in-call');
@@ -332,7 +340,14 @@ const VideoCallPage = ({ isPatient = false }) => {  // Added isPatient prop
     const endCall = () => {
         if (room) {
             addToLog('📞 Ending call...');
+
+            // Stop recording if active (the RecordingControls will handle this)
+            if (roomSid) {
+                addToLog('🎬 Recording cleanup will be handled by RecordingControls');
+            }
+
             room.disconnect();
+            setRoomSid(null); // Clear room SID
         } else {
             setCurrentScreen('ended');
         }
@@ -419,6 +434,13 @@ const VideoCallPage = ({ isPatient = false }) => {  // Added isPatient prop
                                     Copy
                                 </button>
                             </div>
+
+                            <button onClick={() => {
+                                setRoomSid('RM1234567890abcdef1234567890abcdef'); // Fake room SID
+                                setCurrentScreen('in-call');
+                            }}>
+                                Test Recording (Skip Video)
+                            </button>
                         </div>
                     )}
 
@@ -462,6 +484,16 @@ const VideoCallPage = ({ isPatient = false }) => {  // Added isPatient prop
                     </div>
                 )}
             </div>
+
+            {/* ADD RECORDING CONTROLS HERE */}
+            {roomSid && (
+                <RecordingControls
+                    appointmentId={appointmentId}
+                    roomSid={roomSid}
+                    onRecordingStart={handleRecordingStart}
+                    onRecordingStop={handleRecordingStop}
+                />
+            )}
 
             <div className="call-controls">
                 <button
@@ -527,6 +559,16 @@ const VideoCallPage = ({ isPatient = false }) => {  // Added isPatient prop
             </div>
         </div>
     );
+
+    const handleRecordingStart = (recording) => {
+        console.log('🎬 Recording started:', recording);
+        addToLog(`🎬 Recording started: ${recording.sid}`);
+    };
+
+    const handleRecordingStop = (recording) => {
+        console.log('⏹️ Recording stopped:', recording);
+        addToLog(`⏹️ Recording stopped: ${recording.sid}`);
+    };
 
     return (
         <div className="video-call-page">

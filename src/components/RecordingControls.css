@@ -1,0 +1,166 @@
+/* src/components/RecordingControls.css */
+
+.recording-controls {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 15px 0;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .recording-status {
+    margin-bottom: 15px;
+    min-height: 20px;
+  }
+  
+  .recording-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #e74c3c;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .recording-dot {
+    width: 12px;
+    height: 12px;
+    background: #e74c3c;
+    border-radius: 50%;
+  }
+  
+  .recording-dot.pulsing {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { 
+      opacity: 1; 
+      transform: scale(1); 
+    }
+    50% { 
+      opacity: 0.5; 
+      transform: scale(1.1); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: scale(1); 
+    }
+  }
+  
+  .recording-id {
+    font-size: 12px;
+    color: #666;
+    font-weight: normal;
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  
+  .recording-buttons {
+    margin: 15px 0;
+    text-align: center;
+  }
+  
+  .btn-start-recording,
+  .btn-stop-recording {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    min-width: 160px;
+  }
+  
+  .btn-start-recording {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+  }
+  
+  .btn-start-recording:hover:not(:disabled) {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+  }
+  
+  .btn-stop-recording {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    color: white;
+  }
+  
+  .btn-stop-recording:hover {
+    background: linear-gradient(135deg, #7f8c8d, #6c7b7d);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(149, 165, 166, 0.3);
+  }
+  
+  .btn-start-recording:disabled,
+  .btn-stop-recording:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .recording-error {
+    background: #ffe6e6;
+    color: #c0392b;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border-left: 4px solid #e74c3c;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+  }
+  
+  .error-close {
+    background: none;
+    border: none;
+    color: #c0392b;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0;
+    margin-left: 10px;
+  }
+  
+  .error-close:hover {
+    color: #a93226;
+  }
+  
+  .recording-info {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    text-align: center;
+  }
+  
+  .recording-info small {
+    color: #666;
+    font-size: 12px;
+  }
+  
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .recording-controls {
+      padding: 15px;
+      margin: 10px 0;
+    }
+    
+    .btn-start-recording,
+    .btn-stop-recording {
+      width: 100%;
+      padding: 14px;
+      font-size: 14px;
+    }
+    
+    .recording-indicator {
+      flex-direction: column;
+      gap: 5px;
+      text-align: center;
+    }
+  }
