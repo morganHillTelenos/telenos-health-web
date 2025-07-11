@@ -1,7 +1,7 @@
 // AWS Lambda Recording Service
 class AWSLambdaRecordingService {
     constructor() {
-        this.baseURL = process.env.REACT_APP_RECORDING_API_URL || 'https://your-api-gateway-url.com';
+        this.baseURL = process.env.REACT_APP_RECORDING_API_URL || 'https://h70cqz8rn9.execute-api.us-east-1.amazonaws.com/prod';
     }
 
     async startRecording({ roomSid, identity, appointmentId }) {
