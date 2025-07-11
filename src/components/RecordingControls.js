@@ -1,104 +1,105 @@
-// src/components/RecordingControls.js
 import React from 'react';
 import { useAWSRecording } from '../hooks/useAWSRecording';
 
-const RecordingControls = ({
-    appointmentId,
-    roomSid,
-    onRecordingStart,
-    onRecordingStop
-}) => {
+const RecordingControls = ({ room, identity, appointmentId, participants = [] }) => {
     const {
         isRecording,
-        recordingSid,
-        recordingStatus,
         error,
-        loading,
+        isLoading,
         startRecording,
-        stopRecording,
-        clearError
-    } = useAWSRecording(appointmentId, roomSid);
+        stopRecording
+    } = useAWSRecording();
 
     const handleStartRecording = async () => {
         try {
-            clearError();
-            const recording = await startRecording({
-                track: 'AudioVideoMixed',
-                format: 'webm',
-                mode: 'composed'
-            });
+            console.log('🎬 Handle start recording clicked');
+            console.log('Room object:', room);
+            console.log('Participants:', participants);
 
-            if (onRecordingStart) {
-                onRecordingStart(recording);
+            // Validate room
+            if (!room) {
+                alert('No room available. Please join the video call first.');
+                return;
             }
-        } catch (err) {
-            console.error('Recording start failed:', err);
+
+            if (!room.sid) {
+                alert('Room is not properly initialized. Please refresh and try again.');
+                return;
+            }
+
+            // Check participant count
+            if (participants.length < 2) {
+                alert(`Recording requires at least 2 participants. Currently: ${participants.length}`);
+                return;
+            }
+
+            await startRecording(room, identity, appointmentId);
+            console.log('✅ Recording started successfully');
+
+        } catch (error) {
+            console.error('❌ Failed to start recording:', error);
+            alert(`Failed to start recording: ${error.message}`);
         }
     };
 
     const handleStopRecording = async () => {
         try {
-            clearError();
-            const recording = await stopRecording();
+            console.log('🛑 Handle stop recording clicked');
+            await stopRecording(room);
+            console.log('✅ Recording stopped successfully');
 
-            if (onRecordingStop) {
-                onRecordingStop(recording);
-            }
-        } catch (err) {
-            console.error('Recording stop failed:', err);
+        } catch (error) {
+            console.error('❌ Failed to stop recording:', error);
+            alert(`Failed to stop recording: ${error.message}`);
         }
     };
 
+    const canRecord = room && room.sid && participants.length >= 2;
+
     return (
-        <div className="recording-controls">
-            {/* Recording Status Indicator */}
-            <div className="recording-status">
-                {isRecording && (
-                    <div className="recording-indicator">
-                        <span className="recording-dot pulsing"></span>
-                        <span>Recording ({recordingStatus})</span>
-                        {recordingSid && (
-                            <span className="recording-id">ID: {recordingSid.slice(-8)}</span>
-                        )}
-                    </div>
-                )}
-            </div>
-
-            {/* Recording Buttons */}
-            <div className="recording-buttons">
-                {!isRecording ? (
-                    <button
-                        onClick={handleStartRecording}
-                        disabled={!roomSid || !appointmentId || loading}
-                        className="btn-start-recording"
-                    >
-                        {loading ? '⏳' : '🔴'} Start Recording
-                    </button>
-                ) : (
-                    <button
-                        onClick={handleStopRecording}
-                        disabled={loading}
-                        className="btn-stop-recording"
-                    >
-                        {loading ? '⏳' : '⏹️'} Stop Recording
-                    </button>
-                )}
-            </div>
-
-            {/* Error Display */}
-            {error && (
-                <div className="recording-error">
-                    ❌ {error}
-                    <button onClick={clearError} className="error-close">✕</button>
-                </div>
+        <div style={{ margin: '10px 0' }}>
+            {!isRecording ? (
+                <button
+                    onClick={handleStartRecording}
+                    disabled={!canRecord || isLoading}
+                    style={{
+                        backgroundColor: canRecord ? '#ef4444' : '#6b7280',
+                        color: 'white',
+                        padding: '10px 20px',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: canRecord ? 'pointer' : 'not-allowed',
+                        opacity: canRecord ? 1 : 0.5
+                    }}
+                >
+                    {isLoading ? 'Starting...' : 'Start Recording'}
+                </button>
+            ) : (
+                <button
+                    onClick={handleStopRecording}
+                    disabled={isLoading}
+                    style={{
+                        backgroundColor: '#dc2626',
+                        color: 'white',
+                        padding: '10px 20px',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer'
+                    }}
+                >
+                    {isLoading ? 'Stopping...' : 'Stop Recording'}
+                </button>
             )}
 
-            {/* Info Display */}
-            {roomSid && (
-                <div className="recording-info">
-                    <small>Room: {roomSid.slice(-8)} | Appointment: {appointmentId}</small>
-                </div>
-            )}
+            {/* Status indicators */}
+            <div style={{ marginTop: '5px', fontSize: '12px', color: '#666' }}>
+                {!room && <p>⚠️ No room available</p>}
+                {room && !room.sid && <p>⚠️ Room not initialized</p>}
+                {room && room.sid && <p>✅ Room: {room.sid}</p>}
+                <p>Participants: {participants.length}/2 minimum</p>
+                {error && <p style={{ color: 'red' }}>❌ Error: {error}</p>}
+                {isRecording && <p style={{ color: 'green' }}>🔴 Recording in progress</p>}
+            </div>
         </div>
     );
 };

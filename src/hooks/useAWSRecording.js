@@ -1,92 +1,92 @@
-// src/hooks/useAWSRecording.js
 import { useState, useCallback } from 'react';
-import { awsLambdaRecordingService } from '../services/awsLambdaRecordingService';
+import awsLambdaRecordingService from '../services/awsLambdaRecordingService';
 
-export const useAWSRecording = (appointmentId, roomSid) => {
+export const useAWSRecording = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [recordingSid, setRecordingSid] = useState(null);
-    const [recordingStatus, setRecordingStatus] = useState(null);
+    const [compositionSid, setCompositionSid] = useState(null);
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const startRecording = useCallback(async (options = {}) => {
-        if (!roomSid || !appointmentId) {
-            throw new Error('Room SID and Appointment ID are required');
-        }
-
+    const startRecording = useCallback(async (room, identity, appointmentId) => {
         try {
+            setIsLoading(true);
             setError(null);
-            setLoading(true);
 
-            console.log('🎬 Starting recording...');
-            const recording = await awsLambdaRecordingService.startRecording(
-                roomSid,
-                appointmentId,
-                options
-            );
+            console.log('🎬 Starting recording with room:', room);
 
-            setRecordingSid(recording.sid);
-            setIsRecording(true);
-            setRecordingStatus('started');
+            // Validate room object
+            if (!room || !room.sid) {
+                throw new Error('Invalid room object - missing room.sid');
+            }
 
-            console.log('✅ Recording started successfully');
-            return recording;
+            const result = await awsLambdaRecordingService.startRecording({
+                roomSid: room.sid,
+                identity: identity,
+                appointmentId: appointmentId
+            });
+
+            if (result.success) {
+                setIsRecording(true);
+                setRecordingSid(result.recordingSid);
+                setCompositionSid(result.compositionSid);
+                console.log('✅ Recording started:', result);
+                return result;
+            } else {
+                throw new Error(result.error || 'Failed to start recording');
+            }
 
         } catch (err) {
-            console.error('❌ Failed to start recording:', err);
+            console.error('❌ Start recording error:', err);
             setError(err.message);
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    }, [roomSid, appointmentId]);
-
-    const stopRecording = useCallback(async () => {
-        if (!recordingSid) {
-            throw new Error('No active recording to stop');
-        }
-
-        try {
-            setError(null);
-            setLoading(true);
-
-            console.log('⏹️ Stopping recording...');
-            const recording = await awsLambdaRecordingService.stopRecording(recordingSid);
-
             setIsRecording(false);
-            setRecordingStatus('stopped');
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
-            console.log('✅ Recording stopped successfully');
-            return recording;
+    const stopRecording = useCallback(async (room) => {
+        try {
+            setIsLoading(true);
+            setError(null);
+
+            if (!recordingSid && !compositionSid) {
+                throw new Error('No active recording to stop');
+            }
+
+            const result = await awsLambdaRecordingService.stopRecording({
+                compositionSid: compositionSid,
+                recordingSid: recordingSid,
+                roomSid: room?.sid
+            });
+
+            if (result.success) {
+                setIsRecording(false);
+                setRecordingSid(null);
+                setCompositionSid(null);
+                console.log('✅ Recording stopped:', result);
+                return result;
+            } else {
+                throw new Error(result.error || 'Failed to stop recording');
+            }
 
         } catch (err) {
-            console.error('❌ Failed to stop recording:', err);
+            console.error('❌ Stop recording error:', err);
             setError(err.message);
             throw err;
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
-    }, [recordingSid]);
-
-    const getRecordingInfo = useCallback(() => {
-        if (!recordingSid) return null;
-        return awsLambdaRecordingService.getActiveRecording(recordingSid);
-    }, [recordingSid]);
+    }, [recordingSid, compositionSid]);
 
     return {
-        // Recording state
         isRecording,
         recordingSid,
-        recordingStatus,
+        compositionSid,
         error,
-        loading,
-
-        // Recording actions
+        isLoading,
         startRecording,
-        stopRecording,
-        getRecordingInfo,
-
-        // Utility functions
-        clearError: () => setError(null)
+        stopRecording
     };
 };

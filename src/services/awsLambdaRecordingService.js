@@ -1,113 +1,100 @@
-// src/services/awsLambdaRecordingService.js
-import { getCurrentUser } from 'aws-amplify/auth';
-
-export class AWSLambdaRecordingService {
+// AWS Lambda Recording Service
+class AWSLambdaRecordingService {
     constructor() {
-        // Replace with YOUR API Gateway URL from AWS Console
-        this.apiBaseUrl = 'https://h70cqz8rn9.execute-api.us-east-1.amazonaws.com/prod';
-        this.activeRecordings = new Map();
+        this.baseURL = process.env.REACT_APP_RECORDING_API_URL || 'https://your-api-gateway-url.com';
     }
 
-    async startRecording(roomSid, appointmentId, options = {}) {
+    async startRecording({ roomSid, identity, appointmentId }) {
         try {
-            console.log('🎬 Starting recording via AWS Lambda...');
+            console.log('🎬 Starting recording with:', { roomSid, identity, appointmentId });
 
-            const response = await fetch(`${this.apiBaseUrl}/recording/start`, {
+            // Validate required parameters
+            if (!roomSid) {
+                throw new Error('roomSid is required for recording');
+            }
+
+            const response = await fetch(`${this.baseURL}/recording/start`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    roomSid,
-                    appointmentId,
-                    options: {
-                        track: options.track || 'AudioVideoMixed',
-                        format: options.format || 'webm',
-                        mode: options.mode || 'composed',
-                        ...options
-                    }
+                    roomSid: roomSid,
+                    identity: identity || 'unknown-user',
+                    appointmentId: appointmentId || 'unknown-appointment'
+                })
+            });
+
+            console.log('Recording start response status:', response.status);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Recording start failed:', errorText);
+                throw new Error(`Recording start failed: ${response.status} - ${errorText}`);
+            }
+
+            const result = await response.json();
+            console.log('✅ Recording started successfully:', result);
+
+            return {
+                success: true,
+                compositionSid: result.compositionSid,
+                recordingSid: result.recordingSid,
+                status: result.status,
+                roomSid: result.roomSid
+            };
+
+        } catch (error) {
+            console.error('❌ Recording start error:', error);
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
+
+    async stopRecording({ compositionSid, recordingSid, roomSid }) {
+        try {
+            console.log('🛑 Stopping recording:', { compositionSid, recordingSid, roomSid });
+
+            if (!compositionSid && !recordingSid) {
+                throw new Error('Either compositionSid or recordingSid is required');
+            }
+
+            const response = await fetch(`${this.baseURL}/recording/stop`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    compositionSid: compositionSid,
+                    recordingSid: recordingSid,
+                    roomSid: roomSid
                 })
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to start recording');
+                const errorText = await response.text();
+                console.error('Recording stop failed:', errorText);
+                throw new Error(`Recording stop failed: ${response.status} - ${errorText}`);
             }
 
             const result = await response.json();
+            console.log('✅ Recording stopped successfully:', result);
 
-            // Store locally for state management
-            this.activeRecordings.set(result.recording.sid, {
-                recordingSid: result.recording.sid,
-                roomSid,
-                appointmentId,
-                status: 'started',
-                startTime: new Date().toISOString(),
-                ...options
-            });
-
-            console.log('✅ Recording started:', result.recording.sid);
-            return result.recording;
+            return {
+                success: true,
+                ...result
+            };
 
         } catch (error) {
-            console.error('❌ Error starting recording:', error);
-            throw error;
+            console.error('❌ Recording stop error:', error);
+            return {
+                success: false,
+                error: error.message
+            };
         }
-    }
-
-    async stopRecording(recordingSid) {
-        try {
-            console.log('⏹️ Stopping recording via AWS Lambda...');
-
-            const response = await fetch(`${this.apiBaseUrl}/recording/stop`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ recordingSid })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to stop recording');
-            }
-
-            const result = await response.json();
-
-            // Update local storage
-            const recording = this.activeRecordings.get(recordingSid);
-            if (recording) {
-                recording.status = 'stopped';
-                recording.endTime = new Date().toISOString();
-            }
-
-            console.log('✅ Recording stopped:', recordingSid);
-            return result.recording;
-
-        } catch (error) {
-            console.error('❌ Error stopping recording:', error);
-            throw error;
-        }
-    }
-
-    async getRecordingStatus(recordingSid) {
-        // For now, return local status
-        // Later you could add an API endpoint to check Twilio status
-        const recording = this.activeRecordings.get(recordingSid);
-        return recording ? recording.status : 'unknown';
-    }
-
-    getActiveRecording(recordingSid) {
-        return this.activeRecordings.get(recordingSid);
-    }
-
-    getAllActiveRecordings() {
-        return Array.from(this.activeRecordings.values());
-    }
-
-    clearRecordingData(recordingSid) {
-        this.activeRecordings.delete(recordingSid);
     }
 }
 
-export const awsLambdaRecordingService = new AWSLambdaRecordingService();
+export default new AWSLambdaRecordingService();
