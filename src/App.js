@@ -10,7 +10,6 @@ import PatientsPage from './pages/PatientsPage';
 import NewPatientForm from './pages/NewPatientForm';
 import CalendarPage from './pages/CalendarPage';
 import VideoCallPage from './pages/VideoCallPage';
-import ProviderNotesPage from './pages/ProviderNotesPage'; // New import
 import Header from './components/Header';
 import NewAppointmentPage from './pages/NewAppointmentPage';
 import NotesPage from './pages/NotesPage';
@@ -76,10 +75,7 @@ const NewAppointmentWrapper = () => {
   );
 };
 
-// Provider Notes Wrapper
-const ProviderNotesWrapper = () => {
-  return <ProviderNotesPage />;
-};
+
 
 // Loading Spinner Component
 const LoadingSpinner = () => (
