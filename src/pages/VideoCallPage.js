@@ -557,7 +557,7 @@ const VideoCallPage = ({ isPatient = false }) => {
             <div className="call-ended-content">
                 <div className="call-ended-icon">✅</div>
                 <h2>Call Ended</h2>
-                <p>The video consultation has ended. Thank you for using TelenosHealth.</p>
+                <p>The video consultation has ended. Thank you for using Promind Psychiatry.</p>
                 <button onClick={() => navigate('/dashboard')} className="back-btn">
                     Return to Dashboard
                 </button>

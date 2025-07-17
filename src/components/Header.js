@@ -60,7 +60,7 @@ const Header = ({ user: propUser, onLogout }) => {
                             T
                         </div>
                         <div>
-                            <h1 className="text-xl font-bold text-gray-900">TelenosHealth</h1>
+                            <h1 className="text-xl font-bold text-gray-900">Promind Psychiatry</h1>
                             <p className="text-xs text-gray-500">Healthcare Platform</p>
                         </div>
                     </div>

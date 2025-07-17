@@ -122,7 +122,7 @@ const LoginPage = ({ onLogin }) => {
             <div className="login-container">
                 <div className="login-card">
                     <div className="login-header">
-                        <h1>TelenosHealth</h1>
+                        <h1>Promind Psychiatry</h1>
                         <h2>Confirm Your Email</h2>
                         <p>We sent a verification code to {userEmail}</p>
                     </div>
@@ -168,7 +168,7 @@ const LoginPage = ({ onLogin }) => {
         <div className="login-container">
             <div className="login-card">
                 <div className="login-header">
-                    <h1>TelenosHealth</h1>
+                    <h1>Promind Psychiatry</h1>
                     <h2>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
                     <p>{isLogin ?
                         'Sign in to access your healthcare dashboard' :

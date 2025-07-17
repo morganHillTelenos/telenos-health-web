@@ -1,4 +1,4 @@
-# TelenosHealth Web Application
+# Promind Psychiatry Web Application
 
 A modern, HIPAA-compliant healthcare platform built with React, featuring patient management, appointment scheduling, and secure video consultations.
 
