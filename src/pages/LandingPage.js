@@ -1,263 +1,220 @@
-// src/pages/LandingPage.js
-import React, { useEffect } from 'react';
+// src/pages/LandingPage.js - Tempus-inspired design
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 
 const LandingPage = () => {
     const navigate = useNavigate();
+    const [currentTime, setCurrentTime] = useState(new Date());
 
-    useEffect(() => {
-        // Smooth scrolling for navigation links
-        const handleSmoothScroll = (e) => {
-            if (e.target.getAttribute('href')?.startsWith('#')) {
-                e.preventDefault();
-                const target = document.querySelector(e.target.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            }
-        };
+    // Update time every second
+    React.useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
 
-        // Animate elements on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // Observe all fade-in elements
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
-
-        // Add event listeners
-        document.addEventListener('click', handleSmoothScroll);
-
-        // Add dynamic background animation
-        const animationInterval = setInterval(() => {
-            const neural = document.querySelector('.neural-network');
-            if (neural) {
-                neural.style.backgroundPosition = `${Math.random() * 100}px ${Math.random() * 100}px`;
-            }
-        }, 3000);
-
-        // Cleanup
-        return () => {
-            document.removeEventListener('click', handleSmoothScroll);
-            clearInterval(animationInterval);
-            observer.disconnect();
-        };
+        return () => clearInterval(timer);
     }, []);
 
     const handleLogin = () => {
         navigate('/login');
     };
 
-    const handleSignUp = () => {
-        navigate('/signup');
+    const handleLearnMore = () => {
+        // Scroll to features section
+        document.getElementById('features')?.scrollIntoView({
+            behavior: 'smooth'
+        });
     };
 
     return (
         <div className="landing-page">
+            {/* Header */}
+            <header className="tempus-header">
+                <nav className="nav-container">
+                    <div className="tempus-logo">TelenosHealth</div>
+                    <ul className="nav-links">
+                        <li><a href="#features" className="nav-link">Providers</a></li>
+                        <li><a href="#partnerships" className="nav-link">Life Sciences</a></li>
+                        <li><a href="#about" className="nav-link">Patients</a></li>
+                        <li><a href="#resources" className="nav-link">Resources</a></li>
+                    </ul>
+                    <button className="cta-button" onClick={handleLogin}>
+                        Get Started
+                    </button>
+                </nav>
+            </header>
+
             {/* Hero Section */}
-            <section className="hero-section">
-                <div className="hero-background"></div>
-                <div className="neural-network"></div>
-
+            <section className="tempus-hero">
+                <div className="hero-overlay"></div>
                 <div className="hero-content">
-                    <div className="hero-logo">
-                        <div className="logo-container">
-                            <span className="logo-icon">🧠</span>
-                        </div>
-                    </div>
-
                     <h1 className="hero-title">
-                        <span className="brand-gradient">Promind Precision Psychiatry:</span><br />
-                        Engineering the Future of Mental Health
+                        AI-enabled precision medicine
                     </h1>
-
-                    <p className="tagline">Beyond the Snapshot. Continuous Optimization for the Human Mind.</p>
-
                     <p className="hero-subtitle">
-                        Promind Precision Psychiatry is committed to elevating mental health care through a relentless pursuit of objective understanding and continuous innovation. We integrate a holistic view of the individual with persistent, evolving care, moving beyond episodic treatment.
+                        Advancing data-driven precision medicine with the practical application of AI in healthcare.
+                        Unlock the power of intelligent diagnostics through multimodal data.
                     </p>
 
                     <div className="hero-actions">
-                        <a href="#philosophy" className="btn-primary">Explore Our Vision</a>
-                        <a href="#beta" className="btn-secondary">Learn More About Beta</a>
-                        <button onClick={handleLogin} className="btn-secondary">Login</button>
-                        <button onClick={handleSignUp} className="btn-primary">Sign Up</button>
+                        <button className="primary-button" onClick={handleLogin}>
+                            Enter Platform
+                        </button>
+                        <button className="secondary-button" onClick={handleLearnMore}>
+                            Learn More
+                        </button>
                     </div>
 
-                    <div className="beta-tease">
-                        🚀 Pioneering new frontiers. Ask about joining the Beta for an undisclosed mental health technology product.
-                    </div>
-                </div>
-            </section>
-
-            {/* Philosophy Section */}
-            <section id="philosophy" className="section philosophy-section">
-                <div className="section-container">
-                    <h2 className="section-title">The Algorithmic Advantage</h2>
-                    <p className="section-subtitle">Precision. Prediction. Progress.</p>
-
-                    <div className="differentiators-grid">
-                        <div className="differentiator-card fade-in">
-                            <div className="card-icon">📊</div>
-                            <h3 className="card-title">Objective Insights</h3>
-                            <p className="card-description">
-                                We rely on data and objective information to inform diagnosis and treatment, moving past subjective interpretations toward evidence-based precision.
-                            </p>
-                            <p className="card-tagline">"Deconstructing complexity to reveal truth."</p>
+                    <div className="hero-stats">
+                        <div className="stat">
+                            <span className="stat-number">50%+</span>
+                            <span className="stat-label">Oncologists Connected</span>
                         </div>
-
-                        <div className="differentiator-card fade-in">
-                            <div className="card-icon">🔄</div>
-                            <h3 className="card-title">Holistic Integration</h3>
-                            <p className="card-description">
-                                Understanding the patient as a complex system, where problems are interconnected and require a comprehensive approach to achieve lasting wellness.
-                            </p>
-                            <p className="card-tagline">"The mind as a dynamic ecosystem. Engineered for equilibrium."</p>
+                        <div className="stat">
+                            <span className="stat-number">95%</span>
+                            <span className="stat-label">Top 20 Pharma Partners</span>
                         </div>
-
-                        <div className="differentiator-card fade-in">
-                            <div className="card-icon">⚡</div>
-                            <h3 className="card-title">Continuous Evolution</h3>
-                            <p className="card-description">
-                                Care is not confined to appointments but is an ongoing process of analysis, refinement, and adaptation that evolves with your needs.
-                            </p>
-                            <p className="card-tagline">"Beyond the confines of the clinic. Persistent optimization."</p>
-                        </div>
-
-                        <div className="differentiator-card fade-in">
-                            <div className="card-icon">🤖</div>
-                            <h3 className="card-title">Computational Psychiatry</h3>
-                            <p className="card-description">
-                                Pioneering the integration of computational psychiatry to achieve unparalleled outcomes through advanced algorithms and data science.
-                            </p>
-                            <p className="card-tagline">"Leveraging the power of computation to unlock state-of-the-art mental health."</p>
+                        <div className="stat">
+                            <span className="stat-number">2,000+</span>
+                            <span className="stat-label">Healthcare Institutions</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Promind Difference Section */}
-            <section id="difference" className="section difference-section">
+            {/* Features Section */}
+            <section id="features" className="features-section">
                 <div className="section-container">
-                    <h2 className="section-title">Unlocking Human Potential</h2>
-                    <p className="section-subtitle">Accelerating Mental Wellness.</p>
-
-                    <div className="offerings-grid">
-                        <div className="offering-item">
-                            <h3 className="offering-title">Personalized Mental Architecture</h3>
-                            <p>Tailored frameworks designed for your unique cognitive landscape</p>
-                        </div>
-
-                        <div className="offering-item">
-                            <h3 className="offering-title">Proactive Intervention Strategies</h3>
-                            <p>Anticipating and preventing mental health challenges before they escalate</p>
-                        </div>
-
-                        <div className="offering-item">
-                            <h3 className="offering-title">Optimized Treatment Trajectories</h3>
-                            <p>Data-driven pathways that adapt and evolve with your progress</p>
-                        </div>
-
-                        <div className="offering-item">
-                            <h3 className="offering-title">Sustainable Well-being Solutions</h3>
-                            <p>Long-term strategies for maintaining optimal mental health</p>
-                        </div>
-                    </div>
-
-                    <div className="why-choose">
-                        <h3>Why Choose Promind</h3>
-                        <div className="benefits-list">
-                            <div className="benefit-item">Cutting-edge Approach</div>
-                            <div className="benefit-item">Superior Outcomes</div>
-                            <div className="benefit-item">Forward-thinking Methodology</div>
-                            <div className="benefit-item">Continuous Innovation</div>
-                        </div>
-                        <p className="evolution-tagline">"Join the vanguard of mental evolution."</p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Beta Program Section */}
-            <section id="beta" className="section beta-section">
-                <div className="section-container">
-                    <h2 className="section-title">The Next Frontier</h2>
-                    <p className="section-subtitle">Igniting Innovation. Participate in the Future.</p>
-
-                    <p className="beta-description">
-                        A unique opportunity to contribute to the advancement of mental health technology. Join an exclusive community shaping the future of psychiatric care through groundbreaking innovation.
+                    <h2 className="section-title">Intelligent Diagnostics Platform</h2>
+                    <p className="section-subtitle">
+                        Our AI-powered platform transforms healthcare data into actionable insights for precision medicine
                     </p>
 
-                    <div className="beta-promise">
-                        <p><strong>Be at the forefront of undisclosed innovation.</strong></p>
-                        <p>Shape the future of mental health while experiencing cutting-edge treatments and technologies before they become widely available.</p>
-                    </div>
+                    <div className="features-grid">
+                        <div className="feature-card">
+                            <span className="feature-icon">🧬</span>
+                            <h3 className="feature-title">Genomic Sequencing</h3>
+                            <p className="feature-description">
+                                Comprehensive DNA and RNA sequencing with tumor-normal matched profiling
+                                to identify actionable oncologic targets and personalized treatment options.
+                            </p>
+                        </div>
 
-                    <div className="hero-actions">
-                        <a href="#beta" className="btn-primary">Learn More About Beta Program</a>
-                        <a href="mailto:contact@promindpsychiatry.com" className="btn-secondary">Express Interest</a>
+                        <div className="feature-card">
+                            <span className="feature-icon">🤖</span>
+                            <h3 className="feature-title">AI-Powered Analytics</h3>
+                            <p className="feature-description">
+                                Advanced machine learning algorithms analyze multimodal clinical and molecular
+                                data to provide real-time, data-driven treatment recommendations.
+                            </p>
+                        </div>
+
+                        <div className="feature-card">
+                            <span className="feature-icon">📊</span>
+                            <h3 className="feature-title">Clinical Data Platform</h3>
+                            <p className="feature-description">
+                                World's largest library of clinical and molecular data with 450+ unique
+                                data connections across healthcare institutions worldwide.
+                            </p>
+                        </div>
+
+                        <div className="feature-card">
+                            <span className="feature-icon">🔬</span>
+                            <h3 className="feature-title">Liquid Biopsy</h3>
+                            <p className="feature-description">
+                                Non-invasive blood-based testing to detect circulating tumor DNA and
+                                monitor treatment response in real-time for advanced solid tumors.
+                            </p>
+                        </div>
+
+                        <div className="feature-card">
+                            <span className="feature-icon">🏥</span>
+                            <h3 className="feature-title">Clinical Trial Matching</h3>
+                            <p className="feature-description">
+                                AI-enabled matching platform connects patients with relevant clinical
+                                trials based on molecular biomarkers and clinical characteristics.
+                            </p>
+                        </div>
+
+                        <div className="feature-card">
+                            <span className="feature-icon">⚡</span>
+                            <h3 className="feature-title">Real-Time Insights</h3>
+                            <p className="feature-description">
+                                Instant access to patient information, test results, and treatment
+                                recommendations through our AI-enabled assistant platform.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Partnerships Section */}
+            <section id="partnerships" className="partnerships-section">
+                <div className="section-container">
+                    <h2 className="partnership-title">Trusted by Leading Organizations</h2>
+                    <p className="partnership-subtitle">
+                        Collaborating with top pharmaceutical companies and healthcare institutions
+                        to advance precision medicine research and patient care
+                    </p>
+
+                    <div className="partner-logos">
+                        <div className="partner-logo">BioNTech</div>
+                        <div className="partner-logo">AstraZeneca</div>
+                        <div className="partner-logo">Pfizer</div>
+                        <div className="partner-logo">GSK</div>
+                        <div className="partner-logo">Northwestern</div>
                     </div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="footer">
+            <footer className="footer-section">
                 <div className="section-container">
                     <div className="footer-content">
-                        <div className="footer-section">
-                            <h4>Promind Precision Psychiatry</h4>
-                            <p>Engineering the future of mental health through precision, innovation, and continuous optimization.</p>
+                        <div className="footer-section-item">
+                            <h4 className="footer-title">Providers</h4>
+                            <div className="footer-links">
+                                <a href="#" className="footer-link">Oncology</a>
+                                <a href="#" className="footer-link">Cardiology</a>
+                                <a href="#" className="footer-link">Neurology</a>
+                                <a href="#" className="footer-link">Radiology</a>
+                            </div>
                         </div>
 
-                        <div className="footer-section">
-                            <h4>Services</h4>
-                            <ul className="footer-links">
-                                <li><a href="#philosophy">Precision Psychiatry</a></li>
-                                <li><a href="#beta">Beta Program</a></li>
-                                <li><a href="#difference">Treatment Optimization</a></li>
-                                <li><a href="mailto:contact@promindpsychiatry.com">Consultation</a></li>
-                            </ul>
+                        <div className="footer-section-item">
+                            <h4 className="footer-title">Life Sciences</h4>
+                            <div className="footer-links">
+                                <a href="#" className="footer-link">Research</a>
+                                <a href="#" className="footer-link">Clinical Development</a>
+                                <a href="#" className="footer-link">Commercialization</a>
+                                <a href="#" className="footer-link">Partnerships</a>
+                            </div>
                         </div>
 
-                        <div className="footer-section">
-                            <h4>Innovation</h4>
-                            <ul className="footer-links">
-                                <li><a href="#beta">Beta Technology</a></li>
-                                <li><a href="#philosophy">Computational Psychiatry</a></li>
-                                <li><a href="#difference">Continuous Care</a></li>
-                                <li><a href="mailto:contact@promindpsychiatry.com">Research Participation</a></li>
-                            </ul>
+                        <div className="footer-section-item">
+                            <h4 className="footer-title">Resources</h4>
+                            <div className="footer-links">
+                                <a href="#" className="footer-link">Research Publications</a>
+                                <a href="#" className="footer-link">Webinars</a>
+                                <a href="#" className="footer-link">Case Studies</a>
+                                <a href="#" className="footer-link">Documentation</a>
+                            </div>
                         </div>
 
-                        <div className="footer-section">
-                            <h4>Legal & Compliance</h4>
-                            <ul className="footer-links">
-                                <li><a href="#privacy">Privacy Policy</a></li>
-                                <li><a href="#terms">Terms of Service</a></li>
-                                <li><a href="#disclaimer">Medical Disclaimer</a></li>
-                                <li><a href="#compliance">HIPAA Compliance</a></li>
-                            </ul>
+                        <div className="footer-section-item">
+                            <h4 className="footer-title">Company</h4>
+                            <div className="footer-links">
+                                <a href="#" className="footer-link">About Us</a>
+                                <a href="#" className="footer-link">Careers</a>
+                                <a href="#" className="footer-link">Investors</a>
+                                <a href="#" className="footer-link">Contact</a>
+                            </div>
                         </div>
                     </div>
 
                     <div className="footer-bottom">
-                        <p>&copy; 2025 Promind Precision Psychiatry. All rights reserved.</p>
-                        <p>Promind Precision Psychiatry is a medical practice committed to advancing mental healthcare through innovation and precision.</p>
+                        <p>&copy; 2025 TelenosHealth. All rights reserved. | AI-enabled precision medicine platform</p>
                     </div>
                 </div>
             </footer>

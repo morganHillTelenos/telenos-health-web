@@ -1,8 +1,8 @@
-// src/services/api.js - Real AWS GraphQL Implementation
+// src/services/api.js - Real AWS GraphQL Implementation with Notes
 import { generateClient } from 'aws-amplify/api';
 import { authService } from './auth';
 
-// GraphQL queries and mutations
+// Patient GraphQL queries and mutations
 const createPatientMutation = `
   mutation CreatePatient($input: CreatePatientInput!) {
     createPatient(input: $input) {
@@ -70,6 +70,105 @@ const deletePatientMutation = `
   }
 `;
 
+// Notes GraphQL queries and mutations
+const createNoteMutation = `
+  mutation CreateNote($input: CreateNoteInput!) {
+    createNote(input: $input) {
+      id
+      title
+      content
+      patientId
+      appointmentId
+      category
+      priority
+      isPrivate
+      tags
+      owner
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const listNotesQuery = `
+  query ListNotes($filter: ModelNoteFilterInput, $limit: Int, $nextToken: String) {
+    listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        title
+        content
+        patientId
+        appointmentId
+        category
+        priority
+        isPrivate
+        tags
+        owner
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+
+const getNoteQuery = `
+  query GetNote($id: ID!) {
+    getNote(id: $id) {
+      id
+      title
+      content
+      patientId
+      appointmentId
+      category
+      priority
+      isPrivate
+      tags
+      owner
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const updateNoteMutation = `
+  mutation UpdateNote($input: UpdateNoteInput!) {
+    updateNote(input: $input) {
+      id
+      title
+      content
+      patientId
+      appointmentId
+      category
+      priority
+      isPrivate
+      tags
+      owner
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const deleteNoteMutation = `
+  mutation DeleteNote($input: DeleteNoteInput!) {
+    deleteNote(input: $input) {
+      id
+      title
+      content
+      patientId
+      appointmentId
+      category
+      priority
+      isPrivate
+      tags
+      owner
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 class ApiService {
     constructor() {
         this.client = null;
@@ -95,6 +194,8 @@ class ApiService {
             await this.initialize();
         }
     }
+
+    // ========== PATIENT METHODS ==========
 
     async createPatient(patientData) {
         try {
@@ -316,17 +417,267 @@ class ApiService {
         }
     }
 
+    // ========== NOTES METHODS ==========
+
+    async createNote(noteData) {
+        try {
+            await this.ensureInitialized();
+
+            console.log('📝 Creating note with AWS GraphQL:', noteData);
+
+            // Validate required fields
+            if (!noteData.title || !noteData.content) {
+                throw new Error('Missing required fields: title, content');
+            }
+
+            const input = {
+                title: noteData.title.trim(),
+                content: noteData.content.trim(),
+                patientId: noteData.patientId || null,
+                appointmentId: noteData.appointmentId || null,
+                category: noteData.category || 'general',
+                priority: noteData.priority || 'medium',
+                isPrivate: noteData.isPrivate || false,
+                tags: noteData.tags || []
+            };
+
+            const result = await this.client.graphql({
+                query: createNoteMutation,
+                variables: { input }
+            });
+
+            console.log('✅ Note created successfully:', result.data.createNote);
+
+            return {
+                success: true,
+                data: result.data.createNote
+            };
+
+        } catch (error) {
+            console.error('❌ Failed to create note:', error);
+
+            if (error.errors && error.errors.length > 0) {
+                throw new Error(error.errors[0].message);
+            }
+
+            throw new Error('Failed to create note: ' + error.message);
+        }
+    }
+
+    async getNotes(filters = {}) {
+        try {
+            await this.ensureInitialized();
+
+            console.log('📖 Fetching notes from AWS GraphQL with filters:', filters);
+
+            // Build filter object
+            let filter = {};
+
+            if (filters.patientId) {
+                filter.patientId = { eq: filters.patientId };
+            }
+
+            if (filters.appointmentId) {
+                filter.appointmentId = { eq: filters.appointmentId };
+            }
+
+            if (filters.category) {
+                filter.category = { eq: filters.category };
+            }
+
+            if (filters.priority) {
+                filter.priority = { eq: filters.priority };
+            }
+
+            if (filters.searchTerm) {
+                filter.or = [
+                    { title: { contains: filters.searchTerm } },
+                    { content: { contains: filters.searchTerm } }
+                ];
+            }
+
+            const result = await this.client.graphql({
+                query: listNotesQuery,
+                variables: {
+                    filter: Object.keys(filter).length > 0 ? filter : null,
+                    limit: filters.limit || 50
+                }
+            });
+
+            console.log('✅ Notes fetched successfully:', result.data.listNotes.items.length, 'items');
+
+            return {
+                success: true,
+                data: result.data.listNotes.items,
+                nextToken: result.data.listNotes.nextToken
+            };
+
+        } catch (error) {
+            console.error('❌ Failed to fetch notes:', error);
+
+            if (error.errors && error.errors.length > 0) {
+                throw new Error(error.errors[0].message);
+            }
+
+            throw new Error('Failed to fetch notes: ' + error.message);
+        }
+    }
+
+    async getNote(noteId) {
+        try {
+            await this.ensureInitialized();
+
+            console.log('📖 Fetching note from AWS GraphQL:', noteId);
+
+            const result = await this.client.graphql({
+                query: getNoteQuery,
+                variables: { id: noteId }
+            });
+
+            if (!result.data.getNote) {
+                throw new Error('Note not found');
+            }
+
+            console.log('✅ Note fetched successfully:', result.data.getNote.title);
+
+            return {
+                success: true,
+                data: result.data.getNote
+            };
+
+        } catch (error) {
+            console.error('❌ Failed to fetch note:', error);
+
+            if (error.errors && error.errors.length > 0) {
+                throw new Error(error.errors[0].message);
+            }
+
+            throw new Error('Failed to fetch note: ' + error.message);
+        }
+    }
+
+    async updateNote(noteId, updateData) {
+        try {
+            await this.ensureInitialized();
+
+            console.log('📝 Updating note with AWS GraphQL:', noteId, updateData);
+
+            const input = {
+                id: noteId,
+                ...updateData
+            };
+
+            const result = await this.client.graphql({
+                query: updateNoteMutation,
+                variables: { input }
+            });
+
+            console.log('✅ Note updated successfully:', result.data.updateNote);
+
+            return {
+                success: true,
+                data: result.data.updateNote
+            };
+
+        } catch (error) {
+            console.error('❌ Failed to update note:', error);
+
+            if (error.errors && error.errors.length > 0) {
+                throw new Error(error.errors[0].message);
+            }
+
+            throw new Error('Failed to update note: ' + error.message);
+        }
+    }
+
+    async deleteNote(noteId) {
+        try {
+            await this.ensureInitialized();
+
+            console.log('🗑️ Deleting note from AWS GraphQL:', noteId);
+
+            const input = { id: noteId };
+
+            const result = await this.client.graphql({
+                query: deleteNoteMutation,
+                variables: { input }
+            });
+
+            console.log('✅ Note deleted successfully:', noteId);
+
+            return {
+                success: true,
+                data: result.data.deleteNote
+            };
+
+        } catch (error) {
+            console.error('❌ Failed to delete note:', error);
+
+            if (error.errors && error.errors.length > 0) {
+                throw new Error(error.errors[0].message);
+            }
+
+            throw new Error('Failed to delete note: ' + error.message);
+        }
+    }
+
+    // Helper methods for notes
+    async getNotesByPatient(patientId) {
+        return this.getNotes({ patientId });
+    }
+
+    async getNotesByAppointment(appointmentId) {
+        return this.getNotes({ appointmentId });
+    }
+
+    async searchNotes(searchTerm) {
+        return this.getNotes({ searchTerm });
+    }
+
+    // Get recent notes (last 7 days)
+    async getRecentNotes() {
+        try {
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+            const filter = {
+                createdAt: {
+                    gt: sevenDaysAgo.toISOString()
+                }
+            };
+
+            const result = await this.client.graphql({
+                query: listNotesQuery,
+                variables: { filter, limit: 10 }
+            });
+
+            return {
+                success: true,
+                data: result.data.listNotes.items
+            };
+
+        } catch (error) {
+            console.error('❌ Failed to get recent notes:', error);
+            throw new Error('Failed to get recent notes: ' + error.message);
+        }
+    }
+
+    // ========== SHARED METHODS ==========
+
     // Health check
     async healthCheck() {
         try {
             await this.ensureInitialized();
 
             // Try a simple query to check if the service is working
-            const result = await this.getPatients({ limit: 1 });
+            const patientsResult = await this.getPatients({ limit: 1 });
+            const notesResult = await this.getNotes({ limit: 1 });
 
             return {
                 status: 'healthy',
                 message: 'AWS GraphQL API is working',
+                patients: patientsResult.success,
+                notes: notesResult.success,
                 timestamp: new Date().toISOString()
             };
 
@@ -342,5 +693,9 @@ class ApiService {
 
 // Create and export singleton instance
 export const apiService = new ApiService();
+
+// For backwards compatibility and easier imports
+export const notesAPI = apiService;
+export const patientsAPI = apiService;
 
 export default apiService;

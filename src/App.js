@@ -13,6 +13,7 @@ import VideoCallPage from './pages/VideoCallPage';
 import ProviderNotesPage from './pages/ProviderNotesPage'; // New import
 import Header from './components/Header';
 import NewAppointmentPage from './pages/NewAppointmentPage';
+import NotesPage from './pages/NotesPage';
 
 // Import services
 import { authService } from './services/auth';
@@ -396,7 +397,7 @@ const App = () => {
           <Route path="/patients/:id" element={<ProtectedRoute><PatientDetailWrapper /></ProtectedRoute>} />
           <Route path="/appointments/new" element={<ProtectedRoute><NewAppointmentWrapper /></ProtectedRoute>} />
           <Route path="/calendar" element={<ProtectedRoute><CalendarWrapper /></ProtectedRoute>} />
-          <Route path="/notes" element={<ProtectedRoute><ProviderNotesWrapper /></ProtectedRoute>} />
+          <Route path="/notes" element={<ProtectedRoute><NotesPage /></ProtectedRoute>} />
 
           {/* Video Call Routes */}
           <Route path="/video-call/start/:appointmentId" element={<ProtectedRoute><VideoCallWrapper /></ProtectedRoute>} />

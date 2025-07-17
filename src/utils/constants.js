@@ -9,6 +9,9 @@ export const ROUTES = {
     NEW_APPOINTMENT: '/appointments/new',
     APPOINTMENT_DETAIL: '/appointment/:id',
     VIDEO_CALL: '/video-call/:appointmentId',
+    NOTES: '/notes',
+    NEW_NOTE: '/notes/new',
+    NOTE_DETAIL: '/notes/:id',
 };
 
 export const COLORS = {
@@ -83,4 +86,4 @@ export const SUCCESS_MESSAGES = {
     APPOINTMENT_UPDATED: 'Appointment updated successfully!',
     LOGIN_SUCCESS: 'Welcome back!',
     LOGOUT_SUCCESS: 'You have been logged out.',
-  };
+};
