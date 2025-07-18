@@ -19,8 +19,8 @@
   "data": {
     "url": "https://fpg4zax6sjhvtlbuti7sr4llxi.appsync-api.us-east-1.amazonaws.com/graphql",
     "aws_region": "us-east-1",
-    "default_authorization_type": "AMAZON_COGNITO_USER_POOLS",
-    "authorization_types": ["AWS_IAM"],
+    "default_authorization_type": "API_KEY",
+    "authorization_types": ["AWS_IAM", "API_KEY", "AMAZON_COGNITO_USER_POOLS"],
     "model_introspection": {
       "version": 1,
       "models": {
@@ -137,49 +137,6 @@
               "type": "ID",
               "isRequired": false,
               "attributes": []
-            },
-            "appointmentId": {
-              "name": "appointmentId",
-              "isArray": false,
-              "type": "ID",
-              "isRequired": false,
-              "attributes": []
-            },
-            "category": {
-              "name": "category",
-              "isArray": false,
-              "type": "String",
-              "isRequired": false,
-              "attributes": []
-            },
-            "priority": {
-              "name": "priority",
-              "isArray": false,
-              "type": "String",
-              "isRequired": false,
-              "attributes": []
-            },
-            "isPrivate": {
-              "name": "isPrivate",
-              "isArray": false,
-              "type": "Boolean",
-              "isRequired": false,
-              "attributes": []
-            },
-            "tags": {
-              "name": "tags",
-              "isArray": true,
-              "type": "String",
-              "isRequired": false,
-              "attributes": []
-            },
-            "owner": {
-              "name": "owner",
-              "isArray": false,
-              "type": "String",
-              "isRequired": false,
-              "attributes": [],
-              "isReadOnly": true
             },
             "createdAt": {
               "name": "createdAt",
