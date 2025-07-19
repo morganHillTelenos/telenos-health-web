@@ -13,6 +13,7 @@ import VideoCallPage from './pages/VideoCallPage';
 import Header from './components/Header';
 import NewAppointmentPage from './pages/NewAppointmentPage';
 import NotesPage from './pages/NotesPage';
+import DebugPage from './pages/DebugPage';
 
 // Import services
 import { authService } from './services/auth';
@@ -405,6 +406,7 @@ const App = () => {
 
           {/* Catch all - redirect to login */}
           <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="/debug" element={<DebugPage />} />
         </Routes>
       </div>
     </Router>

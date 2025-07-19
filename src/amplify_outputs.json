@@ -21,6 +21,7 @@
     "aws_region": "us-east-1",
     "default_authorization_type": "API_KEY",
     "authorization_types": ["AWS_IAM", "API_KEY", "AMAZON_COGNITO_USER_POOLS"],
+    "api_key": "da2-s5lcwdzq7fgjjd6kpucnmfuki4",
     "model_introspection": {
       "version": 1,
       "models": {
