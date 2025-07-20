@@ -70,7 +70,7 @@ const deletePatientMutation = `
   }
 `;
 
-// Notes GraphQL operations
+// Add this after your existing Patient operations
 const createNoteMutation = `
   mutation CreateNote($input: CreateNoteInput!) {
     createNote(input: $input) {
@@ -78,6 +78,10 @@ const createNoteMutation = `
       title
       content
       patientId
+      category
+      priority
+      isPrivate
+      tags
       createdAt
       updatedAt
     }
@@ -92,10 +96,56 @@ const listNotesQuery = `
         title
         content
         patientId
+        category
+        priority
+        isPrivate
+        tags
         createdAt
         updatedAt
       }
       nextToken
+    }
+  }
+`;
+
+const getNodeQuery = `
+  query GetNote($id: ID!) {
+    getNote(id: $id) {
+      id
+      title
+      content
+      patientId
+      category
+      priority
+      isPrivate
+      tags
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const updateNoteMutation = `
+  mutation UpdateNote($input: UpdateNoteInput!) {
+    updateNote(input: $input) {
+      id
+      title
+      content
+      patientId
+      category
+      priority
+      isPrivate
+      tags
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const deleteNoteMutation = `
+  mutation DeleteNote($input: DeleteNoteInput!) {
+    deleteNote(input: $input) {
+      id
     }
   }
 `;
@@ -366,11 +416,10 @@ class ApiService {
         }
     }
 
-    // Notes methods
+    // Add these methods inside your existing ApiService class, after your Patient methods
     async createNote(noteData) {
         try {
             await this.ensureInitialized();
-
             console.log('📝 Creating note with AWS GraphQL:', noteData);
 
             const input = {
@@ -390,14 +439,11 @@ class ApiService {
                 success: true,
                 data: result.data.createNote
             };
-
         } catch (error) {
             console.error('❌ Failed to create note:', error);
-
             if (error.errors && error.errors.length > 0) {
                 throw new Error(error.errors[0].message);
             }
-
             throw new Error('Failed to create note: ' + error.message);
         }
     }
@@ -405,7 +451,6 @@ class ApiService {
     async getNotes(options = {}) {
         try {
             await this.ensureInitialized();
-
             console.log('📋 Fetching notes from AWS GraphQL...');
 
             const variables = {
@@ -421,24 +466,20 @@ class ApiService {
             });
 
             console.log('✅ Notes fetched successfully:', result.data.listNotes.items.length, 'notes');
-
             return {
                 success: true,
                 data: result.data.listNotes.items,
                 nextToken: result.data.listNotes.nextToken
             };
-
         } catch (error) {
             console.error('❌ Failed to fetch notes:', error);
-
             if (error.errors && error.errors.length > 0) {
                 throw new Error(error.errors[0].message);
             }
-
             throw new Error('Failed to fetch notes: ' + error.message);
         }
     }
-}
+    }
 
 // Create and export singleton instance
 export const apiService = new ApiService();

@@ -80,6 +80,145 @@ const DebugPage = () => {
         setLoading(false);
     };
 
+    const testListNotes = async () => {
+        setLoading(true);
+        addResult('info', 'Testing listNotes query...');
+
+        try {
+            const result = await apiService.getNotes({ limit: 5 });
+            addResult('success', `Found ${result.data.length} notes`, result);
+        } catch (error) {
+            addResult('error', 'listNotes failed', {
+                message: error.message,
+                errors: error.errors
+            });
+        }
+
+        setLoading(false);
+    };
+
+    const testCreateNote = async () => {
+        setLoading(true);
+        addResult('info', 'Testing createNote mutation...');
+
+        const testNote = {
+            title: 'Test Note',
+            content: `Test note created at ${new Date().toLocaleString()}`,
+            patientId: null, // No patient association for this test
+            category: 'General',
+            priority: 'Medium'
+        };
+
+        try {
+            const result = await apiService.createNote(testNote);
+            addResult('success', 'Note created successfully', result);
+        } catch (error) {
+            addResult('error', 'createNote failed', {
+                message: error.message,
+                errors: error.errors
+            });
+        }
+
+        setLoading(false);
+    };
+
+    const testCreateNoteWithPatient = async () => {
+        setLoading(true);
+        addResult('info', 'Testing createNote with patient association...');
+
+        // First, let's get the latest patient
+        try {
+            const patientsResult = await apiService.getPatients({ limit: 1 });
+
+            if (patientsResult.data.length === 0) {
+                addResult('error', 'No patients found. Create a patient first.');
+                setLoading(false);
+                return;
+            }
+
+            const latestPatient = patientsResult.data[0];
+
+            const testNote = {
+                title: 'Patient Note',
+                content: `Note for patient ${latestPatient.firstName} ${latestPatient.lastName}`,
+                patientId: latestPatient.id,
+                category: 'Medical',
+                priority: 'High'
+            };
+
+            const result = await apiService.createNote(testNote);
+            addResult('success', `Note created for patient ${latestPatient.firstName} ${latestPatient.lastName}`, result);
+        } catch (error) {
+            addResult('error', 'createNote with patient failed', {
+                message: error.message,
+                errors: error.errors
+            });
+        }
+
+        setLoading(false);
+    };
+
+    const testDirectNote = async () => {
+        setLoading(true);
+        addResult('info', 'Testing direct Note GraphQL...');
+
+        try {
+            const { generateClient } = await import('aws-amplify/api');
+            const client = generateClient({ authMode: 'apiKey' });
+
+            // Test create note directly
+            const createResult = await client.graphql({
+                query: `
+                    mutation CreateNote($input: CreateNoteInput!) {
+                        createNote(input: $input) {
+                            id
+                            title
+                            content
+                            createdAt
+                        }
+                    }
+                `,
+                variables: {
+                    input: {
+                        title: 'Direct Test Note',
+                        content: 'This is a direct GraphQL test'
+                    }
+                },
+                authMode: 'apiKey'
+            });
+
+            addResult('success', 'Direct Note creation successful', createResult);
+
+            // Test list notes directly
+            const listResult = await client.graphql({
+                query: `
+                    query ListNotes {
+                        listNotes {
+                            items {
+                                id
+                                title
+                                content
+                                createdAt
+                            }
+                        }
+                    }
+                `,
+                authMode: 'apiKey'
+            });
+
+            addResult('success', 'Direct Note listing successful', listResult);
+
+        } catch (error) {
+            addResult('error', 'Direct Note GraphQL failed', {
+                message: error.message,
+                errors: error.errors,
+                networkError: error.networkError
+            });
+        }
+
+        setLoading(false);
+    };
+
     const testAmplifyConfig = () => {
         addResult('info', 'Checking Amplify configuration...');
 
@@ -181,6 +320,38 @@ const DebugPage = () => {
                 </button>
 
                 <button
+                    onClick={testListNotes}
+                    disabled={loading}
+                    style={{ marginRight: '10px', padding: '8px 16px' }}
+                >
+                    6. List Notes
+                </button>
+
+                <button
+                    onClick={testCreateNote}
+                    disabled={loading}
+                    style={{ marginRight: '10px', padding: '8px 16px' }}
+                >
+                    7. Create Note
+                </button>
+
+                <button
+                    onClick={testCreateNoteWithPatient}
+                    disabled={loading}
+                    style={{ marginRight: '10px', padding: '8px 16px' }}
+                >
+                    8. Note + Patient
+                </button>
+
+                <button
+                    onClick={testDirectNote}
+                    disabled={loading}
+                    style={{ marginRight: '10px', padding: '8px 16px', backgroundColor: '#10b981', color: 'white' }}
+                >
+                    9. Direct Note Test
+                </button>
+
+                <button
                     onClick={clearResults}
                     style={{ marginLeft: '20px', padding: '8px 16px', backgroundColor: '#f44336', color: 'white' }}
                 >
@@ -234,7 +405,8 @@ const DebugPage = () => {
                                     borderRadius: '4px',
                                     fontSize: '12px',
                                     overflow: 'auto',
-                                    maxHeight: '200px'
+                                    maxHeight: '200px',
+                                    color: 'black'
                                 }}>
                                     {JSON.stringify(result.data, null, 2)}
                                 </pre>
