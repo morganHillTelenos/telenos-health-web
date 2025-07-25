@@ -1,8 +1,103 @@
-// src/services/api.js - Real AWS GraphQL Implementation with API Key Auth
+// src/services/api.js - CORRECTED to match your ACTUAL deployed schema
 import { generateClient } from 'aws-amplify/api';
-import { authService } from './auth';
 
-// GraphQL queries and mutations
+// ===== DOCTOR OPERATIONS (MATCHING YOUR ACTUAL DEPLOYED SCHEMA) =====
+const createDoctorMutation = `
+  mutation CreateDoctor($input: CreateDoctorInput!) {
+    createDoctor(input: $input) {
+      id
+      firstName
+      lastName
+      email
+      licenseNumber
+      specialty
+      phone
+      credentials
+      yearsOfExperience
+      bio
+      isActive
+      owner
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const listDoctorsQuery = `
+  query ListDoctors($filter: ModelDoctorFilterInput, $limit: Int, $nextToken: String) {
+    listDoctors(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        firstName
+        lastName
+        email
+        licenseNumber
+        specialty
+        phone
+        credentials
+        yearsOfExperience
+        bio
+        isActive
+        owner
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+
+const getDoctorQuery = `
+  query GetDoctor($id: ID!) {
+    getDoctor(id: $id) {
+      id
+      firstName
+      lastName
+      email
+      licenseNumber
+      specialty
+      phone
+      credentials
+      yearsOfExperience
+      bio
+      isActive
+      owner
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const updateDoctorMutation = `
+  mutation UpdateDoctor($input: UpdateDoctorInput!) {
+    updateDoctor(input: $input) {
+      id
+      firstName
+      lastName
+      email
+      licenseNumber
+      specialty
+      phone
+      credentials
+      yearsOfExperience
+      bio
+      isActive
+      owner
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const deleteDoctorMutation = `
+  mutation DeleteDoctor($input: DeleteDoctorInput!) {
+    deleteDoctor(input: $input) {
+      id
+    }
+  }
+`;
+
+// ===== PATIENT OPERATIONS =====
 const createPatientMutation = `
   mutation CreatePatient($input: CreatePatientInput!) {
     createPatient(input: $input) {
@@ -11,6 +106,8 @@ const createPatientMutation = `
       lastName
       email
       dateOfBirth
+      doctorId
+      owner
       createdAt
       updatedAt
     }
@@ -26,6 +123,8 @@ const listPatientsQuery = `
         lastName
         email
         dateOfBirth
+        doctorId
+        owner
         createdAt
         updatedAt
       }
@@ -42,110 +141,10 @@ const getPatientQuery = `
       lastName
       email
       dateOfBirth
+      doctorId
+      owner
       createdAt
       updatedAt
-    }
-  }
-`;
-
-const updatePatientMutation = `
-  mutation UpdatePatient($input: UpdatePatientInput!) {
-    updatePatient(input: $input) {
-      id
-      firstName
-      lastName
-      email
-      dateOfBirth
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-const deletePatientMutation = `
-  mutation DeletePatient($input: DeletePatientInput!) {
-    deletePatient(input: $input) {
-      id
-    }
-  }
-`;
-
-// Add this after your existing Patient operations
-const createNoteMutation = `
-  mutation CreateNote($input: CreateNoteInput!) {
-    createNote(input: $input) {
-      id
-      title
-      content
-      patientId
-      category
-      priority
-      isPrivate
-      tags
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-const listNotesQuery = `
-  query ListNotes($filter: ModelNoteFilterInput, $limit: Int, $nextToken: String) {
-    listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        title
-        content
-        patientId
-        category
-        priority
-        isPrivate
-        tags
-        createdAt
-        updatedAt
-      }
-      nextToken
-    }
-  }
-`;
-
-const getNodeQuery = `
-  query GetNote($id: ID!) {
-    getNote(id: $id) {
-      id
-      title
-      content
-      patientId
-      category
-      priority
-      isPrivate
-      tags
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-const updateNoteMutation = `
-  mutation UpdateNote($input: UpdateNoteInput!) {
-    updateNote(input: $input) {
-      id
-      title
-      content
-      patientId
-      category
-      priority
-      isPrivate
-      tags
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-const deleteNoteMutation = `
-  mutation DeleteNote($input: DeleteNoteInput!) {
-    deleteNote(input: $input) {
-      id
     }
   }
 `;
@@ -154,6 +153,8 @@ class ApiService {
     constructor() {
         this.client = null;
         this.isInitialized = false;
+        // CRITICAL: Your amplify_outputs.json shows COGNITO_USER_POOLS as default
+        this.authMode = 'userPool'; // Start with Cognito as default
     }
 
     async initialize() {
@@ -162,13 +163,13 @@ class ApiService {
         try {
             console.log('🔧 Initializing AWS GraphQL client...');
 
-            // Create client with explicit API Key authentication
+            // Create client with Cognito User Pools as default (matches your config)
             this.client = generateClient({
-                authMode: 'apiKey'
+                authMode: this.authMode
             });
 
             this.isInitialized = true;
-            console.log('✅ AWS GraphQL client initialized with API Key auth');
+            console.log(`✅ AWS GraphQL client initialized with ${this.authMode} auth`);
 
             // Debug: log the current Amplify configuration
             const { Amplify } = await import('aws-amplify');
@@ -190,17 +191,28 @@ class ApiService {
         }
     }
 
+    async ensureAuthenticated() {
+        try {
+            const { getCurrentUser } = await import('aws-amplify/auth');
+            const user = await getCurrentUser();
+            console.log('✅ User authenticated:', user.username);
+            return user;
+        } catch (error) {
+            console.error('❌ User not authenticated:', error);
+            throw new Error('Please sign in to perform this action');
+        }
+    }
+
     async testConnection() {
         try {
             await this.ensureInitialized();
+            await this.ensureAuthenticated();
 
             console.log('🧪 Testing GraphQL connection...');
 
-            // Simple test query
             const result = await this.client.graphql({
                 query: listPatientsQuery,
-                variables: { limit: 1 },
-                authMode: 'apiKey'
+                variables: { limit: 1 }
             });
 
             console.log('✅ Connection test successful:', result);
@@ -208,31 +220,194 @@ class ApiService {
 
         } catch (error) {
             console.error('❌ Connection test failed:', error);
-
-            // Detailed error logging
-            if (error.errors) {
-                console.error('GraphQL Errors:', error.errors);
-                error.errors.forEach((err, index) => {
-                    console.error(`Error ${index + 1}:`, {
-                        message: err.message,
-                        locations: err.locations,
-                        path: err.path,
-                        extensions: err.extensions
-                    });
-                });
-            }
-
             throw error;
         }
     }
 
+    // ===== DOCTOR METHODS (CORRECTED FIELD MAPPINGS) =====
+    async createDoctor(doctorData) {
+        try {
+            await this.ensureInitialized();
+            const currentUser = await this.ensureAuthenticated();
+
+            console.log('📝 Creating doctor with AWS GraphQL:', doctorData);
+
+            // Validate required fields based on your ACTUAL schema
+            if (!doctorData.firstName || !doctorData.lastName || !doctorData.email ||
+                !doctorData.licenseNumber || !doctorData.specialty) {
+                throw new Error('Missing required fields: firstName, lastName, email, licenseNumber, specialty');
+            }
+
+            // CORRECTED: Match your actual schema fields exactly
+            const input = {
+                firstName: doctorData.firstName.trim(),
+                lastName: doctorData.lastName.trim(),
+                email: doctorData.email.trim().toLowerCase(),
+                licenseNumber: doctorData.licenseNumber.trim(),
+                specialty: doctorData.specialty.trim(),
+                // CORRECTED: Use exact schema field names
+                ...(doctorData.phone && { phone: doctorData.phone.trim() }),
+                ...(doctorData.credentials && { credentials: doctorData.credentials }), // Array of strings
+                ...(doctorData.yearsOfExperience !== undefined && { yearsOfExperience: parseInt(doctorData.yearsOfExperience) }),
+                ...(doctorData.bio && { bio: doctorData.bio.trim() }),
+                ...(doctorData.isActive !== undefined && { isActive: doctorData.isActive }),
+                // Set owner to current Cognito user
+                owner: currentUser.username
+            };
+
+            console.log('📤 Sending doctor input:', input);
+
+            const result = await this.client.graphql({
+                query: createDoctorMutation,
+                variables: { input }
+            });
+
+            console.log('✅ Doctor created successfully:', result.data.createDoctor);
+
+            return {
+                success: true,
+                data: result.data.createDoctor
+            };
+
+        } catch (error) {
+            console.error('❌ Failed to create doctor:', error);
+            this.handleGraphQLError(error);
+        }
+    }
+
+    async getDoctors(options = {}) {
+        try {
+            await this.ensureInitialized();
+            await this.ensureAuthenticated();
+
+            console.log('📋 Fetching doctors from AWS GraphQL...');
+
+            const variables = {
+                limit: options.limit || 100,
+                nextToken: options.nextToken || null,
+                filter: options.filter || null
+            };
+
+            const result = await this.client.graphql({
+                query: listDoctorsQuery,
+                variables
+            });
+
+            console.log('🔍 Raw GraphQL result:', result);
+
+            if (!result.data || !result.data.listDoctors) {
+                throw new Error('No doctor data returned - check authorization or schema deployment');
+            }
+
+            const items = result.data.listDoctors.items || [];
+            const nextToken = result.data.listDoctors.nextToken || null;
+
+            console.log('✅ Doctors fetched successfully:', items.length, 'doctors');
+
+            return {
+                success: true,
+                data: items,
+                nextToken: nextToken
+            };
+
+        } catch (error) {
+            console.error('❌ Failed to fetch doctors:', error);
+            this.handleGraphQLError(error);
+        }
+    }
+
+    async getDoctor(doctorId) {
+        try {
+            await this.ensureInitialized();
+            await this.ensureAuthenticated();
+
+            console.log('👤 Fetching doctor from AWS GraphQL:', doctorId);
+
+            const result = await this.client.graphql({
+                query: getDoctorQuery,
+                variables: { id: doctorId }
+            });
+
+            if (!result.data || !result.data.getDoctor) {
+                throw new Error('Doctor not found');
+            }
+
+            console.log('✅ Doctor fetched successfully:', result.data.getDoctor.id);
+
+            return {
+                success: true,
+                data: result.data.getDoctor
+            };
+
+        } catch (error) {
+            console.error('❌ Failed to fetch doctor:', error);
+            this.handleGraphQLError(error);
+        }
+    }
+
+    async updateDoctor(doctorId, updateData) {
+        try {
+            await this.ensureInitialized();
+            await this.ensureAuthenticated();
+
+            console.log('📝 Updating doctor:', doctorId, updateData);
+
+            const input = {
+                id: doctorId,
+                ...updateData
+            };
+
+            const result = await this.client.graphql({
+                query: updateDoctorMutation,
+                variables: { input }
+            });
+
+            console.log('✅ Doctor updated successfully:', result.data.updateDoctor);
+
+            return {
+                success: true,
+                data: result.data.updateDoctor
+            };
+
+        } catch (error) {
+            console.error('❌ Failed to update doctor:', error);
+            this.handleGraphQLError(error);
+        }
+    }
+
+    async deleteDoctor(doctorId) {
+        try {
+            await this.ensureInitialized();
+            await this.ensureAuthenticated();
+
+            console.log('🗑️ Deleting doctor:', doctorId);
+
+            const result = await this.client.graphql({
+                query: deleteDoctorMutation,
+                variables: { input: { id: doctorId } }
+            });
+
+            console.log('✅ Doctor deleted successfully:', result.data.deleteDoctor);
+
+            return {
+                success: true,
+                data: result.data.deleteDoctor
+            };
+
+        } catch (error) {
+            console.error('❌ Failed to delete doctor:', error);
+            this.handleGraphQLError(error);
+        }
+    }
+
+    // ===== PATIENT METHODS (CORRECTED) =====
     async createPatient(patientData) {
         try {
             await this.ensureInitialized();
+            const currentUser = await this.ensureAuthenticated();
 
             console.log('📝 Creating patient with AWS GraphQL:', patientData);
 
-            // Validate required fields
             if (!patientData.firstName || !patientData.lastName || !patientData.email || !patientData.dateOfBirth) {
                 throw new Error('Missing required fields: firstName, lastName, email, dateOfBirth');
             }
@@ -241,13 +416,14 @@ class ApiService {
                 firstName: patientData.firstName.trim(),
                 lastName: patientData.lastName.trim(),
                 email: patientData.email.trim().toLowerCase(),
-                dateOfBirth: patientData.dateOfBirth
+                dateOfBirth: patientData.dateOfBirth,
+                ...(patientData.doctorId && { doctorId: patientData.doctorId }),
+                owner: currentUser.username
             };
 
             const result = await this.client.graphql({
                 query: createPatientMutation,
-                variables: { input },
-                authMode: 'apiKey'
+                variables: { input }
             });
 
             console.log('✅ Patient created successfully:', result.data.createPatient);
@@ -258,27 +434,14 @@ class ApiService {
 
         } catch (error) {
             console.error('❌ Failed to create patient:', error);
-
-            // Handle GraphQL errors
-            if (error.errors && error.errors.length > 0) {
-                const graphqlError = error.errors[0];
-                if (graphqlError.message.includes('already exists')) {
-                    throw new Error('A patient with this email already exists');
-                } else if (graphqlError.message.includes('ValidationException')) {
-                    throw new Error('Invalid patient data provided');
-                } else if (graphqlError.message.includes('UnauthorizedException') || graphqlError.message.includes('Not Authorized')) {
-                    throw new Error('Authorization failed - check API Key configuration');
-                }
-                throw new Error(graphqlError.message);
-            }
-
-            throw new Error('Failed to create patient: ' + error.message);
+            this.handleGraphQLError(error);
         }
     }
 
     async getPatients(options = {}) {
         try {
             await this.ensureInitialized();
+            await this.ensureAuthenticated();
 
             console.log('📋 Fetching patients from AWS GraphQL...');
 
@@ -290,199 +453,55 @@ class ApiService {
 
             const result = await this.client.graphql({
                 query: listPatientsQuery,
-                variables,
-                authMode: 'apiKey'
+                variables
             });
 
-            console.log('✅ Patients fetched successfully:', result.data.listPatients.items.length, 'patients');
+            if (!result.data || !result.data.listPatients) {
+                throw new Error('No patient data returned');
+            }
+
+            const items = result.data.listPatients.items || [];
+            const nextToken = result.data.listPatients.nextToken || null;
+
+            console.log('✅ Patients fetched successfully:', items.length, 'patients');
 
             return {
                 success: true,
-                data: result.data.listPatients.items,
-                nextToken: result.data.listPatients.nextToken
+                data: items,
+                nextToken: nextToken
             };
 
         } catch (error) {
             console.error('❌ Failed to fetch patients:', error);
-
-            if (error.errors && error.errors.length > 0) {
-                const graphqlError = error.errors[0];
-                if (graphqlError.message.includes('UnauthorizedException') || graphqlError.message.includes('Not Authorized')) {
-                    throw new Error('Authorization failed - API Key not configured properly');
-                }
-                throw new Error(graphqlError.message);
-            }
-
-            throw new Error('Failed to fetch patients: ' + error.message);
+            this.handleGraphQLError(error);
         }
     }
 
-    async getPatient(patientId) {
-        try {
-            await this.ensureInitialized();
+    // ===== ERROR HANDLING =====
+    handleGraphQLError(error) {
+        if (error.errors && error.errors.length > 0) {
+            const graphqlError = error.errors[0];
+            console.error('📋 GraphQL Error Details:', graphqlError);
 
-            console.log('👤 Fetching patient from AWS GraphQL:', patientId);
-
-            const result = await this.client.graphql({
-                query: getPatientQuery,
-                variables: { id: patientId },
-                authMode: 'apiKey'
-            });
-
-            if (!result.data.getPatient) {
-                throw new Error('Patient not found');
+            if (graphqlError.message.includes('UnauthorizedException') ||
+                graphqlError.message.includes('Not Authorized') ||
+                graphqlError.message.includes('Unauthorized')) {
+                throw new Error('Authorization failed - please sign in again');
+            } else if (graphqlError.message.includes('ValidationException')) {
+                throw new Error('Invalid data: ' + graphqlError.message);
+            } else if (graphqlError.message.includes('already exists')) {
+                throw new Error('A record with this information already exists');
+            } else if (graphqlError.message.includes('Cannot query field')) {
+                throw new Error('Schema not deployed properly. Run: npx amplify push --force');
             }
-
-            console.log('✅ Patient fetched successfully:', result.data.getPatient.id);
-
-            return {
-                success: true,
-                data: result.data.getPatient
-            };
-
-        } catch (error) {
-            console.error('❌ Failed to fetch patient:', error);
-
-            if (error.errors && error.errors.length > 0) {
-                throw new Error(error.errors[0].message);
-            }
-
-            throw new Error('Failed to fetch patient: ' + error.message);
+            throw new Error(graphqlError.message);
         }
+
+        throw new Error('Failed to perform operation: ' + error.message);
     }
-
-    async updatePatient(patientId, updateData) {
-        try {
-            await this.ensureInitialized();
-
-            console.log('📝 Updating patient:', patientId, updateData);
-
-            const input = {
-                id: patientId,
-                ...updateData
-            };
-
-            const result = await this.client.graphql({
-                query: updatePatientMutation,
-                variables: { input },
-                authMode: 'apiKey'
-            });
-
-            console.log('✅ Patient updated successfully:', result.data.updatePatient);
-
-            return {
-                success: true,
-                data: result.data.updatePatient
-            };
-
-        } catch (error) {
-            console.error('❌ Failed to update patient:', error);
-
-            if (error.errors && error.errors.length > 0) {
-                throw new Error(error.errors[0].message);
-            }
-
-            throw new Error('Failed to update patient: ' + error.message);
-        }
-    }
-
-    async deletePatient(patientId) {
-        try {
-            await this.ensureInitialized();
-
-            console.log('🗑️ Deleting patient:', patientId);
-
-            const result = await this.client.graphql({
-                query: deletePatientMutation,
-                variables: { input: { id: patientId } },
-                authMode: 'apiKey'
-            });
-
-            console.log('✅ Patient deleted successfully:', result.data.deletePatient);
-
-            return {
-                success: true,
-                data: result.data.deletePatient
-            };
-
-        } catch (error) {
-            console.error('❌ Failed to delete patient:', error);
-
-            if (error.errors && error.errors.length > 0) {
-                throw new Error(error.errors[0].message);
-            }
-
-            throw new Error('Failed to delete patient: ' + error.message);
-        }
-    }
-
-    // Add these methods inside your existing ApiService class, after your Patient methods
-    async createNote(noteData) {
-        try {
-            await this.ensureInitialized();
-            console.log('📝 Creating note with AWS GraphQL:', noteData);
-
-            const input = {
-                title: noteData.title.trim(),
-                content: noteData.content.trim(),
-                patientId: noteData.patientId || null
-            };
-
-            const result = await this.client.graphql({
-                query: createNoteMutation,
-                variables: { input },
-                authMode: 'apiKey'
-            });
-
-            console.log('✅ Note created successfully:', result.data.createNote);
-            return {
-                success: true,
-                data: result.data.createNote
-            };
-        } catch (error) {
-            console.error('❌ Failed to create note:', error);
-            if (error.errors && error.errors.length > 0) {
-                throw new Error(error.errors[0].message);
-            }
-            throw new Error('Failed to create note: ' + error.message);
-        }
-    }
-
-    async getNotes(options = {}) {
-        try {
-            await this.ensureInitialized();
-            console.log('📋 Fetching notes from AWS GraphQL...');
-
-            const variables = {
-                limit: options.limit || 100,
-                nextToken: options.nextToken || null,
-                filter: options.filter || null
-            };
-
-            const result = await this.client.graphql({
-                query: listNotesQuery,
-                variables,
-                authMode: 'apiKey'
-            });
-
-            console.log('✅ Notes fetched successfully:', result.data.listNotes.items.length, 'notes');
-            return {
-                success: true,
-                data: result.data.listNotes.items,
-                nextToken: result.data.listNotes.nextToken
-            };
-        } catch (error) {
-            console.error('❌ Failed to fetch notes:', error);
-            if (error.errors && error.errors.length > 0) {
-                throw new Error(error.errors[0].message);
-            }
-            throw new Error('Failed to fetch notes: ' + error.message);
-        }
-    }
-    }
+}
 
 // Create and export singleton instance
-export const apiService = new ApiService();
-
-// Also export the class for testing
-export default ApiService;
+const apiService = new ApiService();
+export { apiService };
+export default apiService;

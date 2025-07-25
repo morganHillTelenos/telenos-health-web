@@ -1,8 +1,10 @@
+// src/App.js - Full Cognito Integration
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation, useParams } from 'react-router-dom';
+import { getCurrentUser } from 'aws-amplify/auth';
 import './styles/globals.css';
 
-// Import components
+// Import your existing components
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import HealthcareDashboard from './pages/HealthcareDashboard';
@@ -14,69 +16,17 @@ import Header from './components/Header';
 import NewAppointmentPage from './pages/NewAppointmentPage';
 import NotesPage from './pages/NotesPage';
 import DebugPage from './pages/DebugPage';
+import DoctorsPage from './pages/DoctorsPage';
+import DoctorTestComponent from './components/DoctorTestComponent';
 
-// Import services
+// Import services - fallback only
 import { authService } from './services/auth';
 
-// New Appointment Wrapper
-const NewAppointmentWrapper = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        if (authService.isAuthenticated()) {
-          const currentUser = await authService.getCurrentUser();
-          setUser(currentUser);
-        }
-      } catch (error) {
-        console.error('Error loading user:', error);
-      }
-    };
-    loadUser();
-  }, []);
-
-  const handleLogout = () => {
-    authService.logout();
-    navigate('/login');
-  };
-
-  const handleAppointmentCreated = (appointment) => {
-    console.log('✅ Appointment created:', appointment);
-    navigate('/calendar');
-  };
-
-  const handleCancel = () => {
-    console.log('❌ Appointment creation cancelled');
-    navigate('/calendar');
-  };
-
-  return (
-    <div>
-      <Header user={user} onLogout={handleLogout} />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-        <div className="container mx-auto px-6 py-8 pt-20">
-          <div className="mb-8">
-            <button
-              onClick={handleCancel}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors group"
-            >
-              <span className="text-lg">←</span>
-              Back to Calendar
-            </button>
-          </div>
-          <NewAppointmentPage
-            onAppointmentCreated={handleAppointmentCreated}
-            onCancel={handleCancel}
-          />
-        </div>
-      </div>
-    </div>
-  );
+// Enhanced Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  // Since we're using Authenticator, user is always authenticated when this renders
+  return children;
 };
-
-
 
 // Loading Spinner Component
 const LoadingSpinner = () => (
@@ -85,300 +35,289 @@ const LoadingSpinner = () => (
   </div>
 );
 
-// Protected Route Component
-const ProtectedRoute = ({ children }) => {
-  return children;
-};
+// Main App Component - Updated to handle Cognito props
+function App({ signOut, user }) {
+  // Helper function to create user object from Cognito user
+  const getCognitoUser = () => {
+    if (!user) return null;
 
-const LandingPageWrapper = () => {
-  const navigate = useNavigate();
+    return {
+      username: user.username,
+      email: user.signInDetails?.loginId || user.attributes?.email || user.username,
+      userId: user.userId,
+      name: user.attributes?.email || user.username,
+      role: 'Healthcare Provider'
+    };
+  };
 
-  return <LandingPage onEnterDashboard={() => navigate('/dashboard')} />;
-};
-
-const LoginPageWrapper = () => {
-  const navigate = useNavigate();
-  const [loginError, setLoginError] = useState(null);
-
-  const handleLogin = async (user) => {
+  // Common logout handler
+  const handleLogout = async () => {
     try {
-      console.log('🎯 App.js handleLogin called with user:', user);
-      console.log('✅ Navigating to dashboard...');
-      navigate('/dashboard');
+      await signOut();
     } catch (error) {
-      console.error('❌ Navigation error:', error);
-      setLoginError(error.message);
+      console.error('Sign out error:', error);
     }
   };
 
-  return (
-    <div>
-      <LoginPage onLogin={handleLogin} />
-      {loginError && (
-        <div className="fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {loginError}
+  // Wrapper Components
+  const LandingPageWrapper = () => {
+    const navigate = useNavigate();
+    return <LandingPage onEnterDashboard={() => navigate('/dashboard')} />;
+  };
+
+  const LoginPageWrapper = () => {
+    const navigate = useNavigate();
+    return <Navigate to="/dashboard" replace />; // Always redirect to dashboard since user is authenticated
+  };
+
+  const DashboardWrapper = () => {
+    const navigate = useNavigate();
+    const currentUser = getCognitoUser();
+
+    const handleVideoCallStart = async (appointmentId) => {
+      try {
+        const id = appointmentId || `appointment-${Date.now()}`;
+        console.log('🎥 Starting video call for appointment:', id);
+        navigate(`/video-call/start/${id}`);
+      } catch (error) {
+        console.error('❌ Video call start error:', error);
+      }
+    };
+
+    const handleNavigateToPatients = () => navigate('/patients');
+    const handleNavigateToCalendar = () => navigate('/calendar');
+    const handleNavigateToNotes = () => navigate('/notes');
+
+    return (
+      <div>
+        <Header user={currentUser} onLogout={handleLogout} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <div className="container mx-auto px-6 py-8 pt-20">
+            <HealthcareDashboard
+              user={currentUser}
+              onVideoCallStart={handleVideoCallStart}
+              onNavigateToPatients={handleNavigateToPatients}
+              onNavigateToCalendar={handleNavigateToCalendar}
+              onNavigateToNotes={handleNavigateToNotes}
+            />
+          </div>
         </div>
-      )}
-    </div>
-  );
-};
-
-// Dashboard Wrapper - Simplified with Proper Props
-const DashboardWrapper = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        if (authService.isAuthenticated()) {
-          const currentUser = await authService.getCurrentUser();
-          setUser(currentUser);
-        }
-      } catch (error) {
-        console.error('Error loading user:', error);
-      }
-    };
-    loadUser();
-  }, []);
-
-  const handleLogout = () => {
-    authService.logout();
-    navigate('/login');
+      </div>
+    );
   };
 
-  const handleVideoCallStart = async (appointmentId) => {
-    try {
-      const id = appointmentId || `appointment-${Date.now()}`;
-      console.log('🎥 Starting video call for appointment:', id);
-      navigate(`/video-call/start/${id}`);
-    } catch (error) {
-      console.error('❌ Video call start error:', error);
+  const PatientsWrapper = () => {
+    const navigate = useNavigate();
+    const currentUser = getCognitoUser();
+
+    const handleAddPatient = () => navigate('/patients/new');
+
+    return (
+      <div>
+        <Header user={currentUser} onLogout={handleLogout} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <div className="container mx-auto px-6 py-8 pt-20">
+            <PatientsPage user={currentUser} onAddPatient={handleAddPatient} />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const DoctorsWrapper = () => {
+    const currentUser = getCognitoUser();
+
+    return (
+      <div>
+        <Header user={currentUser} onLogout={handleLogout} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <div className="container mx-auto px-6 py-8 pt-20">
+            <DoctorsPage user={currentUser} />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const NewPatientWrapper = () => {
+    const navigate = useNavigate();
+    const currentUser = getCognitoUser();
+
+    const handlePatientCreated = (patient) => {
+      console.log('✅ Patient created:', patient);
+      navigate('/patients');
+    };
+
+    const handleCancel = () => {
+      console.log('❌ Patient creation cancelled');
+      navigate('/patients');
+    };
+
+    return (
+      <div>
+        <Header user={currentUser} onLogout={handleLogout} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <div className="container mx-auto px-6 py-8 pt-20">
+            <div className="mb-8">
+              <button
+                onClick={handleCancel}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors group"
+              >
+                <span className="text-lg">←</span>
+                Back to Patients
+              </button>
+            </div>
+            <NewPatientForm
+              onPatientCreated={handlePatientCreated}
+              onCancel={handleCancel}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const NewAppointmentWrapper = () => {
+    const navigate = useNavigate();
+    const currentUser = getCognitoUser();
+
+    const handleAppointmentCreated = (appointment) => {
+      console.log('✅ Appointment created:', appointment);
+      navigate('/calendar');
+    };
+
+    const handleCancel = () => {
+      console.log('❌ Appointment creation cancelled');
+      navigate('/calendar');
+    };
+
+    return (
+      <div>
+        <Header user={currentUser} onLogout={handleLogout} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <div className="container mx-auto px-6 py-8 pt-20">
+            <div className="mb-8">
+              <button
+                onClick={handleCancel}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors group"
+              >
+                <span className="text-lg">←</span>
+                Back to Calendar
+              </button>
+            </div>
+            <NewAppointmentPage
+              onAppointmentCreated={handleAppointmentCreated}
+              onCancel={handleCancel}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const CalendarWrapper = () => {
+    const navigate = useNavigate();
+    const currentUser = getCognitoUser();
+
+    const handleNewAppointment = () => {
+      navigate('/appointments/new');
+    };
+
+    return (
+      <div>
+        <Header user={currentUser} onLogout={handleLogout} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <div className="container mx-auto px-6 py-8 pt-20">
+            <CalendarPage
+              user={currentUser}
+              onNewAppointment={handleNewAppointment}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const NotesWrapper = () => {
+    const currentUser = getCognitoUser();
+
+    return (
+      <div>
+        <Header user={currentUser} onLogout={handleLogout} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <div className="container mx-auto px-6 py-8 pt-20">
+            <NotesPage user={currentUser} />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const DoctorTestWrapper = () => {
+    const currentUser = getCognitoUser();
+
+    return (
+      <div>
+        <Header user={currentUser} onLogout={handleLogout} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <div className="container mx-auto px-6 py-8 pt-20">
+            <DoctorTestComponent />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const VideoCallWrapper = () => {
+    const location = useLocation();
+    const { appointmentId } = useParams();
+    const isProviderStart = location.pathname.includes('/start/');
+
+    console.log('🎥 Provider video call page loaded');
+    console.log('- URL:', location.pathname);
+    console.log('- Provider start:', isProviderStart);
+
+    return <VideoCallPage />;
+  };
+
+  const PatientVideoCallWrapper = () => {
+    const location = useLocation();
+    const { appointmentId, patientToken } = useParams();
+
+    console.log('👤 Patient video call page loaded');
+    console.log('- URL:', location.pathname);
+    console.log('- Appointment ID:', appointmentId);
+    console.log('- Patient Token:', patientToken);
+
+    return <VideoCallPage isPatient={true} />;
+  };
+
+  const DebugWrapper = () => {
+    const currentUser = getCognitoUser();
+
+    return (
+      <div>
+        <Header user={currentUser} onLogout={handleLogout} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <div className="container mx-auto px-6 py-8 pt-20">
+            <DebugPage />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Log current user for debugging
+  useEffect(() => {
+    if (user) {
+      console.log('✅ Cognito user authenticated:', {
+        username: user.username,
+        email: user.attributes?.email || user.signInDetails?.loginId,
+        userId: user.userId
+      });
     }
-  };
+  }, [user]);
 
-  const handleNavigateToPatients = () => {
-    navigate('/patients');
-  };
-
-  const handleNavigateToCalendar = () => {
-    navigate('/calendar');
-  };
-
-  const handleNavigateToNotes = () => {
-    navigate('/notes');
-  };
-
-  return (
-    <div>
-      <Header user={user} onLogout={handleLogout} />
-      <div className="pt-20">
-        <HealthcareDashboard
-          onVideoCallStart={handleVideoCallStart}
-          onNavigateToPatients={handleNavigateToPatients}
-          onNavigateToCalendar={handleNavigateToCalendar}
-          onNavigateToNotes={handleNavigateToNotes}
-        />
-      </div>
-    </div>
-  );
-};
-
-// Patients Wrapper
-const PatientsWrapper = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        if (authService.isAuthenticated()) {
-          const currentUser = await authService.getCurrentUser();
-          setUser(currentUser);
-        }
-      } catch (error) {
-        console.error('Error loading user:', error);
-      }
-    };
-    loadUser();
-  }, []);
-
-  const handleLogout = () => {
-    authService.logout();
-    navigate('/login');
-  };
-
-  const handleNavigateToPatient = (patientId) => {
-    navigate(`/patients/${patientId}`);
-  };
-
-  const handleNavigateToNewPatient = () => {
-    navigate('/patients/new');
-  };
-
-  return (
-    <div>
-      <Header user={user} onLogout={handleLogout} />
-      <div className="pt-20">
-        <PatientsPage
-          onNavigateToPatient={handleNavigateToPatient}
-          onNavigateToNewPatient={handleNavigateToNewPatient}
-        />
-      </div>
-    </div>
-  );
-};
-
-// New Patient Wrapper
-const NewPatientWrapper = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        if (authService.isAuthenticated()) {
-          const currentUser = await authService.getCurrentUser();
-          setUser(currentUser);
-        }
-      } catch (error) {
-        console.error('Error loading user:', error);
-      }
-    };
-    loadUser();
-  }, []);
-
-  const handleLogout = () => {
-    authService.logout();
-    navigate('/login');
-  };
-
-  const handlePatientCreated = (patient) => {
-    console.log('✅ Patient created:', patient);
-    navigate('/patients');
-  };
-
-  const handleCancel = () => {
-    navigate('/patients');
-  };
-
-  return (
-    <div>
-      <Header user={user} onLogout={handleLogout} />
-      <div className="pt-20">
-        <NewPatientForm
-          onPatientCreated={handlePatientCreated}
-          onCancel={handleCancel}
-        />
-      </div>
-    </div>
-  );
-};
-
-// Patient Detail Wrapper
-const PatientDetailWrapper = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold mb-4">Patient Detail View</h2>
-        <p className="mb-4">Patient ID: {id}</p>
-        <button
-          onClick={() => navigate('/patients')}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          Back to Patients
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// Calendar Wrapper - FIXED VERSION
-const CalendarWrapper = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        if (authService.isAuthenticated()) {
-          const currentUser = await authService.getCurrentUser();
-          setUser(currentUser);
-        }
-      } catch (error) {
-        console.error('Error loading user:', error);
-      }
-    };
-    loadUser();
-  }, []);
-
-  const handleLogout = () => {
-    authService.logout();
-    navigate('/login');
-  };
-
-  // This should match the prop name expected by CalendarPage
-  const handleNavigateToNewAppointment = () => {
-    console.log('📅 Navigating to new appointment...');
-    navigate('/appointments/new');
-  };
-
-  // This should match the prop name expected by CalendarPage  
-  const handleJoinVideoCall = (appointmentId) => {
-    console.log('🎥 Going to video call start page for appointment:', appointmentId);
-    navigate(`/video-call/start/${appointmentId}`);
-  };
-
-  // This should match the prop name expected by CalendarPage
-  const handleStartVideoCall = (appointmentId) => {
-    console.log('🎥 Starting video call for appointment:', appointmentId);
-    navigate(`/video-call/start/${appointmentId}`);
-  };
-
-  return (
-    <div>
-      <Header user={user} onLogout={handleLogout} />
-      <div className="pt-20">
-        <CalendarPage
-          onNavigateToNewAppointment={handleNavigateToNewAppointment}
-          onJoinVideoCall={handleJoinVideoCall}
-          onStartVideoCall={handleStartVideoCall}
-        />
-      </div>
-    </div>
-  );
-};
-
-// Video Call Wrapper (Provider)
-const VideoCallWrapper = () => {
-  const location = useLocation();
-  const isProviderStart = location.pathname.includes('/start/');
-
-  console.log('🎬 Video call page loaded');
-  console.log('- URL:', location.pathname);
-  console.log('- Provider start:', isProviderStart);
-
-  return <VideoCallPage />;
-};
-
-// Patient Video Call Wrapper (No authentication required)
-const PatientVideoCallWrapper = () => {
-  const location = useLocation();
-  const { appointmentId, patientToken } = useParams();
-
-  console.log('👤 Patient video call page loaded');
-  console.log('- URL:', location.pathname);
-  console.log('- Appointment ID:', appointmentId);
-  console.log('- Patient Token:', patientToken);
-
-  return <VideoCallPage isPatient={true} />;
-};
-
-// Main App Component
-const App = () => {
   return (
     <Router>
       <div className="App">
@@ -387,14 +326,15 @@ const App = () => {
           <Route path="/" element={<LandingPageWrapper />} />
           <Route path="/login" element={<LoginPageWrapper />} />
 
-          {/* Protected Routes */}
+          {/* Protected Routes - All require Cognito authentication */}
           <Route path="/dashboard" element={<ProtectedRoute><DashboardWrapper /></ProtectedRoute>} />
           <Route path="/patients" element={<ProtectedRoute><PatientsWrapper /></ProtectedRoute>} />
           <Route path="/patients/new" element={<ProtectedRoute><NewPatientWrapper /></ProtectedRoute>} />
-          <Route path="/patients/:id" element={<ProtectedRoute><PatientDetailWrapper /></ProtectedRoute>} />
           <Route path="/appointments/new" element={<ProtectedRoute><NewAppointmentWrapper /></ProtectedRoute>} />
           <Route path="/calendar" element={<ProtectedRoute><CalendarWrapper /></ProtectedRoute>} />
-          <Route path="/notes" element={<ProtectedRoute><NotesPage /></ProtectedRoute>} />
+          <Route path="/notes" element={<ProtectedRoute><NotesWrapper /></ProtectedRoute>} />
+          <Route path="/doctors" element={<ProtectedRoute><DoctorsWrapper /></ProtectedRoute>} />
+          <Route path="/test-doctors" element={<ProtectedRoute><DoctorTestWrapper /></ProtectedRoute>} />
 
           {/* Video Call Routes */}
           <Route path="/video-call/start/:appointmentId" element={<ProtectedRoute><VideoCallWrapper /></ProtectedRoute>} />
@@ -404,13 +344,15 @@ const App = () => {
           <Route path="/join/:appointmentId" element={<PatientVideoCallWrapper />} />
           <Route path="/join/:appointmentId/:patientToken" element={<PatientVideoCallWrapper />} />
 
-          {/* Catch all - redirect to login */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
-          <Route path="/debug" element={<DebugPage />} />
+          {/* Debug route */}
+          <Route path="/debug" element={<ProtectedRoute><DebugWrapper /></ProtectedRoute>} />
+
+          {/* Catch all - redirect to dashboard */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </div>
     </Router>
   );
-};
+}
 
 export default App;

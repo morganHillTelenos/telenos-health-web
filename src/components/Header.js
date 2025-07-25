@@ -80,6 +80,12 @@ const Header = ({ user: propUser, onLogout }) => {
                             👥 Patients
                         </button>
                         <button
+                            onClick={() => navigate('/doctors')}
+                            className={getNavButtonClass('/doctors')}
+                        >
+                            👨‍⚕️ Providers
+                        </button>
+                        <button
                             onClick={() => navigate('/calendar')}
                             className={getNavButtonClass('/calendar')}
                         >
@@ -140,6 +146,16 @@ const Header = ({ user: propUser, onLogout }) => {
                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                                 >
                                     👥 Patients
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        setShowUserMenu(false);
+                                        navigate('/doctors');
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                >
+                                    👨‍⚕️ Providers
                                 </button>
 
                                 <button
@@ -211,6 +227,12 @@ const Header = ({ user: propUser, onLogout }) => {
                         className={getNavButtonClass('/patients')}
                     >
                         👥 Patients
+                    </button>
+                    <button
+                        onClick={() => navigate('/doctors')}
+                        className={getNavButtonClass('/doctors')}
+                    >
+                        👨‍⚕️ Providers
                     </button>
                     <button
                         onClick={() => navigate('/calendar')}
