@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import './VideoCallPage.css';
 import RecordingControls from '../components/RecordingControls';
 import '../components/RecordingControls.css';
+import RecordingDebugComponent from '../components/RecordingDebugComponent';
 
 const VideoCallPage = ({ isPatient = false }) => {
     const { appointmentId } = useParams();
@@ -474,6 +475,7 @@ const VideoCallPage = ({ isPatient = false }) => {
             <div className="video-grid">
                 <div className="local-video-container">
                     <div ref={localVideoRef} className="local-video"></div>
+                    {process.env.NODE_ENV === 'development' && <RecordingDebugComponent />}
                     <div className="participant-label">You ({participantName})</div>
                 </div>
 
