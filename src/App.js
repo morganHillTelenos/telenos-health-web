@@ -161,19 +161,40 @@ function App({ signOut, user }) {
     const navigate = useNavigate();
     const currentUser = getCognitoUser();
 
-    const handleNewAppointment = () => navigate('/appointments/new');
+    const handleNewAppointment = () => {
+      navigate('/appointments/new');
+    };
+
+    // ✅ ADD THESE VIDEO CALL HANDLERS
+    const handleJoinVideoCall = (appointmentId) => {
+      console.log('🎥 Joining video call for appointment:', appointmentId);
+      navigate(`/video-call/${appointmentId}`);
+    };
+
+    const handleStartVideoCall = (appointmentId) => {
+      console.log('🎥 Starting video call for appointment:', appointmentId);
+      navigate(`/video-call/start/${appointmentId}`);
+    };
 
     return (
       <div>
         <Header user={currentUser} onLogout={handleLogout} />
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
           <div className="container mx-auto px-6 py-8 pt-20">
-            <CalendarPage user={currentUser} onNewAppointment={handleNewAppointment} />
+            <CalendarPage
+              user={currentUser}
+              onNewAppointment={handleNewAppointment}
+              onJoinVideoCall={handleJoinVideoCall}        // ✅ Add this
+              onStartVideoCall={handleStartVideoCall}      // ✅ Add this
+            />
           </div>
         </div>
       </div>
     );
   };
+
+
+  
 
   const DoctorsWrapper = () => {
     const currentUser = getCognitoUser();
@@ -220,17 +241,33 @@ function App({ signOut, user }) {
     );
   };
 
+  // ✅ ADD THIS VideoCallWrapper COMPONENT TO YOUR APP.JS
+
   const VideoCallWrapper = () => {
-    const location = useLocation();
     const { appointmentId } = useParams();
-    const isProviderStart = location.pathname.includes('/start/');
+    const navigate = useNavigate();
+    const currentUser = getCognitoUser();
+    const location = useLocation();
 
-    console.log('🎥 Provider video call page loaded');
-    console.log('- URL:', location.pathname);
-    console.log('- Provider start:', isProviderStart);
+    // Check if this is a provider starting a call vs joining
+    const isStartCall = location.pathname.includes('/start/');
+    const isPatient = currentUser?.role?.toLowerCase().includes('patient');
 
-    return <VideoCallPage />;
+    return (
+      <div>
+        <Header user={currentUser} onLogout={handleLogout} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <VideoCallPage
+            appointmentId={appointmentId}
+            isPatient={isPatient}
+            isStartCall={isStartCall}
+          />
+        </div>
+      </div>
+    );
   };
+
+// ✅ AND ADD THESE ROUTES TO YOUR ROUTES SECTION:
 
   const PatientVideoCallWrapper = () => {
     const location = useLocation();
