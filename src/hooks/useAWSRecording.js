@@ -1,5 +1,6 @@
+// src/hooks/useAWSRecording.js - Fixed import and error handling
 import { useState, useCallback } from 'react';
-import awsLambdaRecordingService from '../services/awsLambdaRecordingService';
+import recordingService from '../services/awsLambdaRecordingService';
 
 export const useAWSRecording = () => {
     const [isRecording, setIsRecording] = useState(false);
@@ -14,23 +15,28 @@ export const useAWSRecording = () => {
             setError(null);
 
             console.log('🎬 Starting recording with room:', room);
+            console.log('🆔 Identity:', identity);
+            console.log('📅 Appointment ID:', appointmentId);
 
             // Validate room object
             if (!room || !room.sid) {
                 throw new Error('Invalid room object - missing room.sid');
             }
 
-            const result = await awsLambdaRecordingService.startRecording({
+            // Call the recording service
+            const result = await recordingService.startRecording({
                 roomSid: room.sid,
                 identity: identity,
                 appointmentId: appointmentId
             });
 
+            console.log('📡 Recording service result:', result);
+
             if (result.success) {
                 setIsRecording(true);
                 setRecordingSid(result.recordingSid);
                 setCompositionSid(result.compositionSid);
-                console.log('✅ Recording started:', result);
+                console.log('✅ Recording started successfully:', result);
                 return result;
             } else {
                 throw new Error(result.error || 'Failed to start recording');
@@ -38,9 +44,10 @@ export const useAWSRecording = () => {
 
         } catch (err) {
             console.error('❌ Start recording error:', err);
-            setError(err.message);
+            const errorMessage = `Recording start failed: ${err.message}`;
+            setError(errorMessage);
             setIsRecording(false);
-            throw err;
+            throw new Error(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -51,11 +58,15 @@ export const useAWSRecording = () => {
             setIsLoading(true);
             setError(null);
 
+            console.log('🛑 Stopping recording...');
+            console.log('📝 Recording SID:', recordingSid);
+            console.log('🎬 Composition SID:', compositionSid);
+
             if (!recordingSid && !compositionSid) {
-                throw new Error('No active recording to stop');
+                throw new Error('No active recording to stop - missing recording/composition SID');
             }
 
-            const result = await awsLambdaRecordingService.stopRecording({
+            const result = await recordingService.stopRecording({
                 compositionSid: compositionSid,
                 recordingSid: recordingSid,
                 roomSid: room?.sid
@@ -65,7 +76,7 @@ export const useAWSRecording = () => {
                 setIsRecording(false);
                 setRecordingSid(null);
                 setCompositionSid(null);
-                console.log('✅ Recording stopped:', result);
+                console.log('✅ Recording stopped successfully:', result);
                 return result;
             } else {
                 throw new Error(result.error || 'Failed to stop recording');
@@ -73,12 +84,18 @@ export const useAWSRecording = () => {
 
         } catch (err) {
             console.error('❌ Stop recording error:', err);
-            setError(err.message);
-            throw err;
+            const errorMessage = `Recording stop failed: ${err.message}`;
+            setError(errorMessage);
+            throw new Error(errorMessage);
         } finally {
             setIsLoading(false);
         }
     }, [recordingSid, compositionSid]);
+
+    // Reset error function
+    const clearError = useCallback(() => {
+        setError(null);
+    }, []);
 
     return {
         isRecording,
@@ -87,6 +104,7 @@ export const useAWSRecording = () => {
         error,
         isLoading,
         startRecording,
-        stopRecording
+        stopRecording,
+        clearError
     };
 };
