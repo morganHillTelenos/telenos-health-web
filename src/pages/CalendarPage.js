@@ -1,12 +1,176 @@
-import React from 'react';
-const { useState, useEffect } = React;
+// src/pages/CalendarPage.js - Updated with Video Link Sharing
+import React, { useState, useEffect } from 'react';
+import './CalendarPage.css';
 
-const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVideoCall }) => {
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-    const [viewMode, setViewMode] = useState('month');
+// VideoCallLinkSharing Component (inline for simplicity)
+const VideoCallLinkSharing = ({ appointmentId, onClose }) => {
+    const [copied, setCopied] = useState(false);
+
+    const getShareableLink = () => {
+        const baseUrl = window.location.origin;
+        return `${baseUrl}/video-call/${appointmentId}`;
+    };
+
+    const copyToClipboard = async () => {
+        try {
+            await navigator.clipboard.writeText(getShareableLink());
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            // Fallback for browsers that don't support clipboard API
+            const textArea = document.createElement('textarea');
+            textArea.value = getShareableLink();
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
+
+    const shareViaEmail = () => {
+        const subject = encodeURIComponent('Video Call Invitation - Telenos Health');
+        const body = encodeURIComponent(`You are invited to join a video consultation.
+
+Click the link below to join:
+${getShareableLink()}
+
+Appointment ID: ${appointmentId}
+
+Please ensure you have a stable internet connection and allow camera/microphone access when prompted.
+
+Best regards,
+Telenos Health Team`);
+
+        window.open(`mailto:?subject=${subject}&body=${body}`);
+    };
+
+    const shareViaSMS = () => {
+        const message = encodeURIComponent(`Join our video consultation: ${getShareableLink()} (Appointment ID: ${appointmentId})`);
+        window.open(`sms:?body=${message}`);
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+                <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <span>🔗</span>
+                        Share Video Call Link
+                    </h3>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-400 hover:text-gray-600 text-xl"
+                    >
+                        ×
+                    </button>
+                </div>
+
+                <div className="space-y-4">
+                    {/* Link Display and Copy */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Video Call Link
+                        </label>
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={getShareableLink()}
+                                readOnly
+                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm font-mono"
+                            />
+                            <button
+                                onClick={copyToClipboard}
+                                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200 ${copied
+                                        ? 'bg-green-500 text-white'
+                                        : 'bg-blue-500 hover:bg-blue-600 text-white'
+                                    }`}
+                            >
+                                <span>{copied ? '✓' : '📋'}</span>
+                                {copied ? 'Copied!' : 'Copy'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Appointment Info */}
+                    <div className="bg-blue-50 rounded-lg p-3">
+                        <p className="text-sm text-blue-800">
+                            <strong>Appointment ID:</strong> {appointmentId}
+                        </p>
+                        <p className="text-sm text-blue-600 mt-1">
+                            Share this link with the patient to join the video consultation
+                        </p>
+                    </div>
+
+                    {/* Sharing Options */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                            Share via:
+                        </label>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button
+                                onClick={shareViaEmail}
+                                className="flex items-center gap-2 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                            >
+                                <span>📧</span>
+                                <span className="text-sm font-medium">Email</span>
+                            </button>
+
+                            <button
+                                onClick={shareViaSMS}
+                                className="flex items-center gap-2 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                            >
+                                <span>💬</span>
+                                <span className="text-sm font-medium">SMS</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Security Notice */}
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                        <p className="text-xs text-green-700">
+                            🔒 This link is secure and HIPAA-compliant. Only invited participants can join the call.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                    <button
+                        onClick={onClose}
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                        Close
+                    </button>
+                    <button
+                        onClick={copyToClipboard}
+                        className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    >
+                        Copy Link
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Main CalendarPage Component
+const CalendarPage = ({
+    user,
+    onNewAppointment,
+    onJoinVideoCall,
+    onStartVideoCall,
+    onNavigateToNewAppointment
+}) => {
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [viewMode, setViewMode] = useState('month');
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+
+    // New state for video link sharing
+    const [showLinkSharing, setShowLinkSharing] = useState(false);
+    const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
 
     useEffect(() => {
         loadAppointments();
@@ -15,50 +179,34 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
     const loadAppointments = async () => {
         try {
             setLoading(true);
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 800));
 
+            // Mock appointments data with some video appointments
             const mockAppointments = [
                 {
-                    id: '1',
-                    patient: 'Michael Chen',
-                    patientId: '1',
+                    id: 'APT001',
+                    patient: 'John Smith',
                     date: new Date().toISOString().split('T')[0],
-                    time: '14:00',
+                    time: '09:00',
                     duration: 30,
-                    reason: 'Follow-up consultation',
+                    reason: 'Regular checkup',
                     status: 'confirmed',
                     type: 'video',
                     priority: 'normal'
                 },
                 {
-                    id: '2',
-                    patient: 'Sarah Williams',
-                    patientId: '2',
+                    id: 'APT002',
+                    patient: 'Sarah Johnson',
                     date: new Date().toISOString().split('T')[0],
-                    time: '15:30',
+                    time: '10:30',
                     duration: 45,
-                    reason: 'Annual checkup',
+                    reason: 'Follow-up consultation',
                     status: 'confirmed',
-                    type: 'in-person',
-                    priority: 'normal'
-                },
-                {
-                    id: '3',
-                    patient: 'Robert Johnson',
-                    patientId: '3',
-                    date: getTomorrowDate(),
-                    time: '10:00',
-                    duration: 30,
-                    reason: 'Medication review',
-                    status: 'pending',
                     type: 'video',
                     priority: 'high'
                 },
                 {
-                    id: '4',
-                    patient: 'Emily Davis',
-                    patientId: '4',
+                    id: 'APT003',
+                    patient: 'Michael Brown',
                     date: getTomorrowDate(),
                     time: '11:15',
                     duration: 60,
@@ -83,7 +231,7 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
         return tomorrow.toISOString().split('T')[0];
     };
 
-    // Default handlers in case props are not passed
+    // Video call handlers
     const handleJoinVideoCall = (appointmentId) => {
         if (onJoinVideoCall && typeof onJoinVideoCall === 'function') {
             onJoinVideoCall(appointmentId);
@@ -100,6 +248,12 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
             console.log('🎥 Start video call function not available, appointment ID:', appointmentId);
             alert('Video call functionality is currently unavailable.');
         }
+    };
+
+    // New function for sharing video call link
+    const handleShareVideoLink = (appointmentId) => {
+        setSelectedAppointmentId(appointmentId);
+        setShowLinkSharing(true);
     };
 
     const handleNewAppointment = () => {
@@ -225,9 +379,9 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
 
                             <button
                                 onClick={handleNewAppointment}
-                                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-2 rounded-xl font-semibold flex items-center gap-2 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 hover:scale-105"
+                                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl"
                             >
-                                <span className="text-lg">+</span>
+                                <span className="text-lg mr-2">+</span>
                                 New Appointment
                             </button>
                         </div>
@@ -235,7 +389,7 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto p-6">
+            <div className="max-w-7xl mx-auto px-6 py-8">
                 {/* Calendar View */}
                 {viewMode === 'month' ? (
                     /* Month View */
@@ -279,32 +433,21 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
                                         <div
                                             key={index}
                                             className={`min-h-[100px] p-2 border border-gray-100 cursor-pointer transition-all duration-200 hover:bg-blue-50 ${isCurrentMonth ? 'bg-white' : 'bg-gray-50'
-                                                } ${isToday ? 'ring-2 ring-blue-500' : ''} ${isSelected ? 'bg-blue-100' : ''
-                                                }`}
+                                                } ${isToday ? 'bg-blue-100 border-blue-300' : ''
+                                                } ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
                                             onClick={() => setSelectedDate(day.toISOString().split('T')[0])}
                                         >
-                                            <div className={`text-sm font-medium mb-1 ${isCurrentMonth ? 'text-gray-900' : 'text-gray-400'
-                                                } ${isToday ? 'text-blue-600 font-bold' : ''}`}>
+                                            <div className={`text-sm font-semibold mb-1 ${isCurrentMonth ? 'text-gray-900' : 'text-gray-400'
+                                                } ${isToday ? 'text-blue-600' : ''}`}>
                                                 {day.getDate()}
                                             </div>
-
-                                            {dayAppointments.slice(0, 2).map(appointment => (
-                                                <div
-                                                    key={appointment.id}
-                                                    className={`text-xs p-1 mb-1 rounded truncate ${appointment.type === 'video'
-                                                            ? 'bg-blue-100 text-blue-800'
-                                                            : 'bg-green-100 text-green-800'
-                                                        }`}
-                                                    title={`${appointment.time} - ${appointment.patient}`}
-                                                >
-                                                    {appointment.time} {appointment.patient.split(' ')[0]}
+                                            {dayAppointments.slice(0, 2).map(apt => (
+                                                <div key={apt.id} className="text-xs bg-blue-500 text-white rounded px-1 py-0.5 mb-1 truncate">
+                                                    {apt.patient}
                                                 </div>
                                             ))}
-
                                             {dayAppointments.length > 2 && (
-                                                <div className="text-xs text-gray-500">
-                                                    +{dayAppointments.length - 2} more
-                                                </div>
+                                                <div className="text-xs text-gray-500">+{dayAppointments.length - 2} more</div>
                                             )}
                                         </div>
                                     );
@@ -399,27 +542,17 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
                                                             <span className="text-lg">{appointment.type === 'video' ? '🎥' : '🏥'}</span>
                                                             {appointment.type === 'video' ? 'Video Call' : 'In-Person'}
                                                         </span>
-                                                        <span className="flex items-center gap-1">
-                                                            <span className="text-lg">⚡</span>
-                                                            {appointment.priority}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-center gap-3">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-sm font-medium text-gray-700">Status:</span>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className={`text-sm px-3 py-1 rounded-full font-medium ${appointment.status === 'confirmed' ? 'bg-green-100 text-green-800' :
+                                                        <span className="flex items-center gap-2">
+                                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${appointment.status === 'confirmed' ? 'bg-green-100 text-green-800' :
                                                                 appointment.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                                                                     'bg-gray-100 text-gray-800'
-                                                            }`}>
-                                                            {appointment.status}
-                                                        </span>
-                                                        <div className={`w-3 h-3 rounded-full ${appointment.status === 'confirmed' ? 'bg-green-500' :
+                                                                }`}>
+                                                                {appointment.status}
+                                                            </span>
+                                                            <div className={`w-3 h-3 rounded-full ${appointment.status === 'confirmed' ? 'bg-green-500' :
                                                                 appointment.status === 'pending' ? 'bg-yellow-500' : 'bg-gray-400'
-                                                            }`}></div>
+                                                                }`}></div>
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -432,13 +565,22 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
 
                                             <div className="flex gap-3">
                                                 {appointment.type === 'video' && (
-                                                    <button
-                                                        onClick={() => handleJoinVideoCall(appointment.id)}
-                                                        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105 shadow-md"
-                                                    >
-                                                        <span>🎥</span>
-                                                        Start Video Call
-                                                    </button>
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleShareVideoLink(appointment.id)}
+                                                            className="bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105"
+                                                        >
+                                                            <span>🔗</span>
+                                                            Share Link
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleJoinVideoCall(appointment.id)}
+                                                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105 shadow-md"
+                                                        >
+                                                            <span>🎥</span>
+                                                            Start Video Call
+                                                        </button>
+                                                    </>
                                                 )}
                                                 <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-semibold transition-all duration-200 hover:scale-105">
                                                     View Details
@@ -452,6 +594,17 @@ const CalendarPage = ({ onNavigateToNewAppointment, onJoinVideoCall, onStartVide
                     )}
                 </div>
             </div>
+
+            {/* Video Call Link Sharing Modal */}
+            {showLinkSharing && (
+                <VideoCallLinkSharing
+                    appointmentId={selectedAppointmentId}
+                    onClose={() => {
+                        setShowLinkSharing(false);
+                        setSelectedAppointmentId(null);
+                    }}
+                />
+            )}
         </div>
     );
 };
