@@ -1,4 +1,4 @@
-// src/pages/LandingPage.js
+// src/pages/LandingPage.js - Updated with proper navigation
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
@@ -53,40 +53,23 @@ const LandingPage = () => {
             });
         }, observerOptions);
 
-        // Observe all animated elements
-        document.querySelectorAll('.fade-in, .slide-in, .scale-in').forEach(el => {
-            observer.observe(el);
-        });
+        const animatedElements = document.querySelectorAll('.animate-on-scroll');
+        animatedElements.forEach(el => observer.observe(el));
 
-        // Dynamic gradient animation
-        const animateGradients = () => {
-            const gradientElements = document.querySelectorAll('.dynamic-gradient');
-            gradientElements.forEach(el => {
-                const hue = (Date.now() / 50) % 360;
-                el.style.background = `linear-gradient(135deg, 
-                    hsl(${hue}, 70%, 50%) 0%, 
-                    hsl(${(hue + 60) % 360}, 70%, 60%) 100%)`;
-            });
-        };
-
-        const gradientInterval = setInterval(animateGradients, 100);
-
-        // Event listeners
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('scroll', handleScroll);
         document.addEventListener('click', handleSmoothScroll);
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('scroll', handleScroll);
 
-        // Initialize floating particles
-        createFloatingParticles();
-
-        // Cleanup
         return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('scroll', handleScroll);
             document.removeEventListener('click', handleSmoothScroll);
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('scroll', handleScroll);
-            clearInterval(gradientInterval);
             observer.disconnect();
         };
+    }, []);
+
+    useEffect(() => {
+        createFloatingParticles();
     }, []);
 
     const createFloatingParticles = () => {
@@ -104,11 +87,11 @@ const LandingPage = () => {
     };
 
     const handleLogin = () => {
-        navigate('/login');
+        navigate('/dashboard'); // This will trigger the authentication flow
     };
 
-    const handleSignUp = () => {
-        navigate('/signup');
+    const handleGetStarted = () => {
+        navigate('/dashboard'); // This will trigger the authentication flow
     };
 
     return (
@@ -132,199 +115,237 @@ const LandingPage = () => {
                         <a href="#philosophy" className="nav-link">Vision</a>
                         <a href="#difference" className="nav-link">Innovation</a>
                         <a href="#beta" className="nav-link">Beta</a>
-                        <button onClick={handleLogin} className="nav-btn secondary">Login</button>
-                        <button onClick={handleSignUp} className="nav-btn primary">Join</button>
+                        <a href="#contact" className="nav-link">Contact</a>
                     </div>
+                    <button className="cta-button nav-cta" onClick={handleLogin}>
+                        Provider Login
+                    </button>
                 </div>
             </nav>
 
             {/* Hero Section */}
-            <section ref={heroRef} className="hero-section">
-                <div
-                    className="hero-parallax"
-                    style={{
-                        transform: `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px)`
-                    }}
-                >
-                    <div className="hero-content">
-                        <div className="hero-badge scale-in">
-                            <span className="badge-icon">⚡</span>
-                            <span>Next-Gen Mental Health</span>
+            <section className="hero-section" ref={heroRef}>
+                <div className="hero-container">
+                    <div className="hero-content animate-on-scroll">
+                        <div className="hero-badge">
+                            <span className="badge-text">🚀 Beta Program Now Open</span>
                         </div>
 
-                        <h1 className="hero-title fade-in">
-                            <span className="title-line">
-                                <span className="brand-gradient">Promind</span>
-                                <span className="title-decoration"></span>
-                            </span>
-                            <span className="title-line">Precision Psychiatry</span>
-                            <span className="subtitle-line">Engineering the Future of Mental Health</span>
+                        <h1 className="hero-title">
+                            <span className="gradient-text">Precision Psychiatry</span>
+                            <br />
+                            <span className="secondary-text">Engineered for Outcomes</span>
                         </h1>
 
-                        <p className="hero-description fade-in">
-                            Beyond the Snapshot. Continuous Optimization for the Human Mind.
-                            <br />
-                            <span className="highlight-text">Integrating computational psychiatry with holistic care.</span>
+                        <p className="hero-description">
+                            Advanced computational psychiatry platform combining real-time physiological monitoring,
+                            AI-driven treatment optimization, and continuous outcome measurement for unprecedented
+                            precision in mental health care.
                         </p>
 
-                        <div className="hero-actions fade-in">
-                            <a href="#philosophy" className="btn-modern primary">
-                                <span>Explore Our Vision</span>
-                                <div className="btn-glow"></div>
-                            </a>
-                            <a href="#beta" className="btn-modern secondary">
-                                <span>Join Beta Program</span>
-                                <div className="btn-shine"></div>
-                            </a>
+                        <div className="hero-cta">
+                            <button className="cta-button primary" onClick={handleGetStarted}>
+                                <span>Access Platform</span>
+                                <svg className="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                            <button className="cta-button secondary" onClick={() => document.getElementById('philosophy').scrollIntoView({ behavior: 'smooth' })}>
+                                Learn More
+                            </button>
                         </div>
+                    </div>
 
-                        <div className="hero-stats fade-in">
-                            <div className="stat-item">
-                                <div className="stat-number">99.9%</div>
-                                <div className="stat-label">Precision Rate</div>
+                    <div className="hero-visual">
+                        <div className="floating-dashboard">
+                            <div className="dashboard-header">
+                                <div className="status-indicators">
+                                    <div className="indicator active"></div>
+                                    <div className="indicator active"></div>
+                                    <div className="indicator warning"></div>
+                                </div>
+                                <div className="dashboard-title">Patient Monitoring</div>
                             </div>
-                            <div className="stat-item">
-                                <div className="stat-number">24/7</div>
-                                <div className="stat-label">Monitoring</div>
-                            </div>
-                            <div className="stat-item">
-                                <div className="stat-number">AI-Powered</div>
-                                <div className="stat-label">Insights</div>
+                            <div className="dashboard-content">
+                                <div className="metric-row">
+                                    <div className="metric">
+                                        <div className="metric-label">HRV Coherence</div>
+                                        <div className="metric-value">87%</div>
+                                    </div>
+                                    <div className="metric">
+                                        <div className="metric-label">Treatment Response</div>
+                                        <div className="metric-value trending-up">+23%</div>
+                                    </div>
+                                </div>
+                                <div className="progress-bar">
+                                    <div className="progress-fill"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div className="scroll-indicator">
-                    <div className="scroll-arrow"></div>
                 </div>
             </section>
 
             {/* Philosophy Section */}
-            <section id="philosophy" className="section philosophy-section">
-                <div className="section-container">
-                    <div className="section-header fade-in">
-                        <span className="section-badge">Innovation</span>
-                        <h2 className="section-title">The Algorithmic Advantage</h2>
-                        <p className="section-subtitle">Precision. Prediction. Progress.</p>
+            <section id="philosophy" className="content-section">
+                <div className="container">
+                    <div className="section-header animate-on-scroll">
+                        <h2>Computational Precision</h2>
+                        <p>Moving beyond traditional psychiatry toward measurable, optimized outcomes</p>
                     </div>
 
-                    <div className="features-grid">
-                        {[
-                            {
-                                icon: "📊",
-                                title: "Objective Insights",
-                                description: "Data-driven diagnosis and treatment, moving past subjective interpretations toward evidence-based precision.",
-                                tagline: "Deconstructing complexity to reveal truth."
-                            },
-                            {
-                                icon: "🔄",
-                                title: "Holistic Integration",
-                                description: "Understanding the patient as a complex system, where problems are interconnected and require comprehensive solutions.",
-                                tagline: "The mind as a dynamic ecosystem. Engineered for equilibrium."
-                            },
-                            {
-                                icon: "⚡",
-                                title: "Continuous Evolution",
-                                description: "Ongoing analysis, refinement, and adaptation that evolves with your needs beyond traditional appointments.",
-                                tagline: "Beyond the confines of the clinic. Persistent optimization."
-                            },
-                            {
-                                icon: "🤖",
-                                title: "Computational Psychiatry",
-                                description: "Advanced algorithms and data science integration to achieve unparalleled mental health outcomes.",
-                                tagline: "Leveraging computation for state-of-the-art mental health."
-                            }
-                        ].map((feature, index) => (
-                            <div key={index} className="feature-card slide-in" style={{ animationDelay: `${index * 0.1}s` }}>
-                                <div className="card-glow"></div>
-                                <div className="card-icon">{feature.icon}</div>
-                                <h3 className="card-title">{feature.title}</h3>
-                                <p className="card-description">{feature.description}</p>
-                                <p className="card-tagline">"{feature.tagline}"</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+                    <div className="feature-grid">
+                        <div className="feature-card animate-on-scroll">
+                            <div className="feature-icon">🔬</div>
+                            <h3>Evidence-Based Architecture</h3>
+                            <p>Every intervention backed by real-time physiological data, validated through continuous measurement and algorithmic optimization.</p>
+                        </div>
 
-            {/* Difference Section */}
-            <section id="difference" className="section difference-section">
-                <div className="section-container">
-                    <div className="section-header fade-in">
-                        <span className="section-badge light">Excellence</span>
-                        <h2 className="section-title">Unlocking Human Potential</h2>
-                        <p className="section-subtitle">Accelerating Mental Wellness Through Innovation.</p>
-                    </div>
+                        <div className="feature-card animate-on-scroll">
+                            <div className="feature-icon">⚡</div>
+                            <h3>Adaptive Treatment Protocols</h3>
+                            <p>Dynamic treatment adjustments based on objective biomarkers, response patterns, and predictive modeling for optimal therapeutic outcomes.</p>
+                        </div>
 
-                    <div className="offerings-showcase">
-                        {[
-                            "Personalized Mental Architecture",
-                            "Proactive Intervention Strategies",
-                            "Optimized Treatment Trajectories",
-                            "Sustainable Well-being Solutions"
-                        ].map((offering, index) => (
-                            <div key={index} className="offering-item fade-in" style={{ animationDelay: `${index * 0.15}s` }}>
-                                <div className="offering-number">{String(index + 1).padStart(2, '0')}</div>
-                                <h3 className="offering-title">{offering}</h3>
-                                <div className="offering-bar"></div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="evolution-cta fade-in">
-                        <h3 className="cta-title">Join the Vanguard of Mental Evolution</h3>
-                        <div className="benefit-tags">
-                            {["Cutting-edge Approach", "Superior Outcomes", "Forward-thinking Methodology", "Continuous Innovation"].map((benefit, index) => (
-                                <span key={index} className="benefit-tag">{benefit}</span>
-                            ))}
+                        <div className="feature-card animate-on-scroll">
+                            <div className="feature-icon">📊</div>
+                            <h3>Quantified Mental Health</h3>
+                            <p>Comprehensive tracking of treatment efficacy through validated assessment tools, physiological monitoring, and behavioral analytics.</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Beta Program Section */}
-            <section id="beta" className="section beta-section">
-                <div className="section-container">
-                    <div className="beta-content">
-                        <div className="beta-header fade-in">
-                            <span className="section-badge premium">Exclusive</span>
-                            <h2 className="section-title">The Next Frontier</h2>
-                            <p className="section-subtitle">Shape the Future of Mental Health Technology</p>
+            {/* What Makes Us Different */}
+            <section id="difference" className="difference-section">
+                <div className="container">
+                    <div className="difference-content">
+                        <div className="difference-text animate-on-scroll">
+                            <h2>Engineering Mental Health</h2>
+                            <p className="difference-intro">
+                                Traditional psychiatry relies on subjective assessments and trial-and-error approaches.
+                                We engineer precision through objective measurement and continuous optimization.
+                            </p>
+
+                            <div className="comparison-list">
+                                <div className="comparison-item">
+                                    <div className="comparison-icon">❌</div>
+                                    <div className="comparison-text">
+                                        <strong>Traditional:</strong> Subjective symptom reporting, weeks between adjustments
+                                    </div>
+                                </div>
+                                <div className="comparison-item">
+                                    <div className="comparison-icon">✅</div>
+                                    <div className="comparison-text">
+                                        <strong>Promind:</strong> Real-time physiological monitoring, immediate optimization
+                                    </div>
+                                </div>
+                                <div className="comparison-item">
+                                    <div className="comparison-icon">❌</div>
+                                    <div className="comparison-text">
+                                        <strong>Traditional:</strong> One-size-fits-all treatment protocols
+                                    </div>
+                                </div>
+                                <div className="comparison-item">
+                                    <div className="comparison-icon">✅</div>
+                                    <div className="comparison-text">
+                                        <strong>Promind:</strong> Personalized, adaptive treatment algorithms
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="beta-features fade-in">
-                            <div className="beta-promise">
-                                <h3>Be at the Forefront of Innovation</h3>
-                                <p>Experience cutting-edge treatments and technologies before they become widely available. Join an exclusive community shaping the future of psychiatric care.</p>
+                        <div className="difference-visual animate-on-scroll">
+                            <div className="tech-stack">
+                                <div className="tech-layer">
+                                    <div className="layer-label">AI Optimization Engine</div>
+                                    <div className="layer-content">Treatment Protocol Adaptation</div>
+                                </div>
+                                <div className="tech-layer">
+                                    <div className="layer-label">Real-time Monitoring</div>
+                                    <div className="layer-content">Physiological Biomarkers</div>
+                                </div>
+                                <div className="tech-layer">
+                                    <div className="layer-label">Outcome Measurement</div>
+                                    <div className="layer-content">Validated Assessment Tools</div>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-                            <div className="beta-actions">
-                                <a href="mailto:contact@promindpsychiatry.com" className="btn-modern primary large">
-                                    <span>Express Interest</span>
-                                    <div className="btn-glow"></div>
-                                </a>
-                                <a href="#beta" className="btn-modern secondary">
-                                    <span>Learn More</span>
-                                </a>
+            {/* Beta Program */}
+            <section id="beta" className="beta-section">
+                <div className="container">
+                    <div className="beta-container animate-on-scroll">
+                        <div className="beta-badge">Limited Beta Access</div>
+                        <h2>Join the Future of Psychiatry</h2>
+                        <p>
+                            We're selectively onboarding healthcare providers for our beta program.
+                            Experience precision psychiatry with comprehensive platform access and dedicated support.
+                        </p>
+
+                        <div className="beta-features">
+                            <div className="beta-feature">
+                                <span className="feature-check">✓</span>
+                                Full platform access with real-time monitoring
                             </div>
+                            <div className="beta-feature">
+                                <span className="feature-check">✓</span>
+                                Dedicated implementation support team
+                            </div>
+                            <div className="beta-feature">
+                                <span className="feature-check">✓</span>
+                                Direct influence on product development
+                            </div>
+                        </div>
+
+                        <button className="cta-button primary large" onClick={handleGetStarted}>
+                            Request Beta Access
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            {/* Contact */}
+            <section id="contact" className="contact-section">
+                <div className="container">
+                    <div className="contact-content animate-on-scroll">
+                        <h2>Ready to Transform Mental Health Care?</h2>
+                        <p>Connect with our team to explore how precision psychiatry can enhance your practice.</p>
+
+                        <div className="contact-options">
+                            <a href="mailto:contact@promindpsychiatry.com" className="contact-method">
+                                <div className="contact-icon">📧</div>
+                                <div className="contact-text">
+                                    <strong>Email</strong>
+                                    <span>contact@promindpsychiatry.com</span>
+                                </div>
+                            </a>
+
+                            <button className="contact-method" onClick={handleGetStarted}>
+                                <div className="contact-icon">🚀</div>
+                                <div className="contact-text">
+                                    <strong>Platform Access</strong>
+                                    <span>Request demonstration</span>
+                                </div>
+                            </button>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="footer">
-                <div className="section-container">
+            <footer className="modern-footer">
+                <div className="container">
                     <div className="footer-content">
-                        <div className="footer-main">
-                            <div className="footer-brand">
-                                <div className="footer-logo">
-                                    <span className="logo-pulse">🧠</span>
-                                    <span>Promind Precision Psychiatry</span>
-                                </div>
-                                <p>Engineering the future of mental health through precision, innovation, and continuous optimization.</p>
+                        <div className="footer-brand">
+                            <div className="footer-logo">
+                                <div className="logo-pulse">🧠</div>
+                                <span>Promind Precision Psychiatry</span>
                             </div>
+                            <p>Engineering the future of mental health through precision, innovation, and continuous optimization.</p>
                         </div>
 
                         <div className="footer-links">

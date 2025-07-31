@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/auth';
+import ApiKeyTestComponent from '../components/ApiKeyTestComponent';
 
 const HealthcareDashboard = () => {
     const navigate = useNavigate();
@@ -127,6 +128,8 @@ const HealthcareDashboard = () => {
             setLoading(false);
         }
     };
+
+    <ApiKeyTestComponent />
 
     const handleLogout = async () => {
         try {

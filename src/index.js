@@ -1,10 +1,12 @@
-// src/index.js
+// src/index.js - Fixed to allow public landing page
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Amplify } from 'aws-amplify';
 import { Authenticator } from '@aws-amplify/ui-react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import amplifyConfig from './amplify_outputs.json';
 import App from './App';
+import LandingPage from './pages/LandingPage';
 import '@aws-amplify/ui-react/styles.css';
 import './index.css';
 
@@ -66,8 +68,21 @@ const components = {
   }
 };
 
-root.render(
-  <React.StrictMode>
+// Component to conditionally render authentication
+const ConditionalAuth = () => {
+  const location = useLocation();
+
+  // Define public routes that don't need authentication
+  const publicRoutes = ['/', '/landing'];
+  const isPublicRoute = publicRoutes.includes(location.pathname);
+
+  // If it's a public route, render the landing page directly
+  if (isPublicRoute) {
+    return <LandingPage />;
+  }
+
+  // For all other routes, require authentication
+  return (
     <Authenticator
       formFields={formFields}
       components={components}
@@ -78,5 +93,30 @@ root.render(
         <App signOut={signOut} user={user} />
       )}
     </Authenticator>
+  );
+};
+
+root.render(
+  <React.StrictMode>
+    <Router>
+      <Routes>
+        {/* Public landing page route */}
+        <Route path="/" element={<LandingPage />} />
+
+        {/* All other routes require authentication */}
+        <Route path="/*" element={
+          <Authenticator
+            formFields={formFields}
+            components={components}
+            variation="modal"
+            hideSignUp={false}
+          >
+            {({ signOut, user }) => (
+              <App signOut={signOut} user={user} />
+            )}
+          </Authenticator>
+        } />
+      </Routes>
+    </Router>
   </React.StrictMode>
 );
