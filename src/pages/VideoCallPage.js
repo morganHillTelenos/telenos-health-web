@@ -1,4 +1,4 @@
-// src/pages/VideoCallPage.js - Fixed Identity Issue
+// src/pages/VideoCallPage.js - Fixed with Debug Logging
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './VideoCallPage.css';
@@ -24,7 +24,6 @@ const VideoCallPage = ({ isPatient = false }) => {
     const [localVideoTrack, setLocalVideoTrack] = useState(null);
     const [connectionLog, setConnectionLog] = useState([]);
     const [roomSid, setRoomSid] = useState(null);
-    // ✅ ADD IDENTITY STATE
     const [identity, setIdentity] = useState(null);
 
     // Refs for video elements
@@ -153,15 +152,27 @@ const VideoCallPage = ({ isPatient = false }) => {
                 networkQuality: true
             });
 
+            // ✅ CRITICAL DEBUG LOGGING - ADD RIGHT AFTER CONNECTION
+            console.log('🔍 DEBUG - Connected room object:', connectedRoom);
+            console.log('🔍 DEBUG - Room SID:', connectedRoom.sid);
+            console.log('🔍 DEBUG - Room name:', connectedRoom.name);
+            console.log('🔍 DEBUG - Room status:', connectedRoom.status);
+            console.log('🔍 DEBUG - Full room properties:', Object.keys(connectedRoom));
+
             addToLog(`🎉 Successfully connected to room: ${connectedRoom.name}`);
-            console.log('📹 Connected to room:', connectedRoom.name);
-            console.log('👤 Local participant:', connectedRoom.localParticipant.identity);
+            addToLog(`📝 Room SID: ${connectedRoom.sid}`);
 
-            // Save the room SID for recording
-            setRoomSid(connectedRoom.sid);
-            addToLog(`📝 Room SID saved: ${connectedRoom.sid}`);
-
+            // ✅ CRITICAL: Set room state IMMEDIATELY after connection
             setRoom(connectedRoom);
+            setRoomSid(connectedRoom.sid);
+
+            // ✅ VERIFY STATE WAS SET
+            console.log('🔍 DEBUG - Room state set, verifying...');
+            setTimeout(() => {
+                console.log('🔍 DEBUG - Room state after 100ms:', connectedRoom);
+                console.log('🔍 DEBUG - Room SID after 100ms:', connectedRoom.sid);
+            }, 100);
+
             setCurrentScreen('in-call');
 
             // STEP 4: Attach local tracks to DOM with proper timing
@@ -438,9 +449,24 @@ const VideoCallPage = ({ isPatient = false }) => {
                             </div>
 
                             <button onClick={() => {
-                                setRoomSid('RM1234567890abcdef1234567890abcdef');
+                                // ✅ CREATE A MOCK ROOM OBJECT FOR TESTING
+                                const mockRoom = {
+                                    sid: 'RM1234567890abcdef1234567890abcdef',
+                                    name: 'telenos-room-APT001',
+                                    status: 'in-progress',
+                                    participants: new Map(),
+                                    localParticipant: {
+                                        identity: 'test-doctor',
+                                        sid: 'PA1234567890abcdef1234567890abcdef'
+                                    }
+                                };
+
+                                setRoom(mockRoom);
+                                setRoomSid(mockRoom.sid);
                                 setIdentity('test-doctor');
+                                setParticipantName('Test Doctor');
                                 setCurrentScreen('in-call');
+                                addToLog('🧪 Test mode activated with mock room');
                             }}>
                                 Test Recording (Skip Video)
                             </button>
@@ -489,13 +515,13 @@ const VideoCallPage = ({ isPatient = false }) => {
                 )}
             </div>
 
-            {/* ✅ FIXED RECORDING CONTROLS WITH PROPER PROPS */}
-            {roomSid && (
+            {/* ✅ IMPROVED RECORDING CONTROLS WITH BETTER CONDITIONS */}
+            {room && room.sid && identity && (
                 <RecordingControls
                     room={room}
-                    identity={identity}                    // ✅ Now properly defined
+                    identity={identity}
                     appointmentId={appointmentId}
-                    participants={participantsArray}      // ✅ Convert Map to Array
+                    participants={participantsArray}
                 />
             )}
 
@@ -523,9 +549,11 @@ const VideoCallPage = ({ isPatient = false }) => {
                 <p>Room: telenos-room-{appointmentId}</p>
                 <p>Participants: {participants.size + 1}</p>
                 <p>Status: Connected ✅</p>
-                {/* ✅ DEBUG INFO */}
+                {/* ✅ ENHANCED DEBUG INFO */}
                 <p>Identity: {identity || 'Not set'}</p>
                 <p>Room SID: {roomSid || 'Not available'}</p>
+                <p>Room Object: {room ? '✅ Available' : '❌ Missing'}</p>
+                <p>Room.sid: {room?.sid || 'Not available'}</p>
             </div>
         </div>
     );
@@ -552,12 +580,6 @@ const VideoCallPage = ({ isPatient = false }) => {
             </div>
         </div>
     );
-
-    // Add this right after room connection is successful
-    console.log('🔍 DEBUG - Connected room object:', room);
-    console.log('🔍 DEBUG - Room SID:', room.sid);
-    console.log('🔍 DEBUG - Room name:', room.name);
-    console.log('🔍 DEBUG - Full room properties:', Object.keys(room));
 
     // Render call ended screen
     const renderCallEndedScreen = () => (
