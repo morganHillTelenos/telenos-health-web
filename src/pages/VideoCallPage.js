@@ -553,6 +553,12 @@ const VideoCallPage = ({ isPatient = false }) => {
         </div>
     );
 
+    // Add this right after room connection is successful
+    console.log('🔍 DEBUG - Connected room object:', room);
+    console.log('🔍 DEBUG - Room SID:', room.sid);
+    console.log('🔍 DEBUG - Room name:', room.name);
+    console.log('🔍 DEBUG - Full room properties:', Object.keys(room));
+
     // Render call ended screen
     const renderCallEndedScreen = () => (
         <div className="call-ended-screen">
