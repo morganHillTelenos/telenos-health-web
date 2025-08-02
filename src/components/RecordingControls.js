@@ -13,10 +13,13 @@ const RecordingControls = ({ room, identity, appointmentId, participants = [] })
 
     const handleStartRecording = async () => {
         try {
+            console.log('🔍 RECORDING DEBUG - Room object:', room);
+            console.log('🔍 RECORDING DEBUG - Room SID:', room?.sid);
+            console.log('🔍 RECORDING DEBUG - Expected SID:', 'RMceb13506451702c18bf4b1039bfd3004');
+            console.log('🔍 RECORDING DEBUG - Room properties:', Object.keys(room || {}));
+
             console.log('🎬 Handle start recording clicked');
-            console.log('Room object:', room);
-            console.log('Remote participants:', participants);
-            console.log('Identity:', identity);
+    
 
             // Validate room
             if (!room) {

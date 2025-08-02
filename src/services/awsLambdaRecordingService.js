@@ -6,8 +6,13 @@ class AWSLambdaRecordingService {
 
     async startRecording({ roomSid, identity, appointmentId }) {
         try {
-            console.log('🎬 Starting recording with:', { roomSid, identity, appointmentId });
+            // ✅ ADD THESE DEBUG LINES at the very top
+            console.log('🔍 SERVICE DEBUG - Received roomSid:', roomSid);
+            console.log('🔍 SERVICE DEBUG - Expected roomSid:', 'RMceb13506451702c18bf4b1039bfd3004');
+            console.log('🔍 SERVICE DEBUG - SID Match:', roomSid === 'RMceb13506451702c18bf4b1039bfd3004');
 
+            console.log('🎬 Starting recording with:', { roomSid, identity, appointmentId });
+            // ... rest of function
             // Validate required parameters
             if (!roomSid) {
                 throw new Error('roomSid is required for recording');
