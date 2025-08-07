@@ -1,98 +1,60 @@
-// src/pages/LandingPage.js - Updated with proper navigation
-import React, { useEffect, useRef, useState } from 'react';
+// src/pages/LandingPage.js
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 
 const LandingPage = () => {
     const navigate = useNavigate();
-    const heroRef = useRef();
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-    const [scrollY, setScrollY] = useState(0);
+    const heroRef = useRef(null);
+
+    const handleLogin = () => {
+        navigate('/dashboard');
+    };
+
+    const handleScheduleConsultation = () => {
+        // You can link this to your scheduling system
+        window.location.href = 'mailto:contact@promindpsychiatry.com?subject=Schedule Consultation';
+    };
 
     useEffect(() => {
-        // Mouse movement parallax effect
-        const handleMouseMove = (e) => {
-            setMousePosition({
-                x: (e.clientX / window.innerWidth) * 100,
-                y: (e.clientY / window.innerHeight) * 100,
-            });
-        };
-
-        // Scroll position tracking
-        const handleScroll = () => {
-            setScrollY(window.scrollY);
-        };
-
-        // Smooth scrolling for navigation links
-        const handleSmoothScroll = (e) => {
-            if (e.target.getAttribute('href')?.startsWith('#')) {
-                e.preventDefault();
-                const target = document.querySelector(e.target.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            }
-        };
-
-        // Enhanced intersection observer with stagger animations
+        // Animate elements on scroll
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
         };
 
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry, index) => {
+            entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    setTimeout(() => {
-                        entry.target.classList.add('animate-in');
-                    }, index * 100);
+                    entry.target.classList.add('visible');
                 }
             });
         }, observerOptions);
 
-        const animatedElements = document.querySelectorAll('.animate-on-scroll');
-        animatedElements.forEach(el => observer.observe(el));
+        const animateElements = document.querySelectorAll('.animate-on-scroll');
+        animateElements.forEach(el => observer.observe(el));
 
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('scroll', handleScroll);
-        document.addEventListener('click', handleSmoothScroll);
+        // Create floating particles
+        const createParticles = () => {
+            const container = document.querySelector('.particle-container');
+            if (!container) return;
+
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'floating-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        };
+
+        createParticles();
 
         return () => {
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('scroll', handleScroll);
-            document.removeEventListener('click', handleSmoothScroll);
             observer.disconnect();
         };
     }, []);
-
-    useEffect(() => {
-        createFloatingParticles();
-    }, []);
-
-    const createFloatingParticles = () => {
-        const particleContainer = document.querySelector('.particle-container');
-        if (!particleContainer) return;
-
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'floating-particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 20 + 's';
-            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-            particleContainer.appendChild(particle);
-        }
-    };
-
-    const handleLogin = () => {
-        navigate('/dashboard'); // This will trigger the authentication flow
-    };
-
-    const handleGetStarted = () => {
-        navigate('/dashboard'); // This will trigger the authentication flow
-    };
 
     return (
         <div className="landing-page">
@@ -109,12 +71,12 @@ const LandingPage = () => {
                 <div className="nav-container">
                     <div className="nav-logo">
                         <div className="logo-pulse">🧠</div>
-                        <span>Promind</span>
+                        <span>Promind Psychiatry</span>
                     </div>
                     <div className="nav-links">
-                        <a href="#philosophy" className="nav-link">Vision</a>
-                        <a href="#difference" className="nav-link">Innovation</a>
-                        <a href="#beta" className="nav-link">Beta</a>
+                        <a href="#about" className="nav-link">About</a>
+                        <a href="#services" className="nav-link">Services</a>
+                        <a href="#philosophy" className="nav-link">Approach</a>
                         <a href="#contact" className="nav-link">Contact</a>
                     </div>
                     <button className="cta-button nav-cta" onClick={handleLogin}>
@@ -127,147 +89,189 @@ const LandingPage = () => {
             <section className="hero-section" ref={heroRef}>
                 <div className="hero-container">
                     <div className="hero-content animate-on-scroll">
-                        <div className="hero-badge">
-                            <span className="badge-text">🚀 Beta Program Now Open</span>
-                        </div>
-
                         <h1 className="hero-title">
-                            <span className="gradient-text">Precision Psychiatry</span>
+                            <span className="gradient-text">Transform Your Mental Health Journey</span>
                             <br />
-                            <span className="secondary-text">Engineered for Outcomes</span>
+                            <span className="secondary-text">with Precision Psychiatry</span>
                         </h1>
 
                         <p className="hero-description">
-                            Advanced computational psychiatry platform combining real-time physiological monitoring,
-                            AI-driven treatment optimization, and continuous outcome measurement for unprecedented
-                            precision in mental health care.
+                            Schedule a headache-free telehealth appointment at your convenience with compassionate,
+                            evidence-based care tailored to your unique needs.
                         </p>
 
-                        <div className="hero-cta">
-                            <button className="cta-button primary" onClick={handleGetStarted}>
-                                <span>Access Platform</span>
-                                <svg className="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                </svg>
-                            </button>
-                            <button className="cta-button secondary" onClick={() => document.getElementById('philosophy').scrollIntoView({ behavior: 'smooth' })}>
-                                Learn More
+                        <div className="hero-actions">
+                            <button className="cta-button primary large" onClick={handleScheduleConsultation}>
+                                Schedule Your Consultation Today
                             </button>
                         </div>
                     </div>
+                </div>
+            </section>
 
-                    <div className="hero-visual">
-                        <div className="floating-dashboard">
-                            <div className="dashboard-header">
-                                <div className="status-indicators">
-                                    <div className="indicator active"></div>
-                                    <div className="indicator active"></div>
-                                    <div className="indicator warning"></div>
+            {/* About Section */}
+            <section id="about" className="section">
+                <div className="container">
+                    <div className="content-grid">
+                        <div className="content-text animate-on-scroll">
+                            <h2>Your Partner in Mental Wellness</h2>
+                            <p>
+                                I am passionate about helping all people reach their potential, whether their challenges are severe or mundane.
+                                My approach combines the latest advances in precision psychiatry with compassionate, collaborative care to ensure
+                                you experience lasting improvements—not just symptom management.
+                            </p>
+                            <p>
+                                As a psychiatrist, I am extensively trained to identify and treat mental health conditions using a comprehensive
+                                approach that considers biological, social/environmental, and psychological factors.
+                            </p>
+                            <p>
+                                Together, we'll develop a personalized treatment plan that works for your specific needs and goals, whether that
+                                involves lifestyle changes, therapy, medication, or (most commonly) a thoughtfully combined approach.
+                            </p>
+                        </div>
+                        <div className="content-visual animate-on-scroll">
+                            <div className="feature-grid">
+                                <div className="feature-card">
+                                    <div className="feature-icon">🧬</div>
+                                    <h4>Biological Factors</h4>
+                                    <p>Understanding your unique physiology</p>
                                 </div>
-                                <div className="dashboard-title">Patient Monitoring</div>
+                                <div className="feature-card">
+                                    <div className="feature-icon">🌍</div>
+                                    <h4>Environmental</h4>
+                                    <p>Recognizing surrounding impacts</p>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon">🧠</div>
+                                    <h4>Psychological</h4>
+                                    <p>Addressing thought patterns</p>
+                                </div>
                             </div>
-                            <div className="dashboard-content">
-                                <div className="metric-row">
-                                    <div className="metric">
-                                        <div className="metric-label">HRV Coherence</div>
-                                        <div className="metric-value">87%</div>
-                                    </div>
-                                    <div className="metric">
-                                        <div className="metric-label">Treatment Response</div>
-                                        <div className="metric-value trending-up">+23%</div>
-                                    </div>
-                                </div>
-                                <div className="progress-bar">
-                                    <div className="progress-fill"></div>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Why Choose Section */}
+            <section className="section dark-section">
+                <div className="container">
+                    <div className="section-header animate-on-scroll">
+                        <h2>Why Choose Promind Psychiatry?</h2>
+                    </div>
+                    <div className="benefits-grid animate-on-scroll">
+                        <div className="benefit-card">
+                            <div className="benefit-icon">⚡</div>
+                            <h3>Precision-Driven Care</h3>
+                            <p>Unlike traditional one-size-fits-all treatment protocols, we use advanced computational psychiatry and real-time monitoring to create truly personalized treatment plans.</p>
+                        </div>
+                        <div className="benefit-card">
+                            <div className="benefit-icon">💻</div>
+                            <h3>Convenient Telehealth</h3>
+                            <p>Access expert psychiatric care from the comfort of your home with our secure, HIPAA-compliant telehealth platform.</p>
+                        </div>
+                        <div className="benefit-card">
+                            <div className="benefit-icon">🤝</div>
+                            <h3>Collaborative Approach</h3>
+                            <p>Your voice matters in your treatment journey. We work together as partners to identify root causes and develop strategies that align with your lifestyle.</p>
+                        </div>
+                        <div className="benefit-card">
+                            <div className="benefit-icon">🔍</div>
+                            <h3>Comprehensive Assessment</h3>
+                            <p>We look at the whole picture—not just symptoms—to understand what's really driving your mental health challenges.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Services Section */}
+            <section id="services" className="section">
+                <div className="container">
+                    <div className="section-header animate-on-scroll">
+                        <h2>Services We Provide</h2>
+                    </div>
+                    <div className="services-grid animate-on-scroll">
+                        <div className="service-card">
+                            <div className="service-icon">💙</div>
+                            <h3>Depression & Mood Disorders</h3>
+                            <p>Evidence-based treatment for major depression, bipolar disorder, and mood regulation challenges</p>
+                        </div>
+                        <div className="service-card">
+                            <div className="service-icon">😰</div>
+                            <h3>Anxiety Disorders</h3>
+                            <p>Comprehensive care for generalized anxiety, panic disorder, social anxiety, and phobias</p>
+                        </div>
+                        <div className="service-card">
+                            <div className="service-icon">🎯</div>
+                            <h3>ADHD & Focus Issues</h3>
+                            <p>Adult ADHD assessment and management with both medication and behavioral strategies</p>
+                        </div>
+                        <div className="service-card">
+                            <div className="service-icon">🛡️</div>
+                            <h3>Trauma & PTSD</h3>
+                            <p>Trauma-informed care using proven therapeutic approaches and medication when appropriate</p>
+                        </div>
+                        <div className="service-card">
+                            <div className="service-icon">🌱</div>
+                            <h3>Stress & Life Transitions</h3>
+                            <p>Support during major life changes, work stress, relationship challenges, and adjustment difficulties</p>
+                        </div>
+                        <div className="service-card">
+                            <div className="service-icon">💊</div>
+                            <h3>Medication Management</h3>
+                            <p>Expert psychiatric medication consultation, monitoring, and optimization</p>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Philosophy Section */}
-            <section id="philosophy" className="content-section">
+            <section id="philosophy" className="section dark-section">
                 <div className="container">
-                    <div className="section-header animate-on-scroll">
-                        <h2>Computational Precision</h2>
-                        <p>Moving beyond traditional psychiatry toward measurable, optimized outcomes</p>
-                    </div>
-
-                    <div className="feature-grid">
-                        <div className="feature-card animate-on-scroll">
-                            <div className="feature-icon">🔬</div>
-                            <h3>Evidence-Based Architecture</h3>
-                            <p>Every intervention backed by real-time physiological data, validated through continuous measurement and algorithmic optimization.</p>
-                        </div>
-
-                        <div className="feature-card animate-on-scroll">
-                            <div className="feature-icon">⚡</div>
-                            <h3>Adaptive Treatment Protocols</h3>
-                            <p>Dynamic treatment adjustments based on objective biomarkers, response patterns, and predictive modeling for optimal therapeutic outcomes.</p>
-                        </div>
-
-                        <div className="feature-card animate-on-scroll">
-                            <div className="feature-icon">📊</div>
-                            <h3>Quantified Mental Health</h3>
-                            <p>Comprehensive tracking of treatment efficacy through validated assessment tools, physiological monitoring, and behavioral analytics.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* What Makes Us Different */}
-            <section id="difference" className="difference-section">
-                <div className="container">
-                    <div className="difference-content">
-                        <div className="difference-text animate-on-scroll">
-                            <h2>Engineering Mental Health</h2>
-                            <p className="difference-intro">
-                                Traditional psychiatry relies on subjective assessments and trial-and-error approaches.
-                                We engineer precision through objective measurement and continuous optimization.
+                    <div className="content-grid">
+                        <div className="content-text animate-on-scroll">
+                            <h2>A Safe Space for Healing</h2>
+                            <p>
+                                It can be overwhelming to struggle with your mental health. I'm here to offer a guiding hand and a safe space
+                                for healing and growth. My goal is to see you not just survive, but truly thrive.
                             </p>
-
-                            <div className="comparison-list">
-                                <div className="comparison-item">
-                                    <div className="comparison-icon">❌</div>
-                                    <div className="comparison-text">
-                                        <strong>Traditional:</strong> Subjective symptom reporting, weeks between adjustments
+                            <div className="philosophy-points">
+                                <div className="philosophy-point">
+                                    <div className="point-icon">🎯</div>
+                                    <div>
+                                        <h4>Root Cause Focus</h4>
+                                        <p>Rather than simply treating symptoms, we work together to identify and address underlying factors.</p>
                                     </div>
                                 </div>
-                                <div className="comparison-item">
-                                    <div className="comparison-icon">✅</div>
-                                    <div className="comparison-text">
-                                        <strong>Promind:</strong> Real-time physiological monitoring, immediate optimization
-                                    </div>
-                                </div>
-                                <div className="comparison-item">
-                                    <div className="comparison-icon">❌</div>
-                                    <div className="comparison-text">
-                                        <strong>Traditional:</strong> One-size-fits-all treatment protocols
-                                    </div>
-                                </div>
-                                <div className="comparison-item">
-                                    <div className="comparison-icon">✅</div>
-                                    <div className="comparison-text">
-                                        <strong>Promind:</strong> Personalized, adaptive treatment algorithms
+                                <div className="philosophy-point">
+                                    <div className="point-icon">🌟</div>
+                                    <div>
+                                        <h4>Lasting Improvement</h4>
+                                        <p>Our approach is designed for long-term success, helping you develop tools for sustained wellness.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div className="difference-visual animate-on-scroll">
-                            <div className="tech-stack">
-                                <div className="tech-layer">
-                                    <div className="layer-label">AI Optimization Engine</div>
-                                    <div className="layer-content">Treatment Protocol Adaptation</div>
+                        <div className="content-visual animate-on-scroll">
+                            <div className="process-steps">
+                                <div className="process-step">
+                                    <div className="step-number">1</div>
+                                    <h4>Initial Consultation</h4>
+                                    <p>Comprehensive assessment of your mental health needs and goals</p>
                                 </div>
-                                <div className="tech-layer">
-                                    <div className="layer-label">Real-time Monitoring</div>
-                                    <div className="layer-content">Physiological Biomarkers</div>
+                                <div className="process-step">
+                                    <div className="step-number">2</div>
+                                    <h4>Personalized Plan</h4>
+                                    <p>Development of a treatment strategy tailored specifically to you</p>
                                 </div>
-                                <div className="tech-layer">
-                                    <div className="layer-label">Outcome Measurement</div>
-                                    <div className="layer-content">Validated Assessment Tools</div>
+                                <div className="process-step">
+                                    <div className="step-number">3</div>
+                                    <h4>Ongoing Support</h4>
+                                    <p>Regular check-ins and plan adjustments as you progress</p>
+                                </div>
+                                <div className="process-step">
+                                    <div className="step-number">4</div>
+                                    <h4>Collaborative Care</h4>
+                                    <p>Working together every step of the way</p>
                                 </div>
                             </div>
                         </div>
@@ -275,45 +279,30 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* Beta Program */}
-            <section id="beta" className="beta-section">
+            {/* CTA Section */}
+            <section className="cta-section">
                 <div className="container">
-                    <div className="beta-container animate-on-scroll">
-                        <div className="beta-badge">Limited Beta Access</div>
-                        <h2>Join the Future of Psychiatry</h2>
+                    <div className="cta-content animate-on-scroll">
+                        <h2>Ready to Take the First Step?</h2>
                         <p>
-                            We're selectively onboarding healthcare providers for our beta program.
-                            Experience precision psychiatry with comprehensive platform access and dedicated support.
+                            If you're ready to explore a path towards improvement, I encourage you to take that first step.
+                            Your journey to better mental health starts with a single conversation.
                         </p>
-
-                        <div className="beta-features">
-                            <div className="beta-feature">
-                                <span className="feature-check">✓</span>
-                                Full platform access with real-time monitoring
-                            </div>
-                            <div className="beta-feature">
-                                <span className="feature-check">✓</span>
-                                Dedicated implementation support team
-                            </div>
-                            <div className="beta-feature">
-                                <span className="feature-check">✓</span>
-                                Direct influence on product development
-                            </div>
-                        </div>
-
-                        <button className="cta-button primary large" onClick={handleGetStarted}>
-                            Request Beta Access
+                        <button className="cta-button primary large" onClick={handleScheduleConsultation}>
+                            Schedule Your Appointment
                         </button>
+                        <p className="cta-subtext">
+                            Book your confidential telehealth consultation today and begin your journey toward lasting mental wellness.
+                        </p>
                     </div>
                 </div>
             </section>
 
-            {/* Contact */}
+            {/* Contact Section */}
             <section id="contact" className="contact-section">
                 <div className="container">
                     <div className="contact-content animate-on-scroll">
-                        <h2>Ready to Transform Mental Health Care?</h2>
-                        <p>Connect with our team to explore how precision psychiatry can enhance your practice.</p>
+                        <h2>Get in Touch</h2>
 
                         <div className="contact-options">
                             <a href="mailto:contact@promindpsychiatry.com" className="contact-method">
@@ -324,13 +313,32 @@ const LandingPage = () => {
                                 </div>
                             </a>
 
-                            <button className="contact-method" onClick={handleGetStarted}>
+                            <a href="tel:+1-555-123-4567" className="contact-method">
+                                <div className="contact-icon">📞</div>
+                                <div className="contact-text">
+                                    <strong>Phone</strong>
+                                    <span>(555) 123-4567</span>
+                                </div>
+                            </a>
+
+                            <button className="contact-method" onClick={handleScheduleConsultation}>
                                 <div className="contact-icon">🚀</div>
                                 <div className="contact-text">
-                                    <strong>Platform Access</strong>
-                                    <span>Request demonstration</span>
+                                    <strong>Schedule Online</strong>
+                                    <span>Book your consultation</span>
                                 </div>
                             </button>
+                        </div>
+
+                        <div className="important-notes">
+                            <div className="note-card">
+                                <h4>🔒 Privacy & Security</h4>
+                                <p>All appointments are conducted through our secure, HIPAA-compliant telehealth platform.</p>
+                            </div>
+                            <div className="note-card">
+                                <h4>🆘 Crisis Support</h4>
+                                <p>If you're experiencing a mental health emergency, please call 988 (Suicide & Crisis Lifeline) or go to your nearest emergency room.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -343,29 +351,29 @@ const LandingPage = () => {
                         <div className="footer-brand">
                             <div className="footer-logo">
                                 <div className="logo-pulse">🧠</div>
-                                <span>Promind Precision Psychiatry</span>
+                                <span>Promind Psychiatry</span>
                             </div>
-                            <p>Engineering the future of mental health through precision, innovation, and continuous optimization.</p>
+                            <p>Transforming mental health through precision, compassion, and personalized care.</p>
                         </div>
 
                         <div className="footer-links">
                             <div className="footer-section">
                                 <h4>Services</h4>
                                 <ul>
-                                    <li><a href="#philosophy">Precision Psychiatry</a></li>
-                                    <li><a href="#beta">Beta Program</a></li>
-                                    <li><a href="#difference">Treatment Optimization</a></li>
-                                    <li><a href="mailto:contact@promindpsychiatry.com">Consultation</a></li>
+                                    <li><a href="#services">Depression & Anxiety</a></li>
+                                    <li><a href="#services">ADHD Treatment</a></li>
+                                    <li><a href="#services">Trauma & PTSD</a></li>
+                                    <li><a href="#services">Medication Management</a></li>
                                 </ul>
                             </div>
 
                             <div className="footer-section">
-                                <h4>Innovation</h4>
+                                <h4>About</h4>
                                 <ul>
-                                    <li><a href="#beta">Beta Technology</a></li>
-                                    <li><a href="#philosophy">Computational Psychiatry</a></li>
-                                    <li><a href="#difference">Continuous Care</a></li>
-                                    <li><a href="mailto:contact@promindpsychiatry.com">Research</a></li>
+                                    <li><a href="#about">Our Approach</a></li>
+                                    <li><a href="#philosophy">Treatment Philosophy</a></li>
+                                    <li><a href="#contact">Contact Us</a></li>
+                                    <li><a href="mailto:contact@promindpsychiatry.com">Get Started</a></li>
                                 </ul>
                             </div>
 
@@ -382,7 +390,11 @@ const LandingPage = () => {
                     </div>
 
                     <div className="footer-bottom">
-                        <p>&copy; 2025 Promind Precision Psychiatry. All rights reserved.</p>
+                        <p>&copy; 2025 Promind Psychiatry. All rights reserved.</p>
+                        <p className="footer-disclaimer">
+                            Ready to transform your mental health with precision, compassionate care?
+                            Schedule your consultation today and take the first step toward a better tomorrow.
+                        </p>
                     </div>
                 </div>
             </footer>
