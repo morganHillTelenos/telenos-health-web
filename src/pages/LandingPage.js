@@ -156,7 +156,7 @@ const LandingPage = () => {
                     </div>
                     <div className="specialties-content">
                         <div className="top-specialties animate-on-scroll">
-                            <h3>Top Specialties</h3>
+                            <h3>Specialties</h3>
                             <div className="specialty-grid">
                                 <div className="specialty-card primary">
                                     <div className="specialty-icon">😰</div>
@@ -174,7 +174,7 @@ const LandingPage = () => {
                         </div>
 
                         <div className="all-expertise animate-on-scroll">
-                            <h3>Comprehensive Expertise</h3>
+                            <h3>Areas of Expertise</h3>
                             <div className="expertise-grid">
                                 <div className="expertise-item">Addiction</div>
                                 <div className="expertise-item">ADHD</div>
@@ -302,9 +302,8 @@ const LandingPage = () => {
             <section className="cta-section">
                 <div className="container">
                     <div className="cta-content animate-on-scroll">
-                        <h2>Ready to Take the First Step?</h2>
+                        <h2>Take the First Step</h2>
                         <p>
-                            If you're ready to explore a path towards improvement, I encourage you to take that first step.
                             Your journey to better mental health starts with a single conversation.
                         </p>
                         <button className="cta-button primary large" onClick={handleScheduleConsultation}>
@@ -332,7 +331,7 @@ const LandingPage = () => {
                                 </div>
                             </a>
 
-                            <a href="tel:+1-555-123-4567" className="contact-method">
+                            <a href="tel:+1-385-455-4671" className="contact-method">
                                 <div className="contact-icon">📞</div>
                                 <div className="contact-text">
                                     <strong>Phone</strong>
@@ -351,9 +350,11 @@ const LandingPage = () => {
 
                         <div className="important-notes">
                             <div className="note-card">
-                                <h4>🔒 Privacy & Security</h4>
-                                <p>All appointments are conducted through our secure, HIPAA-compliant telehealth platform.</p>
+                                <h4>💳 Fee Information</h4>
+                                <p><strong>Currently accepting Fee-for-Service only</strong><br />
+                                    Initial Session Fee: $300 • Standard Visit: $150</p>
                             </div>
+
                             <div className="note-card">
                                 <h4>🆘 Crisis Support</h4>
                                 <p>If you're experiencing a mental health emergency, please call 988 (Suicide & Crisis Lifeline) or go to your nearest emergency room.</p>
@@ -369,7 +370,7 @@ const LandingPage = () => {
                     <div className="footer-content">
                         <div className="footer-brand">
                             <div className="footer-logo">
-                                <div className="logo-pulse">🧠</div>
+                                <img src="/images/pm-logo.png" alt="Promind Psychiatry" className="footer-logo-image" />
                                 <span>Promind Psychiatry</span>
                             </div>
                             <p>Transforming mental health through precision, compassion, and personalized care.</p>
@@ -392,7 +393,7 @@ const LandingPage = () => {
                                     <li><a href="#about">Our Approach</a></li>
                                     <li><a href="#philosophy">Treatment Philosophy</a></li>
                                     <li><a href="#contact">Contact Us</a></li>
-                                    <li><a href="mailto:contact@promindpsychiatry.com">Get Started</a></li>
+                                    <li><a href="mailto:Anthony.Privratsky@promindpsychiatry.com">Get Started</a></li>
                                 </ul>
                             </div>
                         </div>
