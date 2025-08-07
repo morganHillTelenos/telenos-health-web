@@ -335,7 +335,7 @@ const LandingPage = () => {
                                 <div className="contact-icon">📞</div>
                                 <div className="contact-text">
                                     <strong>Phone</strong>
-                                    <span>(385) 455-4671</span>
+                                    <span>(801) 382-8118</span>
                                 </div>
                             </a>
 
