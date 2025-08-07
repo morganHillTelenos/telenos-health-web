@@ -39,7 +39,7 @@ body {
     min-height: 100vh;
 }
 
-/* Animated Background */
+/* Subtle Professional Background */
 .animated-background {
     position: fixed;
     top: 0;
@@ -47,82 +47,51 @@ body {
     width: 100%;
     height: 100%;
     z-index: -1;
-    background: radial-gradient(ellipse at center, #1a0033 0%, var(--dark-bg) 100%);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
 }
 
 .gradient-orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(100px);
-    opacity: 0.4;
-    animation: float-orb 20s infinite ease-in-out;
+    filter: blur(80px);
+    opacity: 0.15;
+    animation: subtle-float 30s infinite ease-in-out;
 }
 
 .orb-1 {
-    width: 400px;
-    height: 400px;
+    width: 300px;
+    height: 300px;
     background: var(--primary-gradient);
-    top: 20%;
-    left: 10%;
+    top: 10%;
+    left: 5%;
     animation-delay: 0s;
 }
 
 .orb-2 {
-    width: 300px;
-    height: 300px;
+    width: 250px;
+    height: 250px;
     background: var(--secondary-gradient);
-    top: 60%;
-    right: 20%;
-    animation-delay: 7s;
+    top: 70%;
+    right: 10%;
+    animation-delay: 10s;
 }
 
 .orb-3 {
-    width: 500px;
-    height: 500px;
+    width: 200px;
+    height: 200px;
     background: var(--accent-gradient);
-    bottom: 10%;
-    left: 50%;
-    animation-delay: 14s;
+    bottom: 20%;
+    left: 60%;
+    animation-delay: 20s;
 }
 
-@keyframes float-orb {
+@keyframes subtle-float {
     0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(30px, -30px) scale(1.1); }
-    66% { transform: translate(-20px, 20px) scale(0.9); }
+    50% { transform: translate(20px, -15px) scale(1.05); }
 }
 
 .particle-container {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-.floating-particle {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: var(--neon-blue);
-    border-radius: 50%;
-    opacity: 0.6;
-    animation: float-up 15s infinite linear;
-}
-
-@keyframes float-up {
-    0% {
-        transform: translateY(100vh) translateX(0);
-        opacity: 0;
-    }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(-100px) translateX(100px);
-        opacity: 0;
-    }
+    display: none; /* Remove particles for professional look */
 }
 
 /* Navigation */
@@ -156,27 +125,27 @@ body {
     color: var(--text-primary);
 }
 
-.logo-pulse {
+.logo-image {
     width: 40px;
     height: 40px;
-    background: var(--primary-gradient);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    animation: pulse-glow 2s infinite;
+    border-radius: 8px;
+    object-fit: contain;
 }
 
-@keyframes pulse-glow {
-    0%, 100% { 
-        transform: scale(1);
-        box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
-    }
-    50% { 
-        transform: scale(1.05);
-        box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
-    }
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.footer-logo-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: contain;
 }
 
 .nav-links {
@@ -366,36 +335,142 @@ body {
     line-height: 1.7;
 }
 
-/* Feature Grid */
-.feature-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+/* Doctor Profile Section */
+.doctor-profile {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
 }
 
-.feature-card {
+.doctor-image {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid var(--glass-border);
     background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    text-align: center;
     backdrop-filter: blur(10px);
 }
 
-.feature-icon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+.doctor-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.feature-card h4 {
+.credentials {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 350px;
+}
+
+.credentials h4 {
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+}
+
+.credentials ul {
+    list-style: none;
+    padding: 0;
+}
+
+.credentials li {
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.credentials li:last-child {
+    border-bottom: none;
+}
+
+/* Specialties Section */
+.specialties-content {
+    display: grid;
+    gap: 4rem;
+}
+
+.top-specialties h3,
+.all-expertise h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    text-align: center;
     color: var(--text-primary);
 }
 
-.feature-card p {
+.specialty-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.specialty-card {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.specialty-card.primary {
+    border-color: rgba(102, 126, 234, 0.5);
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.specialty-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.specialty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.specialty-card h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Expertise Grid */
+.expertise-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.expertise-item {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
     color: var(--text-secondary);
+    font-weight: 500;
     font-size: 0.9rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.expertise-item:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: rgba(102, 126, 234, 0.3);
+    color: var(--text-primary);
+    transform: translateY(-2px);
 }
 
 /* Benefits Grid */
@@ -847,5 +922,22 @@ body {
     
     .important-notes {
         grid-template-columns: 1fr;
+    }
+    
+    .doctor-profile {
+        gap: 1.5rem;
+    }
+    
+    .doctor-image {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .specialty-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .expertise-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
 }

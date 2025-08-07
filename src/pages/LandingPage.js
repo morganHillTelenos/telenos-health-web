@@ -8,12 +8,11 @@ const LandingPage = () => {
     const heroRef = useRef(null);
 
     const handleLogin = () => {
-        navigate('/dashboard');
+        navigate('/login');
     };
 
     const handleScheduleConsultation = () => {
-        // You can link this to your scheduling system
-        window.location.href = 'mailto:contact@promindpsychiatry.com?subject=Schedule Consultation';
+        window.open('https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1TQd70RLRe-P2ldmz7nCeb9qJa0RQst1-9CJScUzPbAyCsG9wGpmD2xuhyKwT_JH5WXlK0smpf', '_blank');
     };
 
     useEffect(() => {
@@ -70,12 +69,12 @@ const LandingPage = () => {
             <nav className="modern-nav">
                 <div className="nav-container">
                     <div className="nav-logo">
-                        <div className="logo-pulse">🧠</div>
+                        <img src="/images/pm-logo.png" alt="Promind Psychiatry" className="logo-image" />
                         <span>Promind Psychiatry</span>
                     </div>
                     <div className="nav-links">
                         <a href="#about" className="nav-link">About</a>
-                        <a href="#services" className="nav-link">Services</a>
+                        <a href="#specialties" className="nav-link">Specialties</a>
                         <a href="#philosophy" className="nav-link">Approach</a>
                         <a href="#contact" className="nav-link">Contact</a>
                     </div>
@@ -114,37 +113,34 @@ const LandingPage = () => {
                 <div className="container">
                     <div className="content-grid">
                         <div className="content-text animate-on-scroll">
-                            <h2>Your Partner in Mental Wellness</h2>
+                            <h2>About Dr. Privratsky</h2>
                             <p>
                                 I am passionate about helping all people reach their potential, whether their challenges are severe or mundane.
                                 My approach combines the latest advances in precision psychiatry with compassionate, collaborative care to ensure
                                 you experience lasting improvements—not just symptom management.
                             </p>
                             <p>
-                                As a psychiatrist, I am extensively trained to identify and treat mental health conditions using a comprehensive
-                                approach that considers biological, social/environmental, and psychological factors.
+                                I completed Residency Training in Psychiatry at the University of Utah and medical school and my PhD
+                                (psychiatric neuroimaging and PTSD) at the University of Arkansas for Medical Sciences.
                             </p>
                             <p>
-                                Together, we'll develop a personalized treatment plan that works for your specific needs and goals, whether that
-                                involves lifestyle changes, therapy, medication, or (most commonly) a thoughtfully combined approach.
+                                As a psychiatrist, I am extensively trained to identify and treat mental health conditions using a comprehensive
+                                approach that considers biological, social/environmental, and psychological factors. Together, we'll develop a
+                                personalized treatment plan that works for your specific needs and goals.
                             </p>
                         </div>
                         <div className="content-visual animate-on-scroll">
-                            <div className="feature-grid">
-                                <div className="feature-card">
-                                    <div className="feature-icon">🧬</div>
-                                    <h4>Biological Factors</h4>
-                                    <p>Understanding your unique physiology</p>
+                            <div className="doctor-profile">
+                                <div className="doctor-image">
+                                    <img src="/images/doctor-image.png" alt="Dr. Privratsky" />
                                 </div>
-                                <div className="feature-card">
-                                    <div className="feature-icon">🌍</div>
-                                    <h4>Environmental</h4>
-                                    <p>Recognizing surrounding impacts</p>
-                                </div>
-                                <div className="feature-card">
-                                    <div className="feature-icon">🧠</div>
-                                    <h4>Psychological</h4>
-                                    <p>Addressing thought patterns</p>
+                                <div className="credentials">
+                                    <h4>Education & Training</h4>
+                                    <ul>
+                                        <li>PhD in Psychiatric Neuroimaging and PTSD</li>
+                                        <li>University of Arkansas for Medical Sciences</li>
+                                        <li>Psychiatry Residency - University of Utah</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -152,32 +148,55 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* Why Choose Section */}
-            <section className="section dark-section">
+            {/* Specialties Section */}
+            <section id="specialties" className="section dark-section">
                 <div className="container">
                     <div className="section-header animate-on-scroll">
-                        <h2>Why Choose Promind Psychiatry?</h2>
+                        <h2>Specialties & Expertise</h2>
                     </div>
-                    <div className="benefits-grid animate-on-scroll">
-                        <div className="benefit-card">
-                            <div className="benefit-icon">⚡</div>
-                            <h3>Precision-Driven Care</h3>
-                            <p>Unlike traditional one-size-fits-all treatment protocols, we use advanced computational psychiatry and real-time monitoring to create truly personalized treatment plans.</p>
+                    <div className="specialties-content">
+                        <div className="top-specialties animate-on-scroll">
+                            <h3>Top Specialties</h3>
+                            <div className="specialty-grid">
+                                <div className="specialty-card primary">
+                                    <div className="specialty-icon">😰</div>
+                                    <h4>Anxiety</h4>
+                                </div>
+                                <div className="specialty-card primary">
+                                    <div className="specialty-icon">💙</div>
+                                    <h4>Depression</h4>
+                                </div>
+                                <div className="specialty-card primary">
+                                    <div className="specialty-icon">🛡️</div>
+                                    <h4>Trauma and PTSD</h4>
+                                </div>
+                            </div>
                         </div>
-                        <div className="benefit-card">
-                            <div className="benefit-icon">💻</div>
-                            <h3>Convenient Telehealth</h3>
-                            <p>Access expert psychiatric care from the comfort of your home with our secure, HIPAA-compliant telehealth platform.</p>
-                        </div>
-                        <div className="benefit-card">
-                            <div className="benefit-icon">🤝</div>
-                            <h3>Collaborative Approach</h3>
-                            <p>Your voice matters in your treatment journey. We work together as partners to identify root causes and develop strategies that align with your lifestyle.</p>
-                        </div>
-                        <div className="benefit-card">
-                            <div className="benefit-icon">🔍</div>
-                            <h3>Comprehensive Assessment</h3>
-                            <p>We look at the whole picture—not just symptoms—to understand what's really driving your mental health challenges.</p>
+
+                        <div className="all-expertise animate-on-scroll">
+                            <h3>Comprehensive Expertise</h3>
+                            <div className="expertise-grid">
+                                <div className="expertise-item">Addiction</div>
+                                <div className="expertise-item">ADHD</div>
+                                <div className="expertise-item">Alcohol Use</div>
+                                <div className="expertise-item">Autism</div>
+                                <div className="expertise-item">Bipolar Disorder</div>
+                                <div className="expertise-item">Eating Disorders</div>
+                                <div className="expertise-item">LGBTQ+</div>
+                                <div className="expertise-item">Medication Management</div>
+                                <div className="expertise-item">Personality Disorders</div>
+                                <div className="expertise-item">Pregnancy, Prenatal, Postpartum</div>
+                                <div className="expertise-item">Psychosis</div>
+                                <div className="expertise-item">Psychotherapy (DBT, Exposure, etc)</div>
+                                <div className="expertise-item">School Issues</div>
+                                <div className="expertise-item">Scientific Approach to Mental Health</div>
+                                <div className="expertise-item">Self-Harming</div>
+                                <div className="expertise-item">Sleep or Insomnia</div>
+                                <div className="expertise-item">Substance Use</div>
+                                <div className="expertise-item">Suicidal Ideation</div>
+                                <div className="expertise-item">Testing and Evaluation</div>
+                                <div className="expertise-item">Traumatic Brain Injury (TBI)</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -309,7 +328,7 @@ const LandingPage = () => {
                                 <div className="contact-icon">📧</div>
                                 <div className="contact-text">
                                     <strong>Email</strong>
-                                    <span>contact@promindpsychiatry.com</span>
+                                    <span>Anthony.Privratsky@promindpsychiatry.com</span>
                                 </div>
                             </a>
 
@@ -317,7 +336,7 @@ const LandingPage = () => {
                                 <div className="contact-icon">📞</div>
                                 <div className="contact-text">
                                     <strong>Phone</strong>
-                                    <span>(555) 123-4567</span>
+                                    <span>(385) 455-4671</span>
                                 </div>
                             </a>
 
@@ -374,16 +393,6 @@ const LandingPage = () => {
                                     <li><a href="#philosophy">Treatment Philosophy</a></li>
                                     <li><a href="#contact">Contact Us</a></li>
                                     <li><a href="mailto:contact@promindpsychiatry.com">Get Started</a></li>
-                                </ul>
-                            </div>
-
-                            <div className="footer-section">
-                                <h4>Legal</h4>
-                                <ul>
-                                    <li><a href="#privacy">Privacy Policy</a></li>
-                                    <li><a href="#terms">Terms of Service</a></li>
-                                    <li><a href="#disclaimer">Medical Disclaimer</a></li>
-                                    <li><a href="#compliance">HIPAA Compliance</a></li>
                                 </ul>
                             </div>
                         </div>
