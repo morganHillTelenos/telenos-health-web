@@ -648,7 +648,7 @@ body {
 
 /* Footer */
 .modern-footer {
-    background: var(--primary-blue-hover) !important;
+    background: var(--primary-white) !important;
     color: var(--gray-100);
     padding: var(--space-3xl) var(--space-lg) var(--space-lg);
 }
@@ -658,6 +658,14 @@ body {
     grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: var(--space-lg);
     margin-bottom: var(--space-lg);
+}
+
+.footer-content span{
+    color: black; 
+}
+
+.footer-section h4 {
+    color: black !important; 
 }
 
 .footer-brand {
