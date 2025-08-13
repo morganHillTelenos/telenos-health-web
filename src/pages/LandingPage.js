@@ -2,6 +2,21 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LandingTest.css';
+import { 
+    Brain,
+    HeartBreak, 
+    Shield, 
+    Target, 
+    Waves, 
+    Pill, 
+    Star, 
+    Envelope, 
+    Phone, 
+    RocketLaunch, 
+    CreditCard, 
+    Lock, 
+    Fire 
+} from 'phosphor-react'; 
 
 const LandingPage = () => {
     const navigate = useNavigate();
@@ -126,15 +141,21 @@ const LandingPage = () => {
                         <h3 style={{ textAlign: 'center', marginBottom: 'var(--space-lg)', fontSize: '1.5rem', fontWeight: '600' }}>Primary Specialties</h3>
                         <div className="specialty-grid">
                             <div className="specialty-card">
-                                <div className="specialty-icon">😰</div>
+                                <div className="specialty-icon">
+                                    <Brain size={32} color="#EE6352" />
+                                </div>
                                 <h4>Anxiety</h4>
                             </div>
                             <div className="specialty-card">
-                                <div className="specialty-icon">💙</div>
+                                <div className="specialty-icon">
+                                    <HeartBreak size={32} color="#EE6352" />
+                                </div>
                                 <h4>Depression</h4>
                             </div>
                             <div className="specialty-card">
-                                <div className="specialty-icon">🛡️</div>
+                                <div className="specialty-icon">
+                                    <Shield size={32} color="#EE6352" />
+                                </div>
                                 <h4>Trauma and PTSD</h4>
                             </div>
                         </div>
@@ -176,32 +197,44 @@ const LandingPage = () => {
                     </div>
                     <div className="card-grid animate-on-scroll">
                         <div className="card">
-                            <div className="card-icon">💙</div>
+                            <div className="card-icon">
+                                <HeartBreak size={32} color="#EE6352" />
+                            </div>
                             <h3>Depression & Mood Disorders</h3>
                             <p>Evidence-based treatment for major depression, bipolar disorder, and mood regulation challenges</p>
                         </div>
                         <div className="card">
-                            <div className="card-icon">😰</div>
+                            <div className="card-icon">
+                                <Brain size={32} color="#EE6352" />
+                            </div>
                             <h3>Anxiety Disorders</h3>
                             <p>Comprehensive care for generalized anxiety, panic disorder, social anxiety, and phobias</p>
                         </div>
                         <div className="card">
-                            <div className="card-icon">🎯</div>
+                            <div className="card-icon">
+                                <Target size={32} color="#EE6352" />
+                            </div>
                             <h3>ADHD & Focus Issues</h3>
                             <p>Adult ADHD assessment and management with both medication and behavioral strategies</p>
                         </div>
                         <div className="card">
-                            <div className="card-icon">🛡️</div>
+                            <div className="card-icon">
+                                <Shield size={32} color="#EE6352" />
+                            </div>
                             <h3>Trauma & PTSD</h3>
                             <p>Trauma-informed care using proven therapeutic approaches and medication when appropriate</p>
                         </div>
                         <div className="card">
-                            <div className="card-icon">🌱</div>
+                            <div className="card-icon">
+                                <Waves size={32} color="#EE6352" />
+                            </div>
                             <h3>Stress & Life Transitions</h3>
                             <p>Support during major life changes, work stress, relationship challenges, and adjustment difficulties</p>
                         </div>
                         <div className="card">
-                            <div className="card-icon">💊</div>
+                            <div className="card-icon">
+                                <Pill size={32} color="#EE6352" />
+                            </div>
                             <h3>Medication Management</h3>
                             <p>Expert psychiatric medication consultation, monitoring, and optimization</p>
                         </div>
@@ -221,14 +254,18 @@ const LandingPage = () => {
                             </p>
                             <div className="philosophy-points">
                                 <div className="philosophy-point">
-                                    <div className="point-icon">🎯</div>
+                                    <div className="point-icon">
+                                        <Target size={32} color="#EE6352" />
+                                    </div>
                                     <div>
                                         <h4>Root Cause Focus</h4>
                                         <p>Rather than simply treating symptoms, we work together to identify and address underlying factors.</p>
                                     </div>
                                 </div>
                                 <div className="philosophy-point">
-                                    <div className="point-icon">🌟</div>
+                                    <div className="point-icon">
+                                        <Star size={32} color="#EE6352" />
+                                    </div>
                                     <div>
                                         <h4>Lasting Improvement</h4>
                                         <p>Our approach is designed for long-term success, helping you develop tools for sustained wellness.</p>
@@ -298,7 +335,9 @@ const LandingPage = () => {
 
                         <div className="contact-options">
                             <a href="mailto:Anthony.Privratsky@promindpsychiatry.com" className="contact-method">
-                                <div className="contact-icon">📧</div>
+                                <div className="contact-icon">
+                                    <Envelope size={32} color="#EE6352" />
+                                </div>
                                 <div className="contact-text">
                                     <strong>Email</strong>
                                     <span>Anthony.Privratsky@promindpsychiatry.com</span>
@@ -306,7 +345,9 @@ const LandingPage = () => {
                             </a>
 
                             <a href="tel:+1-385-455-4671" className="contact-method">
-                                <div className="contact-icon">📞</div>
+                                <div className="contact-icon">
+                                    <Phone size={32} color="#EE6352" />
+                                </div>
                                 <div className="contact-text">
                                     <strong>Phone</strong>
                                     <span>(385) 455-4671</span>
@@ -314,7 +355,9 @@ const LandingPage = () => {
                             </a>
 
                             <button className="contact-method" onClick={handleScheduleConsultation}>
-                                <div className="contact-icon">🚀</div>
+                                <div className="contact-icon">
+                                    <RocketLaunch size={32} color="#EE6352" />
+                                </div>
                                 <div className="contact-text">
                                     <strong>Schedule Online</strong>
                                     <span>Book your consultation</span>
@@ -324,16 +367,25 @@ const LandingPage = () => {
 
                         <div className="important-notes">
                             <div className="note-card">
-                                <h4>💳 Fee Information</h4>
+                                <div className="bottom-icon">
+                                    <CreditCard size={24} color="#EE6352" />
+                                <h4>Fee Information</h4>
+                                </div>
                                 <p><strong>Currently accepting Fee-for-Service only</strong><br />
                                     Initial Session Fee: $300 • Standard Visit: $150</p>
                             </div>
                             <div className="note-card">
-                                <h4>🔒 Privacy & Security</h4>
+                                <div className="bottom-icon">
+                                    <Lock size={24} color="#EE6352" />
+                                <h4>Privacy & Security</h4>
+                                </div>
                                 <p>All appointments are conducted through our secure, HIPAA-compliant telehealth platform.</p>
                             </div>
                             <div className="note-card">
-                                <h4>🆘 Crisis Support</h4>
+                                <div className="bottom-icon">
+                                    <Fire size={24} color="#EE6352" />
+                                <h4>Crisis Support</h4>
+                                </div>
                                 <p>If you're experiencing a mental health emergency, please call 988 (Suicide & Crisis Lifeline) or go to your nearest emergency room.</p>
                             </div>
                         </div>

@@ -5,6 +5,7 @@
     --primary-blue-hover: #1d4ed8;
     --primary-blue-light: #dbeafe;
     --primary-blue-lighter: #3E73EE; 
+    --icon-color: #EE6352; 
 
     
     --secondary-purple: #7c3aed;
@@ -189,12 +190,14 @@ body {
 }
 
 .hero-title {
-    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-size: clamp(2rem, 4vw, 3rem); 
     font-weight: 800;
     line-height: 1.1;
     margin-bottom: var(--space-md);
     color: var(--secondary-purple);
 }
+
+
 .hero-title .gradient-text {
     background: linear-gradient(135deg, var(--primary-blue), var(--secondary-purple));
     -webkit-background-clip: text;
@@ -367,6 +370,19 @@ body {
     display: block;
 }
 
+.card-icon {
+    --icon-size: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.card-icon svg {
+    width: var(--icon-size);
+    height: var(--icon-size);
+}
+
 .card h3 {
     font-size: 1.25rem;
     font-weight: 600;
@@ -403,8 +419,16 @@ body {
 }
 
 .specialty-icon {
-    font-size: 3rem;
+    --icon-size: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-bottom: var(--space-md);
+}
+
+.specialty-icon svg {
+    width: var(--icon-size);
+    height: var(--icon-size);
 }
 
 .specialty-card h4 {
@@ -619,6 +643,8 @@ body {
     font-size: 0.9rem;
 }
 
+
+
 /* Important Notes */
 .important-notes {
     display: grid;
@@ -633,6 +659,7 @@ body {
     border-radius: var(--radius-xl);
     padding: var(--space-lg);
     box-shadow: var(--shadow-sm);
+    text-align: center;
 }
 
 .note-card h4 {
@@ -644,6 +671,18 @@ body {
 .note-card p {
     color: var(--primary-gray) !important;
     line-height: 1.6;
+}
+
+.bottom-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    justify-content: center;
+}
+
+.bottom-icon h4 {
+    margin: 0;
 }
 
 /* Footer */
