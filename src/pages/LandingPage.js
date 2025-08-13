@@ -1,15 +1,10 @@
 // src/pages/LandingPage.js
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './LandingPage.css';
+import './LandingTest.css';
 
 const LandingPage = () => {
     const navigate = useNavigate();
-    const heroRef = useRef(null);
-
-    const handleLogin = () => {
-        navigate('/login');
-    };
 
     const handleScheduleConsultation = () => {
         window.open('https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1TQd70RLRe-P2ldmz7nCeb9qJa0RQst1-9CJScUzPbAyCsG9wGpmD2xuhyKwT_JH5WXlK0smpf', '_blank');
@@ -33,23 +28,6 @@ const LandingPage = () => {
         const animateElements = document.querySelectorAll('.animate-on-scroll');
         animateElements.forEach(el => observer.observe(el));
 
-        // Create floating particles
-        const createParticles = () => {
-            const container = document.querySelector('.particle-container');
-            if (!container) return;
-
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'floating-particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                particle.style.animationDelay = Math.random() * 5 + 's';
-                container.appendChild(particle);
-            }
-        };
-
-        createParticles();
-
         return () => {
             observer.disconnect();
         };
@@ -57,41 +35,30 @@ const LandingPage = () => {
 
     return (
         <div className="landing-page">
-            {/* Animated Background */}
-            <div className="animated-background">
-                <div className="gradient-orb orb-1"></div>
-                <div className="gradient-orb orb-2"></div>
-                <div className="gradient-orb orb-3"></div>
-                <div className="particle-container"></div>
-            </div>
-
             {/* Modern Navigation */}
             <nav className="modern-nav">
                 <div className="nav-container">
-                    <div className="nav-logo">
+                    <a href="#" className="nav-logo">
                         <img src="/images/pm-logo.png" alt="Promind Psychiatry" className="logo-image" />
                         <span>Promind Psychiatry</span>
-                    </div>
+                    </a>
                     <div className="nav-links">
                         <a href="#about" className="nav-link">About</a>
                         <a href="#specialties" className="nav-link">Specialties</a>
                         <a href="#philosophy" className="nav-link">Approach</a>
                         <a href="#contact" className="nav-link">Contact</a>
                     </div>
-                    <button className="cta-button nav-cta" onClick={handleLogin}>
-                        Provider Login
-                    </button>
                 </div>
             </nav>
 
             {/* Hero Section */}
-            <section className="hero-section" ref={heroRef}>
+            <section className="hero-section">
                 <div className="hero-container">
-                    <div className="hero-content animate-on-scroll">
+                    <div className="animate-on-scroll">
                         <h1 className="hero-title">
                             <span className="gradient-text">Transform Your Mental Health Journey</span>
                             <br />
-                            <span className="secondary-text">with Precision Psychiatry</span>
+                            with Promind Psychiatry
                         </h1>
 
                         <p className="hero-description">
@@ -100,7 +67,7 @@ const LandingPage = () => {
                         </p>
 
                         <div className="hero-actions">
-                            <button className="cta-button primary large" onClick={handleScheduleConsultation}>
+                            <button className="btn btn-primary btn-large" onClick={handleScheduleConsultation}>
                                 Schedule Your Consultation Today
                             </button>
                         </div>
@@ -129,7 +96,7 @@ const LandingPage = () => {
                                 personalized treatment plan that works for your specific needs and goals.
                             </p>
                         </div>
-                        <div className="content-visual animate-on-scroll">
+                        <div className="animate-on-scroll">
                             <div className="doctor-profile">
                                 <div className="doctor-image">
                                     <img src="/images/doctor-image.png" alt="Dr. Privratsky" />
@@ -149,54 +116,53 @@ const LandingPage = () => {
             </section>
 
             {/* Specialties Section */}
-            <section id="specialties" className="section dark-section">
+            <section id="specialties" className="section section-alt">
                 <div className="container">
                     <div className="section-header animate-on-scroll">
-                        <h2>Specialties & Expertise</h2>
+                        <h2 className="section-title">Specialties & Expertise</h2>
                     </div>
-                    <div className="specialties-content">
-                        <div className="top-specialties animate-on-scroll">
-                            <h3>Specialties</h3>
-                            <div className="specialty-grid">
-                                <div className="specialty-card primary">
-                                    <div className="specialty-icon">😰</div>
-                                    <h4>Anxiety</h4>
-                                </div>
-                                <div className="specialty-card primary">
-                                    <div className="specialty-icon">💙</div>
-                                    <h4>Depression</h4>
-                                </div>
-                                <div className="specialty-card primary">
-                                    <div className="specialty-icon">🛡️</div>
-                                    <h4>Trauma and PTSD</h4>
-                                </div>
+
+                    <div className="animate-on-scroll">
+                        <h3 style={{ textAlign: 'center', marginBottom: 'var(--space-lg)', fontSize: '1.5rem', fontWeight: '600' }}>Primary Specialties</h3>
+                        <div className="specialty-grid">
+                            <div className="specialty-card">
+                                <div className="specialty-icon">😰</div>
+                                <h4>Anxiety</h4>
+                            </div>
+                            <div className="specialty-card">
+                                <div className="specialty-icon">💙</div>
+                                <h4>Depression</h4>
+                            </div>
+                            <div className="specialty-card">
+                                <div className="specialty-icon">🛡️</div>
+                                <h4>Trauma and PTSD</h4>
                             </div>
                         </div>
+                    </div>
 
-                        <div className="all-expertise animate-on-scroll">
-                            <h3>Areas of Expertise</h3>
-                            <div className="expertise-grid">
-                                <div className="expertise-item">Addiction</div>
-                                <div className="expertise-item">ADHD</div>
-                                <div className="expertise-item">Alcohol Use</div>
-                                <div className="expertise-item">Autism</div>
-                                <div className="expertise-item">Bipolar Disorder</div>
-                                <div className="expertise-item">Eating Disorders</div>
-                                <div className="expertise-item">LGBTQ+</div>
-                                <div className="expertise-item">Medication Management</div>
-                                <div className="expertise-item">Personality Disorders</div>
-                                <div className="expertise-item">Pregnancy, Prenatal, Postpartum</div>
-                                <div className="expertise-item">Psychosis</div>
-                                <div className="expertise-item">Psychotherapy (DBT, Exposure, etc)</div>
-                                <div className="expertise-item">School Issues</div>
-                                <div className="expertise-item">Scientific Approach to Mental Health</div>
-                                <div className="expertise-item">Self-Harming</div>
-                                <div className="expertise-item">Sleep or Insomnia</div>
-                                <div className="expertise-item">Substance Use</div>
-                                <div className="expertise-item">Suicidal Ideation</div>
-                                <div className="expertise-item">Testing and Evaluation</div>
-                                <div className="expertise-item">Traumatic Brain Injury (TBI)</div>
-                            </div>
+                    <div className="animate-on-scroll" style={{ marginTop: 'var(--space-3xl)' }}>
+                        <h3 style={{ textAlign: 'center', marginBottom: 'var(--space-lg)', fontSize: '1.5rem', fontWeight: '600' }}>Areas of Expertise</h3>
+                        <div className="expertise-grid">
+                            <div className="expertise-item">Addiction</div>
+                            <div className="expertise-item">ADHD</div>
+                            <div className="expertise-item">Alcohol Use</div>
+                            <div className="expertise-item">Autism</div>
+                            <div className="expertise-item">Bipolar Disorder</div>
+                            <div className="expertise-item">Eating Disorders</div>
+                            <div className="expertise-item">LGBTQ+</div>
+                            <div className="expertise-item">Medication Management</div>
+                            <div className="expertise-item">Personality Disorders</div>
+                            <div className="expertise-item">Pregnancy, Prenatal, Postpartum</div>
+                            <div className="expertise-item">Psychosis</div>
+                            <div className="expertise-item">Psychotherapy (DBT, Exposure, etc)</div>
+                            <div className="expertise-item">School Issues</div>
+                            <div className="expertise-item">Scientific Approach to Mental Health</div>
+                            <div className="expertise-item">Self-Harming</div>
+                            <div className="expertise-item">Sleep or Insomnia</div>
+                            <div className="expertise-item">Substance Use</div>
+                            <div className="expertise-item">Suicidal Ideation</div>
+                            <div className="expertise-item">Testing and Evaluation</div>
+                            <div className="expertise-item">Traumatic Brain Injury (TBI)</div>
                         </div>
                     </div>
                 </div>
@@ -206,36 +172,36 @@ const LandingPage = () => {
             <section id="services" className="section">
                 <div className="container">
                     <div className="section-header animate-on-scroll">
-                        <h2>Services We Provide</h2>
+                        <h2 className="section-title">Services We Provide</h2>
                     </div>
-                    <div className="services-grid animate-on-scroll">
-                        <div className="service-card">
-                            <div className="service-icon">💙</div>
+                    <div className="card-grid animate-on-scroll">
+                        <div className="card">
+                            <div className="card-icon">💙</div>
                             <h3>Depression & Mood Disorders</h3>
                             <p>Evidence-based treatment for major depression, bipolar disorder, and mood regulation challenges</p>
                         </div>
-                        <div className="service-card">
-                            <div className="service-icon">😰</div>
+                        <div className="card">
+                            <div className="card-icon">😰</div>
                             <h3>Anxiety Disorders</h3>
                             <p>Comprehensive care for generalized anxiety, panic disorder, social anxiety, and phobias</p>
                         </div>
-                        <div className="service-card">
-                            <div className="service-icon">🎯</div>
+                        <div className="card">
+                            <div className="card-icon">🎯</div>
                             <h3>ADHD & Focus Issues</h3>
                             <p>Adult ADHD assessment and management with both medication and behavioral strategies</p>
                         </div>
-                        <div className="service-card">
-                            <div className="service-icon">🛡️</div>
+                        <div className="card">
+                            <div className="card-icon">🛡️</div>
                             <h3>Trauma & PTSD</h3>
                             <p>Trauma-informed care using proven therapeutic approaches and medication when appropriate</p>
                         </div>
-                        <div className="service-card">
-                            <div className="service-icon">🌱</div>
+                        <div className="card">
+                            <div className="card-icon">🌱</div>
                             <h3>Stress & Life Transitions</h3>
                             <p>Support during major life changes, work stress, relationship challenges, and adjustment difficulties</p>
                         </div>
-                        <div className="service-card">
-                            <div className="service-icon">💊</div>
+                        <div className="card">
+                            <div className="card-icon">💊</div>
                             <h3>Medication Management</h3>
                             <p>Expert psychiatric medication consultation, monitoring, and optimization</p>
                         </div>
@@ -244,7 +210,7 @@ const LandingPage = () => {
             </section>
 
             {/* Philosophy Section */}
-            <section id="philosophy" className="section dark-section">
+            <section id="philosophy" className="section section-alt">
                 <div className="container">
                     <div className="content-grid">
                         <div className="content-text animate-on-scroll">
@@ -270,27 +236,35 @@ const LandingPage = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="content-visual animate-on-scroll">
+                        <div className="animate-on-scroll">
                             <div className="process-steps">
                                 <div className="process-step">
                                     <div className="step-number">1</div>
-                                    <h4>Initial Consultation</h4>
-                                    <p>Comprehensive assessment of your mental health needs and goals</p>
+                                    <div className="step-content">
+                                        <h4>Initial Consultation</h4>
+                                        <p>Comprehensive assessment of your mental health needs and goals</p>
+                                    </div>
                                 </div>
                                 <div className="process-step">
                                     <div className="step-number">2</div>
-                                    <h4>Personalized Plan</h4>
-                                    <p>Development of a treatment strategy tailored specifically to you</p>
+                                    <div className="step-content">
+                                        <h4>Personalized Plan</h4>
+                                        <p>Development of a treatment strategy tailored specifically to you</p>
+                                    </div>
                                 </div>
                                 <div className="process-step">
                                     <div className="step-number">3</div>
-                                    <h4>Ongoing Support</h4>
-                                    <p>Regular check-ins and plan adjustments as you progress</p>
+                                    <div className="step-content">
+                                        <h4>Ongoing Support</h4>
+                                        <p>Regular check-ins and plan adjustments as you progress</p>
+                                    </div>
                                 </div>
                                 <div className="process-step">
                                     <div className="step-number">4</div>
-                                    <h4>Collaborative Care</h4>
-                                    <p>Working together every step of the way</p>
+                                    <div className="step-content">
+                                        <h4>Collaborative Care</h4>
+                                        <p>Working together every step of the way</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -306,7 +280,7 @@ const LandingPage = () => {
                         <p>
                             Your journey to better mental health starts with a single conversation.
                         </p>
-                        <button className="cta-button primary large" onClick={handleScheduleConsultation}>
+                        <button className="btn btn-primary btn-large" onClick={handleScheduleConsultation}>
                             Schedule Your Appointment
                         </button>
                         <p className="cta-subtext">
@@ -323,7 +297,7 @@ const LandingPage = () => {
                         <h2>Get in Touch</h2>
 
                         <div className="contact-options">
-                            <a href="mailto:contact@promindpsychiatry.com" className="contact-method">
+                            <a href="mailto:Anthony.Privratsky@promindpsychiatry.com" className="contact-method">
                                 <div className="contact-icon">📧</div>
                                 <div className="contact-text">
                                     <strong>Email</strong>
@@ -335,7 +309,7 @@ const LandingPage = () => {
                                 <div className="contact-icon">📞</div>
                                 <div className="contact-text">
                                     <strong>Phone</strong>
-                                    <span>(801) 382-8118</span>
+                                    <span>(385) 455-4671</span>
                                 </div>
                             </a>
 
@@ -354,7 +328,10 @@ const LandingPage = () => {
                                 <p><strong>Currently accepting Fee-for-Service only</strong><br />
                                     Initial Session Fee: $300 • Standard Visit: $150</p>
                             </div>
-
+                            <div className="note-card">
+                                <h4>🔒 Privacy & Security</h4>
+                                <p>All appointments are conducted through our secure, HIPAA-compliant telehealth platform.</p>
+                            </div>
                             <div className="note-card">
                                 <h4>🆘 Crisis Support</h4>
                                 <p>If you're experiencing a mental health emergency, please call 988 (Suicide & Crisis Lifeline) or go to your nearest emergency room.</p>
