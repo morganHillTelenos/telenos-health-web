@@ -95,7 +95,7 @@ const LandingPage = () => {
                 <div className="container">
                     <div className="content-grid">
                         <div className="content-text animate-on-scroll">
-                            <h2>About Dr. Privratsky</h2>
+                            <h2>About Anthony Privratsky, MD, PHD</h2>
                             <p>
                                 I am passionate about helping all people reach their potential, whether their challenges are severe or mundane.
                                 My approach combines the latest advances in precision psychiatry with compassionate, collaborative care to ensure
