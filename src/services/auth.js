@@ -1,247 +1,215 @@
-// src/services/auth.js - Simplified version for demo login
+// src/services/auth.js - Enhanced to work with Cognito + Demo roles
+import { getCurrentUser } from 'aws-amplify/auth';
+
 class AuthService {
     constructor() {
         this.tokenKey = 'healthcare_token';
         this.userKey = 'healthcare_user';
+        this.roleKey = 'healthcare_user_role'; // Store role separately for demo
 
-        // Demo user accounts
-        this.demoUsers = {
-            'demo@telenos.com': {
-                id: '1',
-                email: 'demo@telenos.com',
-                password: 'demo123',
-                name: 'Dr. Smith',
-                firstName: 'Dr.',
-                lastName: 'Smith',
-                role: 'provider',
-                type: 'provider',
-                permissions: ['all'],
-                isProvider: true,
-                isPatient: false
-            },
-            'provider@telenos.com': {
-                id: '2',
-                email: 'provider@telenos.com',
-                password: 'provider123',
-                name: 'Dr. Johnson',
-                firstName: 'Dr.',
-                lastName: 'Johnson',
-                role: 'provider',
-                type: 'provider',
-                permissions: ['all'],
-                isProvider: true,
-                isPatient: false
-            },
-            'patient@telenos.com': {
-                id: '3',
-                email: 'patient@telenos.com',
-                password: 'patient123',
-                name: 'John Doe',
-                firstName: 'John',
-                lastName: 'Doe',
-                role: 'patient',
-                type: 'patient',
-                permissions: ['limited'],
-                isProvider: false,
-                isPatient: true
-            }
+        // Demo role mapping - in real app, this would come from Cognito user attributes
+        this.demoRoleMappings = {
+            'admin@telenos.com': 'admin',
+            'demo@telenos.com': 'provider',
+            'provider@telenos.com': 'provider',
+            'patient@telenos.com': 'patient'
+        };
+
+        // Define permission sets for each role
+        this.rolePermissions = {
+            admin: [
+                'user_management',
+                'system_settings',
+                'view_all_data',
+                'generate_reports',
+                'audit_logs',
+                'backup_restore',
+                'compliance_management',
+                'integration_settings'
+            ],
+            provider: [
+                'view_assigned_patients',
+                'create_clinical_notes',
+                'schedule_appointments',
+                'video_consultations',
+                'prescription_management',
+                'patient_communication',
+                'patient_management',
+                'clinical_notes',
+                'appointments'
+            ],
+            patient: [
+                'view_own_records',
+                'request_appointments',
+                'patient_portal_access',
+                'secure_messaging',
+                'join_video_calls'
+            ]
         };
     }
 
-    // Simple sign in for demo
-    async signIn(email, password) {
+    // Get current user from Cognito or localStorage
+    async getCurrentUser() {
         try {
-            console.log('Attempting login with:', email);
+            // Try Cognito first
+            const cognitoUser = await getCurrentUser();
+            if (cognitoUser) {
+                const email = cognitoUser.signInDetails?.loginId || cognitoUser.attributes?.email || cognitoUser.username;
+                const role = this.getUserRoleByEmail(email);
 
-            // Ensure email is a string and handle edge cases
-            const emailStr = String(email || '').toLowerCase().trim();
-
-            if (!emailStr) {
-                throw new Error('Email is required');
+                return {
+                    id: cognitoUser.userId,
+                    username: cognitoUser.username,
+                    email: email,
+                    name: email, // Could be enhanced with proper name from Cognito attributes
+                    role: role,
+                    type: role,
+                    permissions: this.rolePermissions[role] || [],
+                    isAdmin: role === 'admin',
+                    isProvider: role === 'provider',
+                    isPatient: role === 'patient',
+                    source: 'cognito'
+                };
             }
-
-            const user = this.demoUsers[emailStr];
-
-            if (!user) {
-                throw new Error('User not found');
-            }
-
-            if (user.password !== password) {
-                throw new Error('Invalid password');
-            }
-
-            // Create user session (remove password from stored data)
-            const userSession = {
-                ...user,
-                loginTime: new Date().toISOString(),
-                sessionId: `session_${Date.now()}`
-            };
-            delete userSession.password;
-
-            // Store session
-            localStorage.setItem(this.userKey, JSON.stringify(userSession));
-            localStorage.setItem(this.tokenKey, `demo_token_${Date.now()}`);
-
-            console.log('✅ Login successful as:', userSession.role);
-
-            return {
-                success: true,
-                user: userSession
-            };
-
         } catch (error) {
-            console.error('❌ Login error:', error);
-            throw error;
+            // If Cognito fails, try localStorage (demo mode)
+            const userStr = localStorage.getItem(this.userKey);
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                return user;
+            }
+        }
+
+        throw new Error('No user session found');
+    }
+
+    // Determine role by email (demo purposes)
+    getUserRoleByEmail(email) {
+        // In a real app, this would be stored in Cognito user attributes
+        const emailStr = String(email || '').toLowerCase().trim();
+        return this.demoRoleMappings[emailStr] || 'patient'; // Default to patient
+    }
+
+    // Set demo role for testing
+    async setDemoRole(role) {
+        try {
+            const user = await this.getCurrentUser();
+            if (user) {
+                user.role = role;
+                user.type = role;
+                user.permissions = this.rolePermissions[role] || [];
+                user.isAdmin = role === 'admin';
+                user.isProvider = role === 'provider';
+                user.isPatient = role === 'patient';
+
+                localStorage.setItem(this.userKey, JSON.stringify(user));
+                localStorage.setItem(this.roleKey, role);
+                return user;
+            }
+        } catch (error) {
+            console.error('Failed to set demo role:', error);
         }
     }
 
-    // Alternative method name for compatibility
-    async login(email, password) {
-        return this.signIn(email, password);
-    }
-
-    // Check if user is authenticated
-    isAuthenticated() {
+    // Role checking methods
+    async isAdmin() {
         try {
-            const token = localStorage.getItem(this.tokenKey);
-            const user = localStorage.getItem(this.userKey);
-            return !!(token && user);
+            const user = await this.getCurrentUser();
+            return user && (user.role === 'admin' || user.isAdmin === true);
         } catch (error) {
             return false;
         }
     }
 
-    // Get current user
-    async getCurrentUser() {
+    async isProvider() {
         try {
-            const userStr = localStorage.getItem(this.userKey);
-            if (!userStr) {
-                throw new Error('No user session found');
-            }
-
-            const user = JSON.parse(userStr);
-            console.log('Current user:', user);
-            return user;
+            const user = await this.getCurrentUser();
+            return user && (user.role === 'provider' || user.isProvider === true);
         } catch (error) {
-            console.error('Error getting current user:', error);
-            throw error;
+            return false;
         }
     }
 
-    // Get user role
-    getUserRole() {
+    async isPatient() {
         try {
-            const user = JSON.parse(localStorage.getItem(this.userKey) || '{}');
-            return user.role || 'unknown';
+            const user = await this.getCurrentUser();
+            return user && (user.role === 'patient' || user.isPatient === true);
+        } catch (error) {
+            return false;
+        }
+    }
+
+    // Permission checking method
+    async hasPermission(permission) {
+        try {
+            const user = await this.getCurrentUser();
+            return user && user.permissions && user.permissions.includes(permission);
+        } catch (error) {
+            return false;
+        }
+    }
+
+    // Check multiple permissions
+    async hasAnyPermission(permissions) {
+        const results = await Promise.all(permissions.map(p => this.hasPermission(p)));
+        return results.some(Boolean);
+    }
+
+    async hasAllPermissions(permissions) {
+        const results = await Promise.all(permissions.map(p => this.hasPermission(p)));
+        return results.every(Boolean);
+    }
+
+    // Get user role
+    async getUserRole() {
+        try {
+            const user = await this.getCurrentUser();
+            return user ? user.role : 'unknown';
         } catch (error) {
             return 'unknown';
         }
     }
 
-    // Check if user is provider
-    isProvider() {
+    // Authentication check - works with both Cognito and demo
+    async isAuthenticated() {
         try {
-            const user = JSON.parse(localStorage.getItem(this.userKey) || '{}');
-            return user.role === 'provider' || user.isProvider === true;
+            await this.getCurrentUser();
+            return true;
         } catch (error) {
             return false;
         }
     }
 
-    // Check if user is patient
-    isPatient() {
-        try {
-            const user = JSON.parse(localStorage.getItem(this.userKey) || '{}');
-            return user.role === 'patient' || user.isPatient === true;
-        } catch (error) {
-            return false;
-        }
+    // Legacy methods for compatibility (now async)
+    isAdminSync() {
+        // Synchronous fallback for compatibility - not recommended
+        const roleOverride = localStorage.getItem(this.roleKey);
+        return roleOverride === 'admin';
     }
 
-    // Sign out
-    async signOut() {
-        try {
-            localStorage.removeItem(this.userKey);
-            localStorage.removeItem(this.tokenKey);
-            console.log('✅ Signed out successfully');
-            return { success: true };
-        } catch (error) {
-            console.error('Sign out error:', error);
-            throw error;
-        }
+    isProviderSync() {
+        const roleOverride = localStorage.getItem(this.roleKey);
+        return roleOverride === 'provider';
     }
 
-    // Alternative method name for compatibility
-    async logout() {
-        return this.signOut();
+    isPatientSync() {
+        const roleOverride = localStorage.getItem(this.roleKey);
+        return roleOverride === 'patient';
     }
 
-    // Register new user (for demo)
-    async signUp(email, password, name) {
-        try {
-            // Ensure email is a string
-            const emailStr = String(email || '').toLowerCase().trim();
-
-            if (!emailStr) {
-                throw new Error('Email is required');
-            }
-
-            // For demo, just create a new patient user
-            const newUser = {
-                id: `user_${Date.now()}`,
-                email: emailStr,
-                password: password,
-                name: name,
-                firstName: name.split(' ')[0] || name,
-                lastName: name.split(' ').slice(1).join(' ') || '',
-                role: 'patient',
-                type: 'patient',
-                permissions: ['limited'],
-                isProvider: false,
-                isPatient: true,
-                createdAt: new Date().toISOString()
-            };
-
-            // For demo purposes, add to demo users
-            this.demoUsers[emailStr] = newUser;
-
-            console.log('✅ Demo registration successful');
-
-            return {
-                success: true,
-                user: { ...newUser, password: undefined },
-                needsConfirmation: false
-            };
-
-        } catch (error) {
-            console.error('Registration error:', error);
-            throw error;
-        }
-    }
-
-    // Alternative method name for compatibility
-    async register(userData) {
-        const { email, password, firstName, lastName } = userData;
-        const name = `${firstName} ${lastName}`.trim();
-        return this.signUp(email, password, name);
-    }
-
-    // Get demo accounts info
+    // Get demo accounts for testing
     getDemoAccounts() {
         return {
+            admin: {
+                email: 'admin@telenos.com',
+                role: 'Administrator'
+            },
             provider: {
                 email: 'demo@telenos.com',
-                password: 'demo123',
-                role: 'Provider/Doctor'
-            },
-            alternativeProvider: {
-                email: 'provider@telenos.com',
-                password: 'provider123',
                 role: 'Provider/Doctor'
             },
             patient: {
                 email: 'patient@telenos.com',
-                password: 'patient123',
                 role: 'Patient'
             }
         };

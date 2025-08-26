@@ -1,396 +1,473 @@
-// src/pages/HealthcareDashboard.js - Clean version without Doxy.me
+// src/pages/HealthcareDashboard.js - Simple version with Role Testing
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/auth';
-import ApiKeyTestComponent from '../components/ApiKeyTestComponent';
+import { Link } from 'react-router-dom';
 
-const HealthcareDashboard = () => {
-    const navigate = useNavigate();
-    const [stats, setStats] = useState({});
-    const [recentActivity, setRecentActivity] = useState([]);
-    const [upcomingAppointments, setUpcomingAppointments] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [currentTime, setCurrentTime] = useState(new Date());
-    const [currentUser, setCurrentUser] = useState(null);
+const HealthcareDashboard = ({ user }) => {
+    const [currentTime, setCurrentTime] = useState('');
+    const [currentRole, setCurrentRole] = useState('provider');
+    const [stats, setStats] = useState({
+        todayPatients: 8,
+        upcomingAppointments: 3,
+        activeNotes: 12,
+        pendingReviews: 2
+    });
 
     useEffect(() => {
-        loadDashboardData();
-        getCurrentUserInfo();
-
-        // Update time every minute
-        const timeInterval = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 60000);
-
+        updateTime();
+        const timeInterval = setInterval(updateTime, 1000);
         return () => clearInterval(timeInterval);
     }, []);
 
-    const getCurrentUserInfo = async () => {
-        try {
-            const user = await authService.getCurrentUser();
-            setCurrentUser(user);
-        } catch (error) {
-            console.error('Error getting current user:', error);
-        }
+    const updateTime = () => {
+        const now = new Date();
+        setCurrentTime(now.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        }));
     };
 
-    const loadDashboardData = async () => {
-        try {
-            // Simulate loading delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
+    const testRoleChange = async (newRole) => {
+        console.log(`🔄 Switching to ${newRole} role...`);
+        setCurrentRole(newRole);
 
+        // Update stats based on role
+        if (newRole === 'admin') {
             setStats({
-                totalPatients: 247,
-                todayAppointments: 12,
-                upcomingAppointments: 38,
-                completedToday: 8,
+                totalUsers: 156,
+                activeProviders: 12,
+                systemHealth: 98,
                 pendingReviews: 5
             });
-
-            setRecentActivity([
-                {
-                    id: 1,
-                    type: 'patient',
-                    title: 'New patient registration: Sarah Johnson',
-                    time: '12 minutes ago',
-                    icon: '👤',
-                    color: '#10B981',
-                    priority: 'normal'
-                },
-                {
-                    id: 2,
-                    type: 'appointment',
-                    title: 'Appointment completed with Michael Chen',
-                    time: '45 minutes ago',
-                    icon: '✅',
-                    color: '#059669',
-                    priority: 'normal'
-                },
-                {
-                    id: 3,
-                    type: 'urgent',
-                    title: 'Lab results ready for review - Emily Davis',
-                    time: '1 hour ago',
-                    icon: '🔬',
-                    color: '#DC2626',
-                    priority: 'urgent'
-                },
-                {
-                    id: 4,
-                    type: 'appointment',
-                    title: 'Upcoming appointment with Robert Wilson',
-                    time: 'In 2 hours',
-                    icon: '📅',
-                    color: '#3B82F6',
-                    priority: 'high'
-                },
-                {
-                    id: 5,
-                    type: 'system',
-                    title: 'Daily backup completed successfully',
-                    time: '3 hours ago',
-                    icon: '💾',
-                    color: '#6B7280',
-                    priority: 'low'
-                }
-            ]);
-
-            setUpcomingAppointments([
-                {
-                    id: 'apt-001',
-                    patientName: 'Robert Wilson',
-                    time: '2:00 PM',
-                    type: 'Consultation',
-                    duration: '30 min',
-                    status: 'confirmed'
-                },
-                {
-                    id: 'apt-002',
-                    patientName: 'Lisa Anderson',
-                    time: '3:30 PM',
-                    type: 'Follow-up',
-                    duration: '20 min',
-                    status: 'confirmed'
-                },
-                {
-                    id: 'apt-003',
-                    patientName: 'David Martinez',
-                    time: '4:15 PM',
-                    type: 'Check-up',
-                    duration: '45 min',
-                    status: 'pending'
-                }
-            ]);
-
-            setLoading(false);
-        } catch (error) {
-            console.error('Error loading dashboard data:', error);
-            setLoading(false);
+        } else if (newRole === 'patient') {
+            setStats({
+                myAppointments: 2,
+                messageCount: 1,
+                healthAlerts: 0,
+                documentCount: 8
+            });
+        } else {
+            setStats({
+                todayPatients: 8,
+                upcomingAppointments: 3,
+                activeNotes: 12,
+                pendingReviews: 2
+            });
         }
+
+        alert(`✅ Switched to ${newRole} role! Stats updated. Role-based features will be added in the next steps.`);
     };
 
-    <ApiKeyTestComponent />
+    const getRoleBadge = () => {
+        const badges = {
+            admin: { icon: '👑', label: 'Admin', color: '#8B5CF6' },
+            provider: { icon: '👨‍⚕️', label: 'Provider', color: '#3B82F6' },
+            patient: { icon: '👤', label: 'Patient', color: '#10B981' }
+        };
 
-    const handleLogout = async () => {
-        try {
-            await authService.signOut();
-            navigate('/');
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
-    };
-
-    const quickActions = [
-        {
-            title: 'Add New Patient',
-            description: 'Register a new patient in the system',
-            icon: '👤',
-            color: 'from-blue-500 to-blue-600',
-            action: () => navigate('/patients/new')
-        },
-        {
-            title: 'Schedule Appointment',
-            description: 'Book a new appointment',
-            icon: '📅',
-            color: 'from-green-500 to-green-600',
-            action: () => navigate('/appointments/new')
-        },
-        {
-            title: 'Clinical Notes',
-            description: 'Document patient encounters',
-            icon: '📝',
-            color: 'from-purple-500 to-purple-600',
-            action: () => navigate('/notes')
-        },
-        {
-            title: 'View Calendar',
-            description: 'Check today\'s schedule',
-            icon: '🗓️',
-            color: 'from-teal-500 to-teal-600',
-            action: () => navigate('/calendar')
-        },
-        {
-            title: 'Patient Records',
-            description: 'Browse all patient files',
-            icon: '📋',
-            color: 'from-orange-500 to-orange-600',
-            action: () => navigate('/patients')
-        }
-    ];
-
-    if (loading) {
+        const badge = badges[currentRole] || badges.provider;
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading dashboard...</p>
-                </div>
-            </div>
+            <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0.5rem 1rem',
+                borderRadius: '9999px',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                backgroundColor: badge.color + '20',
+                color: badge.color,
+                border: `1px solid ${badge.color}40`
+            }}>
+                {badge.icon} {badge.label}
+            </span>
         );
-    }
+    };
+
+    const getStatsForRole = () => {
+        switch (currentRole) {
+            case 'admin':
+                return [
+                    { label: 'Total Users', value: stats.totalUsers || 156, icon: '👥' },
+                    { label: 'Active Providers', value: stats.activeProviders || 12, icon: '👨‍⚕️' },
+                    { label: 'System Health', value: `${stats.systemHealth || 98}%`, icon: '💚' },
+                    { label: 'Pending Reviews', value: stats.pendingReviews || 5, icon: '📋' }
+                ];
+            case 'patient':
+                return [
+                    { label: 'My Appointments', value: stats.myAppointments || 2, icon: '📅' },
+                    { label: 'New Messages', value: stats.messageCount || 1, icon: '💬' },
+                    { label: 'Health Alerts', value: stats.healthAlerts || 0, icon: '⚠️' },
+                    { label: 'Documents', value: stats.documentCount || 8, icon: '📄' }
+                ];
+            default: // provider
+                return [
+                    { label: "Today's Patients", value: stats.todayPatients, icon: '👤' },
+                    { label: 'Upcoming Appointments', value: stats.upcomingAppointments, icon: '📅' },
+                    { label: 'Active Notes', value: stats.activeNotes, icon: '📝' },
+                    { label: 'Pending Reviews', value: stats.pendingReviews, icon: '📋' }
+                ];
+        }
+    };
+
+    const containerStyle = {
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #f0f9ff 0%, #fef3f2 100%)',
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+    };
+
+    const headerStyle = {
+        background: 'rgba(255, 255, 255, 0.8)',
+        backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        padding: '1rem 0'
+    };
+
+    const cardStyle = {
+        background: 'rgba(255, 255, 255, 0.8)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+        borderRadius: '1rem',
+        padding: '1.5rem',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
+    };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div style={containerStyle}>
             {/* Header */}
-            <div className="bg-white/80 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center py-4">
+            <div style={headerStyle}>
+                <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Healthcare Dashboard</h1>
-                            <p className="text-sm text-gray-600">
-                                Welcome back, {currentUser?.name || 'Doctor'}
+                            <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1f2937', margin: 0 }}>
+                                📊 Dashboard
+                            </h1>
+                            <p style={{ color: '#6b7280', margin: '0.25rem 0 0 0' }}>
+                                Welcome back, {user?.email || user?.name || 'User'}
                             </p>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <div className="text-sm text-gray-600">
-                                {currentTime.toLocaleDateString()} • {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </div>
-                            <button
-                                onClick={handleLogout}
-                                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                            >
-                                Sign Out
-                            </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            {getRoleBadge()}
+                            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>{currentTime}</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem' }}>
+
+                {/* Role Testing Panel */}
+                <div style={{
+                    ...cardStyle,
+                    backgroundColor: '#EBF8FF',
+                    border: '1px solid #BEE3F8',
+                    marginBottom: '2rem'
+                }}>
+                    <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#1A365D', marginBottom: '1rem' }}>
+                        🧪 Role Testing Panel
+                    </h3>
+
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: '1rem',
+                        marginBottom: '1rem'
+                    }}>
+                        <button
+                            onClick={() => testRoleChange('admin')}
+                            style={{
+                                padding: '1rem',
+                                borderRadius: '0.5rem',
+                                border: currentRole === 'admin' ? '2px solid #8B5CF6' : '1px solid #E2E8F0',
+                                backgroundColor: currentRole === 'admin' ? '#F3E8FF' : '#FFFFFF',
+                                color: currentRole === 'admin' ? '#6B46C1' : '#4A5568',
+                                cursor: 'pointer',
+                                textAlign: 'center',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>👑</div>
+                            <div style={{ fontWeight: '600' }}>Administrator</div>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>Full system access</div>
+                            {currentRole === 'admin' && <div style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '0.25rem' }}>✓ Active</div>}
+                        </button>
+
+                        <button
+                            onClick={() => testRoleChange('provider')}
+                            style={{
+                                padding: '1rem',
+                                borderRadius: '0.5rem',
+                                border: currentRole === 'provider' ? '2px solid #3B82F6' : '1px solid #E2E8F0',
+                                backgroundColor: currentRole === 'provider' ? '#EBF8FF' : '#FFFFFF',
+                                color: currentRole === 'provider' ? '#1E40AF' : '#4A5568',
+                                cursor: 'pointer',
+                                textAlign: 'center',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>👨‍⚕️</div>
+                            <div style={{ fontWeight: '600' }}>Provider</div>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>Patient management</div>
+                            {currentRole === 'provider' && <div style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '0.25rem' }}>✓ Active</div>}
+                        </button>
+
+                        <button
+                            onClick={() => testRoleChange('patient')}
+                            style={{
+                                padding: '1rem',
+                                borderRadius: '0.5rem',
+                                border: currentRole === 'patient' ? '2px solid #10B981' : '1px solid #E2E8F0',
+                                backgroundColor: currentRole === 'patient' ? '#ECFDF5' : '#FFFFFF',
+                                color: currentRole === 'patient' ? '#047857' : '#4A5568',
+                                cursor: 'pointer',
+                                textAlign: 'center',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>👤</div>
+                            <div style={{ fontWeight: '600' }}>Patient</div>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>Personal portal</div>
+                            {currentRole === 'patient' && <div style={{ fontSize: '0.75rem', fontWeight: '600', marginTop: '0.25rem' }}>✓ Active</div>}
+                        </button>
+                    </div>
+
+                    <div style={{
+                        fontSize: '0.75rem',
+                        color: '#1E40AF',
+                        backgroundColor: '#FFFFFF',
+                        padding: '0.75rem',
+                        borderRadius: '0.25rem',
+                        border: '1px solid #BEE3F8'
+                    }}>
+                        <strong>Current Role:</strong> {currentRole} • <strong>Testing:</strong> Click buttons above to test different user roles and permissions.
+                    </div>
+                </div>
+
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-6 shadow-lg">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Total Patients</p>
-                                <p className="text-3xl font-bold text-gray-900">{stats.totalPatients}</p>
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gap: '1.5rem',
+                    marginBottom: '2rem'
+                }}>
+                    {getStatsForRole().map((stat, index) => (
+                        <div key={index} style={cardStyle}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                                <div>
+                                    <p style={{ color: '#6b7280', fontSize: '0.875rem', fontWeight: '500', margin: 0 }}>
+                                        {stat.label}
+                                    </p>
+                                    <p style={{ fontSize: '2rem', fontWeight: '700', color: '#1f2937', margin: '0.25rem 0 0 0' }}>
+                                        {stat.value}
+                                    </p>
+                                </div>
+                                <div style={{ fontSize: '2rem' }}>{stat.icon}</div>
                             </div>
-                            <div className="text-3xl">👥</div>
                         </div>
-                        <div className="mt-2">
-                            <span className="text-sm text-green-600 font-medium">↗ 12% increase</span>
-                        </div>
+                    ))}
+                </div>
+
+                {/* Quick Actions - Role-Based */}
+                <div style={{ marginBottom: '2rem' }}>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1f2937', marginBottom: '1.5rem' }}>
+                        Quick Actions
+                    </h2>
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: '1rem'
+                    }}>
+                        {/* Admin Actions */}
+                        {currentRole === 'admin' && (
+                            <>
+                                <div style={{ ...cardStyle, textAlign: 'center', color: '#4A5568', backgroundColor: '#F3E8FF', border: '1px solid #DDD6FE' }}>
+                                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>👥</div>
+                                    <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>User Management</div>
+                                    <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>Manage all system users</div>
+                                </div>
+
+                                <Link to="/doctors" style={{ textDecoration: 'none' }}>
+                                    <div style={{ ...cardStyle, cursor: 'pointer', textAlign: 'center', color: '#4A5568', backgroundColor: '#F3E8FF', border: '1px solid #DDD6FE' }}>
+                                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>👨‍⚕️</div>
+                                        <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Manage Doctors</div>
+                                        <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>Add and manage healthcare providers</div>
+                                    </div>
+                                </Link>
+
+                                <div style={{ ...cardStyle, textAlign: 'center', color: '#4A5568', backgroundColor: '#F3E8FF', border: '1px solid #DDD6FE' }}>
+                                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📊</div>
+                                    <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Reports & Analytics</div>
+                                    <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>View system reports</div>
+                                </div>
+
+                                <div style={{ ...cardStyle, textAlign: 'center', color: '#4A5568', backgroundColor: '#F3E8FF', border: '1px solid #DDD6FE' }}>
+                                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🔒</div>
+                                    <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Security & Compliance</div>
+                                    <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>Manage security settings</div>
+                                </div>
+                            </>
+                        )}
+
+                        {/* Provider Actions */}
+                        {currentRole === 'provider' && (
+                            <>
+                                <Link to="/patients" style={{ textDecoration: 'none' }}>
+                                    <div style={{ ...cardStyle, cursor: 'pointer', textAlign: 'center', color: '#4A5568', backgroundColor: '#EBF8FF', border: '1px solid #BFDBFE' }}>
+                                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>👤</div>
+                                        <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Patients</div>
+                                        <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>Manage patient records</div>
+                                    </div>
+                                </Link>
+
+                                <Link to="/notes" style={{ textDecoration: 'none' }}>
+                                    <div style={{ ...cardStyle, cursor: 'pointer', textAlign: 'center', color: '#4A5568', backgroundColor: '#EBF8FF', border: '1px solid #BFDBFE' }}>
+                                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📝</div>
+                                        <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Clinical Notes</div>
+                                        <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>Document patient care</div>
+                                    </div>
+                                </Link>
+
+                                <div style={{ ...cardStyle, textAlign: 'center', color: '#4A5568', backgroundColor: '#EBF8FF', border: '1px solid #BFDBFE' }}>
+                                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📅</div>
+                                    <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Schedule</div>
+                                    <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>View appointments and calendar</div>
+                                </div>
+
+                                <Link to="/test" style={{ textDecoration: 'none' }}>
+                                    <div style={{ ...cardStyle, cursor: 'pointer', textAlign: 'center', color: '#4A5568', backgroundColor: '#EBF8FF', border: '1px solid #BFDBFE' }}>
+                                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🧪</div>
+                                        <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>API Test</div>
+                                        <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>Test API functionality</div>
+                                    </div>
+                                </Link>
+                            </>
+                        )}
+
+                        {/* Patient Actions */}
+                        {currentRole === 'patient' && (
+                            <>
+                                <div style={{ ...cardStyle, textAlign: 'center', color: '#4A5568', backgroundColor: '#ECFDF5', border: '1px solid #BBF7D0' }}>
+                                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📄</div>
+                                    <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>My Records</div>
+                                    <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>View personal health records</div>
+                                </div>
+
+                                <div style={{ ...cardStyle, textAlign: 'center', color: '#4A5568', backgroundColor: '#ECFDF5', border: '1px solid #BBF7D0' }}>
+                                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📅</div>
+                                    <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Appointments</div>
+                                    <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>Schedule and manage appointments</div>
+                                </div>
+
+                                <div style={{ ...cardStyle, textAlign: 'center', color: '#4A5568', backgroundColor: '#ECFDF5', border: '1px solid #BBF7D0' }}>
+                                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>💬</div>
+                                    <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Messages</div>
+                                    <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>Communicate with providers</div>
+                                </div>
+
+                                <div style={{ ...cardStyle, textAlign: 'center', color: '#4A5568', backgroundColor: '#ECFDF5', border: '1px solid #BBF7D0' }}>
+                                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>❤️</div>
+                                    <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Health Tracker</div>
+                                    <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>Track symptoms and vitals</div>
+                                </div>
+                            </>
+                        )}
                     </div>
 
-                    <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-6 shadow-lg">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Today's Appointments</p>
-                                <p className="text-3xl font-bold text-gray-900">{stats.todayAppointments}</p>
-                            </div>
-                            <div className="text-3xl">📅</div>
-                        </div>
-                        <div className="mt-2">
-                            <span className="text-sm text-blue-600 font-medium">{stats.completedToday} completed</span>
-                        </div>
-                    </div>
-
-                    <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-6 shadow-lg">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Upcoming This Week</p>
-                                <p className="text-3xl font-bold text-gray-900">{stats.upcomingAppointments}</p>
-                            </div>
-                            <div className="text-3xl">⏰</div>
-                        </div>
-                        <div className="mt-2">
-                            <span className="text-sm text-orange-600 font-medium">Next: 2:00 PM</span>
-                        </div>
-                    </div>
-
-                    <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-6 shadow-lg">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Pending Reviews</p>
-                                <p className="text-3xl font-bold text-gray-900">{stats.pendingReviews}</p>
-                            </div>
-                            <div className="text-3xl">📋</div>
-                        </div>
-                        <div className="mt-2">
-                            <span className="text-sm text-red-600 font-medium">Needs attention</span>
-                        </div>
+                    {/* Access Denied Message for Missing Actions */}
+                    <div style={{
+                        marginTop: '1rem',
+                        padding: '1rem',
+                        backgroundColor: '#FEF3C7',
+                        border: '1px solid #FCD34D',
+                        borderRadius: '0.5rem',
+                        fontSize: '0.875rem',
+                        color: '#92400E'
+                    }}>
+                        <strong>Role-Based Access:</strong> You can only see actions available to your current role ({currentRole}).
+                        {currentRole === 'patient' && ' As a patient, you cannot access clinical management tools or administrative functions.'}
+                        {currentRole === 'provider' && ' As a provider, you can manage patients and clinical data but cannot manage doctors or access system administration.'}
+                        {currentRole === 'admin' && ' As an administrator, you have access to system management tools including user and doctor management.'}
                     </div>
                 </div>
 
-                {/* Quick Actions */}
-                <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {quickActions.map((action, index) => (
-                            <button
-                                key={index}
-                                onClick={action.action}
-                                className="group bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 p-6 shadow-lg hover:shadow-xl transition-all duration-200 text-left"
-                            >
-                                <div className={`w-12 h-12 bg-gradient-to-r ${action.color} rounded-xl flex items-center justify-center text-white text-xl mb-4 group-hover:scale-110 transition-transform`}>
-                                    {action.icon}
-                                </div>
-                                <h3 className="font-semibold text-gray-900 mb-2">{action.title}</h3>
-                                <p className="text-sm text-gray-600">{action.description}</p>
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                {/* Role-specific content */}
+                <div style={cardStyle}>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1f2937', marginBottom: '1.5rem' }}>
+                        {currentRole === 'admin' ? 'System Overview' :
+                            currentRole === 'patient' ? 'My Health Summary' : 'Recent Activity'}
+                    </h2>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Recent Activity */}
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Activity</h2>
-                        <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 shadow-lg">
-                            {recentActivity.length > 0 ? (
-                                <div className="divide-y divide-gray-100">
-                                    {recentActivity.map((item) => (
-                                        <div key={item.id} className="p-6 hover:bg-gray-50/50 transition-colors">
-                                            <div className="flex items-start gap-4">
-                                                <div
-                                                    className="w-10 h-10 rounded-full flex items-center justify-center text-lg flex-shrink-0"
-                                                    style={{ backgroundColor: `${item.color}20`, color: item.color }}
-                                                >
-                                                    {item.icon}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-start justify-between">
-                                                        <p className="text-sm font-medium text-gray-900 leading-5">
-                                                            {item.title}
-                                                        </p>
-                                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ml-2 ${item.priority === 'urgent' ? 'bg-red-100 text-red-700' :
-                                                                item.priority === 'high' ? 'bg-orange-100 text-orange-700' :
-                                                                    'bg-gray-100 text-gray-700'
-                                                            }`}>
-                                                            {item.priority.toUpperCase()}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-gray-500 text-xs mt-1">{item.time}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
+                    {currentRole === 'admin' ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', backgroundColor: '#F0FDF4', borderRadius: '0.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    <div style={{ width: '0.5rem', height: '0.5rem', backgroundColor: '#22C55E', borderRadius: '50%' }}></div>
+                                    <span style={{ fontSize: '0.875rem', color: '#1f2937' }}>System Status: Operational</span>
                                 </div>
-                            ) : (
-                                <div className="p-12 text-center">
-                                    <div className="text-6xl mb-4 opacity-30">📊</div>
-                                    <div className="font-semibold text-gray-900 mb-2">No recent activity</div>
-                                    <div className="text-gray-500 text-sm">
-                                        Start by adding patients or scheduling appointments
-                                    </div>
+                                <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Last checked: 2 minutes ago</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', backgroundColor: '#EBF8FF', borderRadius: '0.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    <div style={{ width: '0.5rem', height: '0.5rem', backgroundColor: '#3B82F6', borderRadius: '50%' }}></div>
+                                    <span style={{ fontSize: '0.875rem', color: '#1f2937' }}>Database backup completed</span>
                                 </div>
-                            )}
+                                <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>4 hours ago</span>
+                            </div>
                         </div>
-                    </div>
+                    ) : currentRole === 'patient' ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', backgroundColor: '#EBF8FF', borderRadius: '0.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    <div style={{ width: '0.5rem', height: '0.5rem', backgroundColor: '#3B82F6', borderRadius: '50%' }}></div>
+                                    <span style={{ fontSize: '0.875rem', color: '#1f2937' }}>Next appointment: Dr. Smith on March 15</span>
+                                </div>
+                                <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>in 3 days</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', backgroundColor: '#F0FDF4', borderRadius: '0.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    <div style={{ width: '0.5rem', height: '0.5rem', backgroundColor: '#22C55E', borderRadius: '50%' }}></div>
+                                    <span style={{ fontSize: '0.875rem', color: '#1f2937' }}>Lab results available</span>
+                                </div>
+                                <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>2 days ago</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', backgroundColor: '#EBF8FF', borderRadius: '0.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    <div style={{ width: '0.5rem', height: '0.5rem', backgroundColor: '#3B82F6', borderRadius: '50%' }}></div>
+                                    <span style={{ fontSize: '0.875rem', color: '#1f2937' }}>Patient consultation completed - Sarah Johnson</span>
+                                </div>
+                                <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>2 hours ago</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', backgroundColor: '#F0FDF4', borderRadius: '0.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    <div style={{ width: '0.5rem', height: '0.5rem', backgroundColor: '#22C55E', borderRadius: '50%' }}></div>
+                                    <span style={{ fontSize: '0.875rem', color: '#1f2937' }}>New patient registered - Mike Davis</span>
+                                </div>
+                                <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>4 hours ago</span>
+                            </div>
+                        </div>
+                    )}
 
-                    {/* Upcoming Appointments */}
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Today's Schedule</h2>
-                        <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-200/50 shadow-lg">
-                            {upcomingAppointments.length > 0 ? (
-                                <div className="divide-y divide-gray-100">
-                                    {upcomingAppointments.map((appointment) => (
-                                        <div key={appointment.id} className="p-6 hover:bg-gray-50/50 transition-colors">
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <h3 className="font-semibold text-gray-900">
-                                                        {appointment.patientName}
-                                                    </h3>
-                                                    <p className="text-sm text-gray-600">
-                                                        {appointment.type} • {appointment.duration}
-                                                    </p>
-                                                    <p className="text-sm font-medium text-blue-600">
-                                                        {appointment.time}
-                                                    </p>
-                                                </div>
-                                                <div className="flex flex-col items-end gap-2">
-                                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${appointment.status === 'confirmed' ? 'bg-green-100 text-green-700' :
-                                                            'bg-yellow-100 text-yellow-700'
-                                                        }`}>
-                                                        {appointment.status.toUpperCase()}
-                                                    </span>
-                                                    <button
-                                                        onClick={() => navigate(`/appointments/${appointment.id}`)}
-                                                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                                                    >
-                                                        View Details
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="p-12 text-center">
-                                    <div className="text-6xl mb-4 opacity-30">📅</div>
-                                    <div className="font-semibold text-gray-900 mb-2">No appointments today</div>
-                                    <div className="text-gray-500 text-sm mb-4">
-                                        Your schedule is clear for today
-                                    </div>
-                                    <button
-                                        onClick={() => navigate('/appointments/new')}
-                                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                                    >
-                                        Schedule New Appointment
-                                    </button>
-                                </div>
-                            )}
-                        </div>
+                    <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+                        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                            {currentRole === 'admin' ? 'Manage your healthcare system with full administrative access.' :
+                                currentRole === 'patient' ? 'Access your personal health information and communicate with providers.' :
+                                    'Full dashboard functionality available. Test API functions and manage records.'}
+                        </p>
+                        <Link
+                            to="/test"
+                            style={{
+                                color: '#3B82F6',
+                                textDecoration: 'none',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Go to API Test →
+                        </Link>
                     </div>
                 </div>
             </div>

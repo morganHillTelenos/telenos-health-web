@@ -1,342 +1,236 @@
-// src/App.js - Updated to work with conditional authentication
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate, useLocation, useParams } from 'react-router-dom';
-import { getCurrentUser } from 'aws-amplify/auth';
+// src/App.js - Updated with Role-Based Route Protection
+import React from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
 import './styles/globals.css';
+// In your main app or a test page
+import PatientTestComponent from './components/PatientTestComponent';
+import NoteTestComponent from './components/NoteTestComponent';
+import DoctorList from './pages/DoctorList';
+import DoctorForm from './pages/DoctorForm';
+import PatientList from './pages/PatientList';
+import PatientForm from './pages/PatientForm';
+import NoteList from './pages/NoteList';
+import NoteForm from './pages/NoteForm';
+import RoleTestComponent from './components/RoleTestComponent';
 
-// Import your existing components
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
+// Import the enhanced dashboard
 import HealthcareDashboard from './pages/HealthcareDashboard';
-import PatientsPage from './pages/PatientsPage';
-import NewPatientForm from './pages/NewPatientForm';
-import CalendarPage from './pages/CalendarPage';
-import VideoCallPage from './pages/VideoCallPage';
-import Header from './components/Header';
-import NewAppointmentPage from './pages/NewAppointmentPage';
-import NotesPage from './pages/NotesPage';
-import DebugPage from './pages/DebugPage';
-import DoctorsPage from './pages/DoctorsPage';
-import DoctorTestComponent from './components/DoctorTestComponent';
 
-// Import services - fallback only
+// Import auth service for role checking
 import { authService } from './services/auth';
 
-// Enhanced Protected Route Component
-const ProtectedRoute = ({ children }) => {
-  // Since we're using Authenticator, user is always authenticated when this renders
+// Admin-only route protection component
+const AdminRoute = ({ children }) => {
+  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const checkAdminAccess = async () => {
+      try {
+        const role = await authService.getUserRole();
+        setIsAdmin(role === 'admin');
+      } catch (error) {
+        setIsAdmin(false);
+      }
+      setLoading(false);
+    };
+
+    checkAdminAccess();
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div style={{
+        padding: '2rem',
+        textAlign: 'center',
+        backgroundColor: '#FEF2F2',
+        border: '1px solid #FECACA',
+        borderRadius: '0.5rem',
+        margin: '2rem'
+      }}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚫</div>
+        <h2 style={{ color: '#DC2626', marginBottom: '1rem' }}>Access Denied</h2>
+        <p style={{ color: '#7F1D1D', marginBottom: '1rem' }}>
+          Administrator access required to manage doctors and healthcare providers.
+        </p>
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+          <Link
+            to="/dashboard"
+            style={{
+              padding: '0.5rem 1rem',
+              backgroundColor: '#3B82F6',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '0.25rem'
+            }}
+          >
+            Go to Dashboard
+          </Link>
+          <button
+            onClick={async () => {
+              await authService.setDemoRole('admin');
+              window.location.reload();
+            }}
+            style={{
+              padding: '0.5rem 1rem',
+              backgroundColor: '#8B5CF6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.25rem',
+              cursor: 'pointer'
+            }}
+          >
+            Switch to Admin Role
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return children;
 };
 
-// Loading Spinner Component
-const LoadingSpinner = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+// Simple navigation component
+const SimpleNav = () => (
+  <nav style={{
+    backgroundColor: '#007bff',
+    padding: '1rem',
+    marginBottom: '2rem'
+  }}>
+    <div style={{
+      maxWidth: '1200px',
+      margin: '0 auto',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    }}>
+      <h1 style={{ color: 'white', margin: 0 }}>🏥 Promind Psychiatry</h1>
+      <div style={{ display: 'flex', gap: '1rem' }}>
+        <Link
+          to="/test"
+          style={{
+            color: 'white',
+            textDecoration: 'none',
+            padding: '0.5rem 1rem',
+            backgroundColor: 'rgba(255,255,255,0.2)',
+            borderRadius: '5px'
+          }}
+        >
+          🧪 API Test
+        </Link>
+        <Link
+          to="/dashboard"
+          style={{
+            color: 'white',
+            textDecoration: 'none',
+            padding: '0.5rem 1rem',
+            backgroundColor: 'rgba(255,255,255,0.2)',
+            borderRadius: '5px'
+          }}
+        >
+          📊 Dashboard
+        </Link>
+      </div>
+    </div>
+  </nav>
+);
+
+// Simple home page
+const HomePage = () => (
+  <div style={{ textAlign: 'center', padding: '2rem' }}>
+    <h1>🏥 Healthcare App</h1>
+    <p>Welcome! Authentication has been temporarily disabled for testing.</p>
+    <div style={{ marginTop: '2rem' }}>
+      <Link
+        to="/dashboard"
+        style={{
+          display: 'inline-block',
+          padding: '1rem 2rem',
+          backgroundColor: '#28a745',
+          color: 'white',
+          textDecoration: 'none',
+          borderRadius: '5px',
+          fontSize: '1.2rem'
+        }}
+      >
+        🚀 Go to Dashboard
+      </Link>
+    </div>
   </div>
 );
 
-// Main App Component - Updated to handle Cognito props
-function App({ signOut, user }) {
-  // Helper function to create user object from Cognito user
-  const getCognitoUser = () => {
-    if (!user) return null;
-
-    return {
-      username: user.username,
-      email: user.signInDetails?.loginId || user.attributes?.email || user.username,
-      userId: user.userId,
-      name: user.attributes?.email || user.username,
-      role: 'Healthcare Provider'
-    };
-  };
-
-  // Common logout handler
-  const handleLogout = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      console.error('Sign out error:', error);
-    }
-  };
-
-  // Wrapper Components
-  const LoginPageWrapper = () => {
-    const navigate = useNavigate();
-    return <Navigate to="/dashboard" replace />; // Always redirect to dashboard since user is authenticated
-  };
-
-  const DashboardWrapper = () => {
-    const navigate = useNavigate();
-    const currentUser = getCognitoUser();
-
-    const handleVideoCallStart = async (appointmentId) => {
-      try {
-        const id = appointmentId || `appointment-${Date.now()}`;
-        console.log('🎥 Starting video call for appointment:', id);
-        navigate(`/video-call/start/${id}`);
-      } catch (error) {
-        console.error('❌ Video call start error:', error);
-      }
-    };
-
-    const handleNavigateToPatients = () => navigate('/patients');
-    const handleNavigateToCalendar = () => navigate('/calendar');
-    const handleNavigateToNotes = () => navigate('/notes');
-
-    return (
-      <div>
-        <Header user={currentUser} onLogout={handleLogout} />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <div className="container mx-auto px-6 py-8 pt-20">
-            <HealthcareDashboard
-              user={currentUser}
-              onVideoCallStart={handleVideoCallStart}
-              onNavigateToPatients={handleNavigateToPatients}
-              onNavigateToCalendar={handleNavigateToCalendar}
-              onNavigateToNotes={handleNavigateToNotes}
-            />
-          </div>
-        </div>
+// API Test page - combining your existing test components
+const APITestPage = () => (
+  <div style={{ padding: '2rem' }}>
+    <h1>🧪 API Testing</h1>
+    <div style={{ display: 'grid', gap: '2rem' }}>
+      <PatientTestComponent />
+      <NoteTestComponent />
+      <div style={{ marginTop: '2rem' }}>
+        <Link to="/dashboard" style={{ color: '#007bff', textDecoration: 'none' }}>
+          ← Back to Dashboard
+        </Link>
       </div>
-    );
-  };
+    </div>
+  </div>
+);
 
-  const PatientsWrapper = () => {
-    const navigate = useNavigate();
-    const currentUser = getCognitoUser();
-
-    const handleAddPatient = () => navigate('/patients/new');
-
-    return (
-      <div>
-        <Header user={currentUser} onLogout={handleLogout} />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <div className="container mx-auto px-6 py-8 pt-20">
-            <PatientsPage user={currentUser} onAddPatient={handleAddPatient} />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const NewPatientWrapper = () => {
-    const navigate = useNavigate();
-    const currentUser = getCognitoUser();
-
-    const handleSuccess = () => navigate('/patients');
-    const handleCancel = () => navigate('/patients');
-
-    return (
-      <div>
-        <Header user={currentUser} onLogout={handleLogout} />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <div className="container mx-auto px-6 py-8 pt-20">
-            <NewPatientForm onSuccess={handleSuccess} onCancel={handleCancel} />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const NewAppointmentWrapper = () => {
-    const navigate = useNavigate();
-    const currentUser = getCognitoUser();
-
-    const handleSuccess = () => navigate('/calendar');
-    const handleCancel = () => navigate('/calendar');
-
-    return (
-      <div>
-        <Header user={currentUser} onLogout={handleLogout} />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <div className="container mx-auto px-6 py-8 pt-20">
-            <NewAppointmentPage onSuccess={handleSuccess} onCancel={handleCancel} />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const CalendarWrapper = () => {
-    const navigate = useNavigate();
-    const currentUser = getCognitoUser();
-
-    const handleNewAppointment = () => {
-      navigate('/appointments/new');
-    };
-
-    // ✅ ADD THESE VIDEO CALL HANDLERS
-    const handleJoinVideoCall = (appointmentId) => {
-      console.log('🎥 Joining video call for appointment:', appointmentId);
-      navigate(`/video-call/${appointmentId}`);
-    };
-
-    const handleStartVideoCall = (appointmentId) => {
-      console.log('🎥 Starting video call for appointment:', appointmentId);
-      navigate(`/video-call/start/${appointmentId}`);
-    };
-
-    return (
-      <div>
-        <Header user={currentUser} onLogout={handleLogout} />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <div className="container mx-auto px-6 py-8 pt-20">
-            <CalendarPage
-              user={currentUser}
-              onNewAppointment={handleNewAppointment}
-              onJoinVideoCall={handleJoinVideoCall}        // ✅ Add this
-              onStartVideoCall={handleStartVideoCall}      // ✅ Add this
-            />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-
-  
-
-  const DoctorsWrapper = () => {
-    const currentUser = getCognitoUser();
-
-    return (
-      <div>
-        <Header user={currentUser} onLogout={handleLogout} />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <div className="container mx-auto px-6 py-8 pt-20">
-            <DoctorsPage />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const NotesWrapper = () => {
-    const currentUser = getCognitoUser();
-
-    return (
-      <div>
-        <Header user={currentUser} onLogout={handleLogout} />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <div className="container mx-auto px-6 py-8 pt-20">
-            <NotesPage user={currentUser} />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const DoctorTestWrapper = () => {
-    const currentUser = getCognitoUser();
-
-    return (
-      <div>
-        <Header user={currentUser} onLogout={handleLogout} />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <div className="container mx-auto px-6 py-8 pt-20">
-            <DoctorTestComponent />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // ✅ ADD THIS VideoCallWrapper COMPONENT TO YOUR APP.JS
-
-  const VideoCallWrapper = () => {
-    const { appointmentId } = useParams();
-    const navigate = useNavigate();
-    const currentUser = getCognitoUser();
-    const location = useLocation();
-
-    // Check if this is a provider starting a call vs joining
-    const isStartCall = location.pathname.includes('/start/');
-    const isPatient = currentUser?.role?.toLowerCase().includes('patient');
-
-    return (
-      <div>
-        <Header user={currentUser} onLogout={handleLogout} />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <VideoCallPage
-            appointmentId={appointmentId}
-            isPatient={isPatient}
-            isStartCall={isStartCall}
-          />
-        </div>
-      </div>
-    );
-  };
-
-// ✅ AND ADD THESE ROUTES TO YOUR ROUTES SECTION:
-
-  const PatientVideoCallWrapper = () => {
-    const location = useLocation();
-    const { appointmentId, patientToken } = useParams();
-
-    console.log('👤 Patient video call page loaded');
-    console.log('- URL:', location.pathname);
-    console.log('- Appointment ID:', appointmentId);
-    console.log('- Patient Token:', patientToken);
-
-    return <VideoCallPage isPatient={true} />;
-  };
-
-  const DebugWrapper = () => {
-    const currentUser = getCognitoUser();
-
-    return (
-      <div>
-        <Header user={currentUser} onLogout={handleLogout} />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <div className="container mx-auto px-6 py-8 pt-20">
-            <DebugPage />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Log current user for debugging
-  useEffect(() => {
-    if (user) {
-      console.log('✅ Cognito user authenticated:', {
-        username: user.username,
-        email: user.attributes?.email || user.signInDetails?.loginId,
-        userId: user.userId
-      });
-    }
-  }, [user]);
-
+function App() {
   return (
     <div className="App">
-      <Routes>
-        {/* Login redirects to dashboard since user is already authenticated */}
-        <Route path="/login" element={<LoginPageWrapper />} />
+      <SimpleNav />
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem' }}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
 
-        {/* Protected Routes - All require Cognito authentication */}
-        <Route path="/dashboard" element={<ProtectedRoute><DashboardWrapper /></ProtectedRoute>} />
-        <Route path="/patients" element={<ProtectedRoute><PatientsWrapper /></ProtectedRoute>} />
-        <Route path="/patients/new" element={<ProtectedRoute><NewPatientWrapper /></ProtectedRoute>} />
-        <Route path="/appointments/new" element={<ProtectedRoute><NewAppointmentWrapper /></ProtectedRoute>} />
-        <Route path="/calendar" element={<ProtectedRoute><CalendarWrapper /></ProtectedRoute>} />
-        <Route path="/notes" element={<ProtectedRoute><NotesWrapper /></ProtectedRoute>} />
-        <Route path="/doctors" element={<ProtectedRoute><DoctorsWrapper /></ProtectedRoute>} />
-        <Route path="/test-doctors" element={<ProtectedRoute><DoctorTestWrapper /></ProtectedRoute>} />
+          {/* Use the full HealthcareDashboard instead of simple DashboardPage */}
+          <Route path="/dashboard" element={
+            <HealthcareDashboard
+              user={{ email: 'demo@telenos.com', name: 'Demo User' }}
+            />
+          } />
 
-        {/* Video Call Routes */}
-        <Route path="/video-call/start/:appointmentId" element={<ProtectedRoute><VideoCallWrapper /></ProtectedRoute>} />
-        <Route path="/video-call/:appointmentId" element={<ProtectedRoute><VideoCallWrapper /></ProtectedRoute>} />
+          {/* API Testing page */}
+          <Route path="/test" element={<APITestPage />} />
 
-        {/* Patient Video Call Routes - NO AUTHENTICATION REQUIRED */}
-        <Route path="/join/:appointmentId" element={<PatientVideoCallWrapper />} />
-        <Route path="/join/:appointmentId/:patientToken" element={<PatientVideoCallWrapper />} />
+          <Route path="/patient" element={<PatientTestComponent />} />
+          <Route path="/note" element={<NoteTestComponent />} />
+          <Route path="/test-roles" element={<RoleTestComponent />} />
 
-        {/* Debug route */}
-        <Route path="/debug" element={<ProtectedRoute><DebugWrapper /></ProtectedRoute>} />
+          {/* PROTECTED: Doctor Management Routes - Admin Only */}
+          <Route path="/doctors" element={
+            <AdminRoute>
+              <DoctorList />
+            </AdminRoute>
+          } />
+          <Route path="/doctor-form" element={
+            <AdminRoute>
+              <DoctorForm />
+            </AdminRoute>
+          } />
 
-        {/* Catch all - redirect to dashboard */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+          {/* Patient Management Routes - Available to Providers and Admins */}
+          <Route path="/patients" element={<PatientList />} />
+          <Route path="/patients/new" element={<PatientForm />} />
+          <Route path="/patients/edit/:id" element={<PatientForm />} />
+
+          {/* Note Management Routes - Available to Providers and Admins */}
+          <Route path="/notes" element={<NoteList />} />
+          <Route path="/notes/new" element={<NoteForm />} />
+          <Route path="/notes/edit/:id" element={<NoteForm />} />
+
+          {/* Catch all - redirect to home */}
+          <Route path="*" element={<HomePage />} />
+        </Routes>
+      </div>
     </div>
   );
 }

@@ -1,22 +1,14 @@
-// src/pages/LoginPage.js - Real AWS Cognito Implementation
+// src/pages/LoginPage.js - Updated with Admin Role Testing
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/auth';
-import './LoginPage.css';
 
-const LoginPage = ({ onLogin }) => {
-    const navigate = useNavigate();
-    const [isLogin, setIsLogin] = useState(true);
+const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [name, setName] = useState('');
-    const [confirmationCode, setConfirmationCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [needsConfirmation, setNeedsConfirmation] = useState(false);
-    const [userEmail, setUserEmail] = useState('');
-
-    // Add this to your LoginPage.js handleSubmit function to debug the issue
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -24,241 +16,150 @@ const LoginPage = ({ onLogin }) => {
         setError('');
 
         try {
-            // Debug: Log the values being passed
-            console.log('Form submission values:');
-            console.log('Email:', email, 'Type:', typeof email);
-            console.log('Password:', password, 'Type:', typeof password);
+            const result = await authService.signIn(email, password);
 
-            // Ensure we have valid strings
-            const emailValue = String(email || '').trim();
-            const passwordValue = String(password || '').trim();
+            if (result.success) {
+                console.log('✅ Login successful:', result.user);
 
-            if (!emailValue) {
-                throw new Error('Please enter your email');
-            }
-
-            if (!passwordValue) {
-                throw new Error('Please enter your password');
-            }
-
-            let result;
-
-            if (isLogin) {
-                // Sign in with the fixed auth service
-                result = await authService.signIn(emailValue, passwordValue);
-                console.log('Login successful:', result);
-                onLogin(result.user);
-            } else {
-                // Sign up logic
-                result = await authService.signUp(emailValue, passwordValue, name);
-                console.log('Registration successful:', result);
-
-                if (result.needsConfirmation) {
-                    setNeedsConfirmation(true);
-                    setUserEmail(emailValue);
-                    setError('');
-                } else {
-                    const loginResult = await authService.signIn(emailValue, passwordValue);
-                    onLogin(loginResult.user);
+                // Redirect based on role
+                const userRole = result.user.role;
+                switch (userRole) {
+                    case 'admin':
+                        navigate('/admin');
+                        break;
+                    case 'provider':
+                        navigate('/dashboard');
+                        break;
+                    case 'patient':
+                        navigate('/patient/records');
+                        break;
+                    default:
+                        navigate('/dashboard');
                 }
             }
-        } catch (error) {
-            console.error('Authentication error:', error);
-            setError(error.message);
+        } catch (err) {
+            setError(err.message || 'Login failed');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleConfirmSignUp = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-
-        try {
-            await authService.confirmSignUp(userEmail, confirmationCode);
-
-            // Now try to sign in
-            const result = await authService.login({ email: userEmail, password });
-            console.log('Confirmation and login successful:', result);
-            onLogin(result);
-        } catch (error) {
-            console.error('Confirmation error:', error);
-            setError(error.message);
-        } finally {
-            setLoading(false);
+    const handleQuickLogin = (userType) => {
+        const accounts = authService.getDemoAccounts();
+        const account = accounts[userType];
+        if (account) {
+            setEmail(account.email);
+            setPassword(account.password);
         }
     };
-
-    const clearForm = () => {
-        setEmail('');
-        setPassword('');
-        setName('');
-        setConfirmationCode('');
-        setError('');
-        setNeedsConfirmation(false);
-        setUserEmail('');
-    };
-
-    const switchMode = () => {
-        setIsLogin(!isLogin);
-        clearForm();
-    };
-
-    const handleSignOut = async () => {
-        try {
-            await authService.logout();
-            setError('');
-            alert('Signed out successfully. You can now sign in again.');
-        } catch (error) {
-            console.error('Sign out error:', error);
-            setError(error.message);
-        }
-    };
-
-    // Show confirmation form if user needs to verify email
-    if (needsConfirmation) {
-        return (
-            <div className="login-container">
-                <div className="login-card">
-                    <div className="login-header">
-                        <h1>Promind Psychiatry</h1>
-                        <h2>Confirm Your Email</h2>
-                        <p>We sent a verification code to {userEmail}</p>
-                    </div>
-
-                    {error && <div className="error-message">{error}</div>}
-
-                    <form onSubmit={handleConfirmSignUp} className="login-form">
-                        <div className="form-group">
-                            <label htmlFor="confirmationCode">Verification Code</label>
-                            <input
-                                type="text"
-                                id="confirmationCode"
-                                value={confirmationCode}
-                                onChange={(e) => setConfirmationCode(e.target.value)}
-                                placeholder="Enter 6-digit code"
-                                required
-                                maxLength="6"
-                            />
-                        </div>
-
-                        <button
-                            type="submit"
-                            className="login-button"
-                            disabled={loading || !confirmationCode}
-                        >
-                            {loading ? 'Confirming...' : 'Confirm Email'}
-                        </button>
-                    </form>
-
-                    <div className="login-footer">
-                        <p>
-                            <button onClick={switchMode} className="link-button">
-                                Back to Sign In
-                            </button>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     return (
-        <div className="login-container">
-            <div className="login-card">
-                <div className="login-header">
-                    <h1>Promind Psychiatry</h1>
-                    <h2>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
-                    <p>{isLogin ?
-                        'Sign in to access your healthcare dashboard' :
-                        'Join our secure healthcare platform'
-                    }</p>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-6">
+            <div className="max-w-md w-full bg-white rounded-2xl border border-gray-200/50 p-8 shadow-lg">
+                <div className="text-center mb-8">
+                    <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
+                    <p className="text-gray-600 mt-2">Sign in to your healthcare portal</p>
                 </div>
 
-                {error && error.includes('already a signed in user') && (
-                    <button
-                        type="button"
-                        onClick={handleSignOut}
-                        className="login-button"
-                        style={{ backgroundColor: '#dc2626', marginBottom: '10px' }}
-                    >
-                        Sign Out Current User
-                    </button>
+                {/* Quick Login Demo Accounts */}
+                <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                    <p className="text-sm text-blue-800 font-medium mb-3">Demo Accounts:</p>
+                    <div className="space-y-2">
+                        <button
+                            type="button"
+                            onClick={() => handleQuickLogin('admin')}
+                            className="w-full text-left p-2 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded text-sm transition-colors"
+                        >
+                            👑 <strong>Administrator</strong><br />
+                            <span className="text-xs">admin@telenos.com • Full system access</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handleQuickLogin('provider')}
+                            className="w-full text-left p-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded text-sm transition-colors"
+                        >
+                            👨‍⚕️ <strong>Doctor/Provider</strong><br />
+                            <span className="text-xs">demo@telenos.com • Patient management</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handleQuickLogin('patient')}
+                            className="w-full text-left p-2 bg-green-100 hover:bg-green-200 text-green-800 rounded text-sm transition-colors"
+                        >
+                            👤 <strong>Patient</strong><br />
+                            <span className="text-xs">patient@telenos.com • Personal health portal</span>
+                        </button>
+                    </div>
+                </div>
+
+                {error && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-red-600 text-sm">{error}</p>
+                    </div>
                 )}
 
-                {error && <div className="error-message">{error}</div>}
-
-                <form onSubmit={handleSubmit} className="login-form">
-                    {!isLogin && (
-                        <div className="form-group">
-                            <label htmlFor="name">Full Name</label>
-                            <input
-                                type="text"
-                                id="name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="Enter your full name"
-                                required={!isLogin}
-                            />
-                        </div>
-                    )}
-
-                    <div className="form-group">
-                        <label htmlFor="email">Email</label>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                            Email Address
+                        </label>
                         <input
-                            type="email"
                             id="email"
+                            name="email"
+                            type="email"
+                            required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                             placeholder="Enter your email"
-                            required
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
+                    <div>
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                            Password
+                        </label>
                         <input
-                            type="password"
                             id="password"
+                            name="password"
+                            type="password"
+                            required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder={isLogin ? "Enter your password" : "Create a strong password"}
-                            required
-                            minLength={isLogin ? undefined : 8}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                            placeholder="Enter your password"
                         />
-                        {!isLogin && (
-                            <small className="password-hint">
-                                Password must be at least 8 characters with uppercase, lowercase, numbers, and symbols
-                            </small>
-                        )}
                     </div>
 
                     <button
                         type="submit"
-                        className="login-button"
                         disabled={loading}
+                        className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${loading
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                            }`}
                     >
-                        {loading ?
-                            (isLogin ? 'Signing In...' : 'Creating Account...') :
-                            (isLogin ? 'Sign In' : 'Create Account')
-                        }
+                        {loading ? 'Signing in...' : 'Sign In'}
                     </button>
                 </form>
 
-                <div className="login-footer">
-                    <p>
-                        {isLogin ? "Don't have an account? " : "Already have an account? "}
-                        <button onClick={switchMode} className="link-button">
-                            {isLogin ? 'Sign Up' : 'Sign In'}
-                        </button>
+                <div className="mt-6 text-center">
+                    <p className="text-sm text-gray-600">
+                        Need help?{' '}
+                        <a href="/support" className="text-blue-600 hover:text-blue-500">
+                            Contact Support
+                        </a>
                     </p>
                 </div>
 
-                {/* Real AWS info */}
-                <div className="demo-info">
-                    <p><strong>Real AWS Backend:</strong></p>
-                    <p>Using AWS Cognito authentication and DynamoDB storage</p>
+                {/* Role Testing Info */}
+                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <p className="text-xs text-gray-600 font-medium mb-2">🧪 Testing Role-Based Access:</p>
+                    <ul className="text-xs text-gray-500 space-y-1">
+                        <li>• Admin: Can access all system features</li>
+                        <li>• Provider: Can manage patients and appointments</li>
+                        <li>• Patient: Can view own records only</li>
+                    </ul>
                 </div>
             </div>
         </div>

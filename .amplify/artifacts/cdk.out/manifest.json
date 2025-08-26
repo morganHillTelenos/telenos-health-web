@@ -1,0 +1,1963 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b.template.json",
+        "terminationProtection": false,
+        "tags": {
+          "amplify:deployment-type": "sandbox",
+          "created-by": "amplify"
+        },
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5009a9548072302fd40a19530633452e85da2ddf250ebca82e483ee93e4b693c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b.assets"
+      ],
+      "metadata": {
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "amplify:deployment-type",
+                "Value": "sandbox"
+              },
+              {
+                "Key": "created-by",
+                "Value": "amplify"
+              }
+            ]
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/deploymentType": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deploymentType"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/region": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "region"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/GraphQLAPI/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataGraphQLAPI42A6FA33"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/GraphQLAPI/TransformerSchema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataGraphQLAPITransformerSchemaFF50A789"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/GraphQLAPI/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataGraphQLAPIDefaultApiKey1C8ED374"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/GraphQLAPI/NONE_DS": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "NONE_DS"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/GraphQLAPI/NONE_DS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataGraphQLAPINONEDS684BF699"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "NONE_DS"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyTableManager/AmplifyManagedTableIsCompleteRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AmplifyManagedTableIsCompleteRoleF825222C"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AmplifyManagedTableOnEventRoleB4E71DEA"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AmplifyManagedTableOnEventRoleDefaultPolicyF6DABCB6"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableManagerCustomProviderframeworkonEvent1DFC2ECC"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-isComplete/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableManagerCustomProviderframeworkisComplete2E51021B"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AmplifyTableWaiterStateMachineRole470BE899"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AmplifyTableWaiterStateMachineRoleDefaultPolicy89F3836A"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AmplifyTableWaiterStateMachine060600BC"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyTableManager/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyTableManager/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyTableManager/reference-to-amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551ApiId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551ApiId"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyTableManager/amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent6B2912BBArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent6B2912BBArn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyTableManager.NestedStack/AmplifyTableManager.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource86290833"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/DynamoDBModelTableReadIOPS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBModelTableReadIOPS"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/DynamoDBModelTableWriteIOPS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBModelTableWriteIOPS"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/DynamoDBBillingMode": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBBillingMode"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/DynamoDBEnablePointInTimeRecovery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBEnablePointInTimeRecovery"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/DynamoDBEnableServerSideEncryption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBEnableServerSideEncryption"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/HasEnvironmentParameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HasEnvironmentParameter"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/ShouldUsePayPerRequestBilling": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShouldUsePayPerRequestBilling"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/ShouldUsePointInTimeRecovery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShouldUsePointInTimeRecovery"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/DoctorTable": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Doctor"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/DoctorTable/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DoctorTable"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Doctor"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/CustomTableDoctorTable": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Doctor"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/GetAttDoctorTableStreamArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttDoctorTableStreamArn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/GetAttDoctorTableName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttDoctorTableName"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/DoctorIAMRole": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "DoctorIAMRole"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/DoctorIAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DoctorIAMRole0CD21C3B"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "DoctorIAMRole"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/DoctorDataSource": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "DoctorTable"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/DoctorDataSource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DoctorDataSource"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "DoctorTable"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/QuerygetDoctorauth0Function/QuerygetDoctorauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerygetDoctorauth0FunctionQuerygetDoctorauth0FunctionAppSyncFunctionA487165A"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerygetDoctorauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/QuerygetDoctorpostAuth0Function/QuerygetDoctorpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerygetDoctorpostAuth0FunctionQuerygetDoctorpostAuth0FunctionAppSyncFunction8C1EC38D"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerygetDoctorpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/QueryGetDoctorDataResolverFn/QueryGetDoctorDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryGetDoctorDataResolverFnQueryGetDoctorDataResolverFnAppSyncFunction88B72D97"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QueryGetDoctorDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/queryGetDoctorResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetDoctorResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Query.getDoctor"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/QuerylistDoctorsauth0Function/QuerylistDoctorsauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerylistDoctorsauth0FunctionQuerylistDoctorsauth0FunctionAppSyncFunction742A45D8"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerylistDoctorsauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/QuerylistDoctorspostAuth0Function/QuerylistDoctorspostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerylistDoctorspostAuth0FunctionQuerylistDoctorspostAuth0FunctionAppSyncFunction84EFB5F5"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerylistDoctorspostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/QueryListDoctorsDataResolverFn/QueryListDoctorsDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryListDoctorsDataResolverFnQueryListDoctorsDataResolverFnAppSyncFunctionAB643681"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QueryListDoctorsDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/queryListDoctorsResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListDoctorResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Query.listDoctors"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/MutationcreateDoctorinit0Function/MutationcreateDoctorinit0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreateDoctorinit0FunctionMutationcreateDoctorinit0FunctionAppSyncFunction02A0A42C"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreateDoctorinit0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/MutationcreateDoctorinit1Function/MutationcreateDoctorinit1Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreateDoctorinit1FunctionMutationcreateDoctorinit1FunctionAppSyncFunctionEF080344"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreateDoctorinit1Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/MutationcreateDoctorauth0Function/MutationcreateDoctorauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreateDoctorauth0FunctionMutationcreateDoctorauth0FunctionAppSyncFunctionB8D40D6C"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreateDoctorauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/MutationcreateDoctorpostAuth0Function/MutationcreateDoctorpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreateDoctorpostAuth0FunctionMutationcreateDoctorpostAuth0FunctionAppSyncFunction84B4D89F"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreateDoctorpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/MutationCreateDoctorDataResolverFn/MutationCreateDoctorDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationCreateDoctorDataResolverFnMutationCreateDoctorDataResolverFnAppSyncFunctionD8FCD7B3"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationCreateDoctorDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/mutationCreateDoctorResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CreateDoctorResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.createDoctor"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/MutationupdateDoctorinit0Function/MutationupdateDoctorinit0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdateDoctorinit0FunctionMutationupdateDoctorinit0FunctionAppSyncFunction38E9EF9E"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdateDoctorinit0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/MutationupdateDoctorauth0Function/MutationupdateDoctorauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdateDoctorauth0FunctionMutationupdateDoctorauth0FunctionAppSyncFunction1C033283"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdateDoctorauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/MutationupdateDoctorpostAuth0Function/MutationupdateDoctorpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdateDoctorpostAuth0FunctionMutationupdateDoctorpostAuth0FunctionAppSyncFunction8F1FAB13"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdateDoctorpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/MutationUpdateDoctorDataResolverFn/MutationUpdateDoctorDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationUpdateDoctorDataResolverFnMutationUpdateDoctorDataResolverFnAppSyncFunctionDF644555"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationUpdateDoctorDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/mutationUpdateDoctorResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UpdateDoctorResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.updateDoctor"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/MutationdeleteDoctorauth0Function/MutationdeleteDoctorauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationdeleteDoctorauth0FunctionMutationdeleteDoctorauth0FunctionAppSyncFunction08180DF7"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationdeleteDoctorauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/MutationdeleteDoctorpostAuth0Function/MutationdeleteDoctorpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationdeleteDoctorpostAuth0FunctionMutationdeleteDoctorpostAuth0FunctionAppSyncFunction2371120E"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationdeleteDoctorpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/MutationDeleteDoctorDataResolverFn/MutationDeleteDoctorDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationDeleteDoctorDataResolverFnMutationDeleteDoctorDataResolverFnAppSyncFunction1E77297B"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationDeleteDoctorDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/mutationDeleteDoctorResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeleteDoctorResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.deleteDoctor"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/SubscriptiononCreateDoctorauth0Function/SubscriptiononCreateDoctorauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreateDoctorauth0FunctionSubscriptiononCreateDoctorauth0FunctionAppSyncFunction21C8D887"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononCreateDoctorauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/SubscriptiononCreateDoctorpostAuth0Function/SubscriptiononCreateDoctorpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreateDoctorpostAuth0FunctionSubscriptiononCreateDoctorpostAuth0FunctionAppSyncFunction4BBED25D"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononCreateDoctorpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/SubscriptionOnCreateDoctorDataResolverFn/SubscriptionOnCreateDoctorDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnCreateDoctorDataResolverFnSubscriptionOnCreateDoctorDataResolverFnAppSyncFunction13638954"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnCreateDoctorDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/subscriptionOnCreateDoctorResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreateDoctorResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onCreateDoctor"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/SubscriptiononUpdateDoctorauth0Function/SubscriptiononUpdateDoctorauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdateDoctorauth0FunctionSubscriptiononUpdateDoctorauth0FunctionAppSyncFunction621CCE65"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononUpdateDoctorauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/SubscriptiononUpdateDoctorpostAuth0Function/SubscriptiononUpdateDoctorpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdateDoctorpostAuth0FunctionSubscriptiononUpdateDoctorpostAuth0FunctionAppSyncFunction7693BCD4"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononUpdateDoctorpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/SubscriptionOnUpdateDoctorDataResolverFn/SubscriptionOnUpdateDoctorDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnUpdateDoctorDataResolverFnSubscriptionOnUpdateDoctorDataResolverFnAppSyncFunctionFD7F78DF"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnUpdateDoctorDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/subscriptionOnUpdateDoctorResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdateDoctorResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onUpdateDoctor"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/SubscriptiononDeleteDoctorauth0Function/SubscriptiononDeleteDoctorauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeleteDoctorauth0FunctionSubscriptiononDeleteDoctorauth0FunctionAppSyncFunctionD5F6AEFF"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononDeleteDoctorauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/SubscriptiononDeleteDoctorpostAuth0Function/SubscriptiononDeleteDoctorpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeleteDoctorpostAuth0FunctionSubscriptiononDeleteDoctorpostAuth0FunctionAppSyncFunction0B3D59F1"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononDeleteDoctorpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/SubscriptionOnDeleteDoctorDataResolverFn/SubscriptionOnDeleteDoctorDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnDeleteDoctorDataResolverFnSubscriptionOnDeleteDoctorDataResolverFnAppSyncFunction5B5BA7D7"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnDeleteDoctorDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/subscriptionOnDeleteDoctorResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeleteDoctorResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onDeleteDoctor"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/reference-to-amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceA6CE8C6COutputs.amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent6B2912BBArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceA6CE8C6COutputsamplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerT2D255A1C"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/reference-to-amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551ApiId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551ApiId"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor/reference-to-amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPINONEDS45753C00Name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPINONEDS45753C00Name"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Doctor.NestedStack/Doctor.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataDoctorNestedStackDoctorNestedStackResource7ED847A0"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/DynamoDBModelTableReadIOPS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBModelTableReadIOPS"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/DynamoDBModelTableWriteIOPS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBModelTableWriteIOPS"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/DynamoDBBillingMode": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBBillingMode"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/DynamoDBEnablePointInTimeRecovery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBEnablePointInTimeRecovery"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/DynamoDBEnableServerSideEncryption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBEnableServerSideEncryption"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/HasEnvironmentParameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HasEnvironmentParameter"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/ShouldUsePayPerRequestBilling": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShouldUsePayPerRequestBilling"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/ShouldUsePointInTimeRecovery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShouldUsePointInTimeRecovery"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/PatientTable": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Patient"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/PatientTable/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatientTable"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Patient"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/CustomTablePatientTable": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Patient"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/GetAttPatientTableStreamArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttPatientTableStreamArn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/GetAttPatientTableName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttPatientTableName"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/PatientIAMRole": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "PatientIAMRole"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/PatientIAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatientIAMRoleF96FD722"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "PatientIAMRole"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/PatientDataSource": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "PatientTable"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/PatientDataSource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatientDataSource"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "PatientTable"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/QuerygetPatientauth0Function/QuerygetPatientauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerygetPatientauth0FunctionQuerygetPatientauth0FunctionAppSyncFunction36192A1C"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerygetPatientauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/QuerygetPatientpostAuth0Function/QuerygetPatientpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerygetPatientpostAuth0FunctionQuerygetPatientpostAuth0FunctionAppSyncFunction82FA667A"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerygetPatientpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/QueryGetPatientDataResolverFn/QueryGetPatientDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryGetPatientDataResolverFnQueryGetPatientDataResolverFnAppSyncFunction63361816"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QueryGetPatientDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/queryGetPatientResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetPatientResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Query.getPatient"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/QuerylistPatientsauth0Function/QuerylistPatientsauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerylistPatientsauth0FunctionQuerylistPatientsauth0FunctionAppSyncFunction178A0B1A"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerylistPatientsauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/QuerylistPatientspostAuth0Function/QuerylistPatientspostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerylistPatientspostAuth0FunctionQuerylistPatientspostAuth0FunctionAppSyncFunction551E6891"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerylistPatientspostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/QueryListPatientsDataResolverFn/QueryListPatientsDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryListPatientsDataResolverFnQueryListPatientsDataResolverFnAppSyncFunction017AB2F8"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QueryListPatientsDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/queryListPatientsResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListPatientResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Query.listPatients"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/MutationcreatePatientinit0Function/MutationcreatePatientinit0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreatePatientinit0FunctionMutationcreatePatientinit0FunctionAppSyncFunction0CD0CD62"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreatePatientinit0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/MutationcreatePatientinit1Function/MutationcreatePatientinit1Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreatePatientinit1FunctionMutationcreatePatientinit1FunctionAppSyncFunction7E56CA7B"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreatePatientinit1Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/MutationcreatePatientauth0Function/MutationcreatePatientauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreatePatientauth0FunctionMutationcreatePatientauth0FunctionAppSyncFunction4B518D1A"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreatePatientauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/MutationcreatePatientpostAuth0Function/MutationcreatePatientpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreatePatientpostAuth0FunctionMutationcreatePatientpostAuth0FunctionAppSyncFunctionBD6CE1E4"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreatePatientpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/MutationCreatePatientDataResolverFn/MutationCreatePatientDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationCreatePatientDataResolverFnMutationCreatePatientDataResolverFnAppSyncFunction571019B0"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationCreatePatientDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/mutationCreatePatientResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CreatePatientResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.createPatient"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/MutationupdatePatientinit0Function/MutationupdatePatientinit0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdatePatientinit0FunctionMutationupdatePatientinit0FunctionAppSyncFunction52F8D404"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdatePatientinit0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/MutationupdatePatientauth0Function/MutationupdatePatientauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdatePatientauth0FunctionMutationupdatePatientauth0FunctionAppSyncFunction7F17F47B"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdatePatientauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/MutationupdatePatientpostAuth0Function/MutationupdatePatientpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdatePatientpostAuth0FunctionMutationupdatePatientpostAuth0FunctionAppSyncFunction21174856"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdatePatientpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/MutationUpdatePatientDataResolverFn/MutationUpdatePatientDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationUpdatePatientDataResolverFnMutationUpdatePatientDataResolverFnAppSyncFunctionE259C0CA"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationUpdatePatientDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/mutationUpdatePatientResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UpdatePatientResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.updatePatient"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/MutationdeletePatientauth0Function/MutationdeletePatientauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationdeletePatientauth0FunctionMutationdeletePatientauth0FunctionAppSyncFunction7E0E87EC"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationdeletePatientauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/MutationdeletePatientpostAuth0Function/MutationdeletePatientpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationdeletePatientpostAuth0FunctionMutationdeletePatientpostAuth0FunctionAppSyncFunction9252F852"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationdeletePatientpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/MutationDeletePatientDataResolverFn/MutationDeletePatientDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationDeletePatientDataResolverFnMutationDeletePatientDataResolverFnAppSyncFunction2AC12786"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationDeletePatientDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/mutationDeletePatientResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeletePatientResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.deletePatient"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/SubscriptiononCreatePatientauth0Function/SubscriptiononCreatePatientauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreatePatientauth0FunctionSubscriptiononCreatePatientauth0FunctionAppSyncFunction7BC63B56"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononCreatePatientauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/SubscriptiononCreatePatientpostAuth0Function/SubscriptiononCreatePatientpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreatePatientpostAuth0FunctionSubscriptiononCreatePatientpostAuth0FunctionAppSyncFunction7680783B"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononCreatePatientpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/SubscriptionOnCreatePatientDataResolverFn/SubscriptionOnCreatePatientDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnCreatePatientDataResolverFnSubscriptionOnCreatePatientDataResolverFnAppSyncFunction0CDA21EE"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnCreatePatientDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/subscriptionOnCreatePatientResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreatePatientResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onCreatePatient"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/SubscriptiononUpdatePatientauth0Function/SubscriptiononUpdatePatientauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdatePatientauth0FunctionSubscriptiononUpdatePatientauth0FunctionAppSyncFunction096C94CC"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononUpdatePatientauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/SubscriptiononUpdatePatientpostAuth0Function/SubscriptiononUpdatePatientpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdatePatientpostAuth0FunctionSubscriptiononUpdatePatientpostAuth0FunctionAppSyncFunction39298827"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononUpdatePatientpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/SubscriptionOnUpdatePatientDataResolverFn/SubscriptionOnUpdatePatientDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnUpdatePatientDataResolverFnSubscriptionOnUpdatePatientDataResolverFnAppSyncFunctionC1B0BBB4"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnUpdatePatientDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/subscriptionOnUpdatePatientResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdatePatientResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onUpdatePatient"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/SubscriptiononDeletePatientauth0Function/SubscriptiononDeletePatientauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeletePatientauth0FunctionSubscriptiononDeletePatientauth0FunctionAppSyncFunction03DA42A7"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononDeletePatientauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/SubscriptiononDeletePatientpostAuth0Function/SubscriptiononDeletePatientpostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeletePatientpostAuth0FunctionSubscriptiononDeletePatientpostAuth0FunctionAppSyncFunctionBAB77182"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononDeletePatientpostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/SubscriptionOnDeletePatientDataResolverFn/SubscriptionOnDeletePatientDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnDeletePatientDataResolverFnSubscriptionOnDeletePatientDataResolverFnAppSyncFunction0178DEB0"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnDeletePatientDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/subscriptionOnDeletePatientResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeletePatientResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onDeletePatient"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/reference-to-amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceA6CE8C6COutputs.amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent6B2912BBArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceA6CE8C6COutputsamplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerT2D255A1C"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/reference-to-amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551ApiId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551ApiId"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient/reference-to-amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPINONEDS45753C00Name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPINONEDS45753C00Name"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Patient.NestedStack/Patient.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataPatientNestedStackPatientNestedStackResource551FFA4A"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/DynamoDBModelTableReadIOPS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBModelTableReadIOPS"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/DynamoDBModelTableWriteIOPS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBModelTableWriteIOPS"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/DynamoDBBillingMode": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBBillingMode"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/DynamoDBEnablePointInTimeRecovery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBEnablePointInTimeRecovery"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/DynamoDBEnableServerSideEncryption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBEnableServerSideEncryption"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/HasEnvironmentParameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HasEnvironmentParameter"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/ShouldUsePayPerRequestBilling": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShouldUsePayPerRequestBilling"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/ShouldUsePointInTimeRecovery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ShouldUsePointInTimeRecovery"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/NoteTable": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Note"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/NoteTable/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NoteTable"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Note"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/CustomTableNoteTable": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Note"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/GetAttNoteTableStreamArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttNoteTableStreamArn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/GetAttNoteTableName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttNoteTableName"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/NoteIAMRole": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "NoteIAMRole"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/NoteIAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NoteIAMRoleCA742F19"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "NoteIAMRole"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/NoteDataSource": [
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "NoteTable"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/NoteDataSource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NoteDataSource"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "NoteTable"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/QuerygetNoteauth0Function/QuerygetNoteauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerygetNoteauth0FunctionQuerygetNoteauth0FunctionAppSyncFunction1125F54B"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerygetNoteauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/QuerygetNotepostAuth0Function/QuerygetNotepostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerygetNotepostAuth0FunctionQuerygetNotepostAuth0FunctionAppSyncFunctionBC9940CA"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerygetNotepostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/QueryGetNoteDataResolverFn/QueryGetNoteDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryGetNoteDataResolverFnQueryGetNoteDataResolverFnAppSyncFunction2F346125"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QueryGetNoteDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/queryGetNoteResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetNoteResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Query.getNote"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/QuerylistNotesauth0Function/QuerylistNotesauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerylistNotesauth0FunctionQuerylistNotesauth0FunctionAppSyncFunction4C828F45"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerylistNotesauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/QuerylistNotespostAuth0Function/QuerylistNotespostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuerylistNotespostAuth0FunctionQuerylistNotespostAuth0FunctionAppSyncFunctionCEA378D3"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QuerylistNotespostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/QueryListNotesDataResolverFn/QueryListNotesDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryListNotesDataResolverFnQueryListNotesDataResolverFnAppSyncFunctionBD5C872B"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "QueryListNotesDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/queryListNotesResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListNoteResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Query.listNotes"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/MutationcreateNoteinit0Function/MutationcreateNoteinit0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreateNoteinit0FunctionMutationcreateNoteinit0FunctionAppSyncFunction336343A0"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreateNoteinit0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/MutationcreateNoteauth0Function/MutationcreateNoteauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreateNoteauth0FunctionMutationcreateNoteauth0FunctionAppSyncFunction24439C2F"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreateNoteauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/MutationcreateNotepostAuth0Function/MutationcreateNotepostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationcreateNotepostAuth0FunctionMutationcreateNotepostAuth0FunctionAppSyncFunction6D427EC4"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationcreateNotepostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/MutationCreateNoteDataResolverFn/MutationCreateNoteDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationCreateNoteDataResolverFnMutationCreateNoteDataResolverFnAppSyncFunction591F5456"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationCreateNoteDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/mutationCreateNoteResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CreateNoteResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.createNote"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/MutationupdateNoteinit0Function/MutationupdateNoteinit0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdateNoteinit0FunctionMutationupdateNoteinit0FunctionAppSyncFunction19D28B0F"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdateNoteinit0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/MutationupdateNoteauth0Function/MutationupdateNoteauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdateNoteauth0FunctionMutationupdateNoteauth0FunctionAppSyncFunction72CAF43F"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdateNoteauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/MutationupdateNotepostAuth0Function/MutationupdateNotepostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationupdateNotepostAuth0FunctionMutationupdateNotepostAuth0FunctionAppSyncFunction7DBB904D"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationupdateNotepostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/MutationUpdateNoteDataResolverFn/MutationUpdateNoteDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationUpdateNoteDataResolverFnMutationUpdateNoteDataResolverFnAppSyncFunctionBCC5D9E4"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationUpdateNoteDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/mutationUpdateNoteResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UpdateNoteResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.updateNote"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/MutationdeleteNoteauth0Function/MutationdeleteNoteauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationdeleteNoteauth0FunctionMutationdeleteNoteauth0FunctionAppSyncFunction5FE2B4D0"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationdeleteNoteauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/MutationdeleteNotepostAuth0Function/MutationdeleteNotepostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationdeleteNotepostAuth0FunctionMutationdeleteNotepostAuth0FunctionAppSyncFunction5E0783EF"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationdeleteNotepostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/MutationDeleteNoteDataResolverFn/MutationDeleteNoteDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MutationDeleteNoteDataResolverFnMutationDeleteNoteDataResolverFnAppSyncFunction3FA3FDA0"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "MutationDeleteNoteDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/mutationDeleteNoteResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeleteNoteResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Mutation.deleteNote"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/SubscriptiononCreateNoteauth0Function/SubscriptiononCreateNoteauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreateNoteauth0FunctionSubscriptiononCreateNoteauth0FunctionAppSyncFunction853C832F"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononCreateNoteauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/SubscriptiononCreateNotepostAuth0Function/SubscriptiononCreateNotepostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreateNotepostAuth0FunctionSubscriptiononCreateNotepostAuth0FunctionAppSyncFunction2FE4DC1E"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononCreateNotepostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/SubscriptionOnCreateNoteDataResolverFn/SubscriptionOnCreateNoteDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnCreateNoteDataResolverFnSubscriptionOnCreateNoteDataResolverFnAppSyncFunction37D6FFF2"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnCreateNoteDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/subscriptionOnCreateNoteResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononCreateNoteResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onCreateNote"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/SubscriptiononUpdateNoteauth0Function/SubscriptiononUpdateNoteauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdateNoteauth0FunctionSubscriptiononUpdateNoteauth0FunctionAppSyncFunction2413D644"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononUpdateNoteauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/SubscriptiononUpdateNotepostAuth0Function/SubscriptiononUpdateNotepostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdateNotepostAuth0FunctionSubscriptiononUpdateNotepostAuth0FunctionAppSyncFunction30ABF2EE"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononUpdateNotepostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/SubscriptionOnUpdateNoteDataResolverFn/SubscriptionOnUpdateNoteDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnUpdateNoteDataResolverFnSubscriptionOnUpdateNoteDataResolverFnAppSyncFunctionE4137817"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnUpdateNoteDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/subscriptionOnUpdateNoteResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononUpdateNoteResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onUpdateNote"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/SubscriptiononDeleteNoteauth0Function/SubscriptiononDeleteNoteauth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeleteNoteauth0FunctionSubscriptiononDeleteNoteauth0FunctionAppSyncFunction1B717F3B"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononDeleteNoteauth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/SubscriptiononDeleteNotepostAuth0Function/SubscriptiononDeleteNotepostAuth0Function.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeleteNotepostAuth0FunctionSubscriptiononDeleteNotepostAuth0FunctionAppSyncFunction7D4AF5B3"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptiononDeleteNotepostAuth0Function"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/SubscriptionOnDeleteNoteDataResolverFn/SubscriptionOnDeleteNoteDataResolverFn.AppSyncFunction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionOnDeleteNoteDataResolverFnSubscriptionOnDeleteNoteDataResolverFnAppSyncFunctionA1CED045"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "SubscriptionOnDeleteNoteDataResolverFn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/subscriptionOnDeleteNoteResolver": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptiononDeleteNoteResolver"
+          },
+          {
+            "type": "graphqltransformer:resourceName",
+            "data": "Subscription.onDeleteNote"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/reference-to-amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceA6CE8C6COutputs.amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent6B2912BBArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceA6CE8C6COutputsamplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyTableManagerT2D255A1C"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/reference-to-amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551ApiId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551ApiId"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note/reference-to-amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPINONEDS45753C00Name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoamplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPINONEDS45753C00Name"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/Note.NestedStack/Note.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataNoteNestedStackNoteNestedStackResourceA19C7467"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsBucket9CCB4ACA"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsBucketPolicyF1C1C548"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsBucketAutoDeleteObjectsCustomResource437F26F5"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsDeployment/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentAwsCliLayerE322F905"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsDeployment/CustomResource-1536MiB/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB21775929"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/DynamoDBModelTableReadIOPS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBModelTableReadIOPS"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/DynamoDBModelTableWriteIOPS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBModelTableWriteIOPS"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/DynamoDBBillingMode": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBBillingMode"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/DynamoDBEnablePointInTimeRecovery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBEnablePointInTimeRecovery"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/DynamoDBEnableServerSideEncryption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBEnableServerSideEncryption"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 2
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 2
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiBServiceRoleA41FC8C2"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiBServiceRoleDefaultPolicyFF1C635B"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiBC5D8AB21"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/modelIntrospectionSchemaBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "modelIntrospectionSchemaBucketF566B665"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/modelIntrospectionSchemaBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "modelIntrospectionSchemaBucketPolicy4DAB0D15"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/modelIntrospectionSchemaBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "modelIntrospectionSchemaBucketAutoDeleteObjectsCustomResourceFE57309F"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/modelIntrospectionSchemaBucketDeployment/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "modelIntrospectionSchemaBucketDeploymentAwsCliLayer13C432F7"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/modelIntrospectionSchemaBucketDeployment/CustomResource-1536MiB/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "modelIntrospectionSchemaBucketDeploymentCustomResource1536MiB104B97EC"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/AMPLIFY_DATA_GRAPHQL_ENDPOINTParameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AMPLIFYDATAGRAPHQLENDPOINTParameter1C2CBB16"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_BUCKET_NAMEParameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AMPLIFYDATAMODELINTROSPECTIONSCHEMABUCKETNAMEParameter47BF4F44"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_KEYParameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AMPLIFYDATAMODELINTROSPECTIONSCHEMAKEYParameterB6AEAE8A"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/AMPLIFY_DATA_DEFAULT_NAMEParameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AMPLIFYDATADEFAULTNAMEParameterE7C23CC4"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551ApiId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551ApiId"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551GraphQLUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551GraphQLUrl"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB15F7EA0ADestinationBucketArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB15F7EA0ADestinationBucketArn"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPIDefaultApiKey2880C2FBApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPIDefaultApiKey2880C2FBApiKey"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data.NestedStack/data.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "data7552DF31"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/awsAppsyncApiId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsAppsyncApiId"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/awsAppsyncApiEndpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsAppsyncApiEndpoint"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/awsAppsyncAuthenticationType": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsAppsyncAuthenticationType"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/awsAppsyncRegion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsAppsyncRegion"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/amplifyApiModelSchemaS3Uri": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyApiModelSchemaS3Uri"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/awsAppsyncApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsAppsyncApiKey"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/awsAppsyncAdditionalAuthenticationTypes": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsAppsyncAdditionalAuthenticationTypes"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1019.0"
+}

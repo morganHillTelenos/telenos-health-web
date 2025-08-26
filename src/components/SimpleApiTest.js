@@ -1,5 +1,7 @@
-// src/components/SimpleApiTest.js - Complete Direct API testing component
+// src/components/SimpleApiTest.js - Test what actually works
 import React, { useState } from 'react';
+import { generateClient } from 'aws-amplify/api';
+import { getCurrentUser } from 'aws-amplify/auth';
 
 const SimpleApiTest = () => {
     const [results, setResults] = useState([]);
@@ -7,200 +9,196 @@ const SimpleApiTest = () => {
 
     const addResult = (type, message, data = null) => {
         const timestamp = new Date().toLocaleTimeString();
-        setResults(prev => [...prev, { type, message, data, timestamp, id: Date.now() }]);
+        setResults(prev => [...prev, {
+            type,
+            message,
+            data,
+            timestamp,
+            id: Date.now() + Math.random()
+        }]);
     };
 
     const clearResults = () => setResults([]);
 
-    // Add this test to your SimpleApiTest component to verify schema
-
-    const testSchemaQueries = async () => {
-        setLoading(true);
-        addResult('info', '🔍 Testing individual schema queries...');
-
-        const endpoint = 'https://fpg4zax6sjhvtlbuti7sr4llxi.appsync-api.us-east-1.amazonaws.com/graphql';
-        const apiKey = 'your-working-api-key-here';
-
-        const queries = [
-            {
-                name: 'listPatients',
-                query: `query { listPatients(limit: 1) { items { id firstName } } }`
-            },
-            {
-                name: 'listDoctors',
-                query: `query { listDoctors(limit: 1) { items { id firstName } } }`
-            },
-            {
-                name: 'listNotes',
-                query: `query { listNotes(limit: 1) { items { id title } } }`
-            }
-        ];
-
-        for (const { name, query } of queries) {
-            try {
-                addResult('info', `Testing ${name}...`);
-
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': apiKey
-                    },
-                    body: JSON.stringify({ query })
-                });
-
-                const result = await response.json();
-
-                if (response.ok && !result.errors) {
-                    addResult('success', `✅ ${name} works`, result.data);
-                } else {
-                    addResult('error', `❌ ${name} failed`, {
-                        status: response.status,
-                        errors: result.errors
-                    });
-                }
-
-            } catch (error) {
-                addResult('error', `❌ ${name} threw error`, error);
-            }
-        }
-
-        setLoading(false);
-    };
-
-    // Test 1: Check Amplify configuration
-    const testAmplifyConfig = async () => {
-        setLoading(true);
-        addResult('info', '⚙️ Checking Amplify configuration...');
-
+    // Test 1: Basic authentication check
+    const testAuth = async () => {
         try {
-            const { Amplify } = await import('aws-amplify');
-            const config = Amplify.getConfig();
-
-            addResult('info', 'Raw Amplify config:', config);
-
-            // Check different ways the config might be structured
-            const graphqlConfig = config.API?.GraphQL || config.aws_appsync_graphqlEndpoint;
-            const apiKey = config.API?.GraphQL?.apiKey || config.aws_appsync_apiKey;
-            const authType = config.API?.GraphQL?.defaultAuthorizationType || config.aws_appsync_authenticationType;
-
-            addResult('info', `GraphQL Config: ${JSON.stringify(graphqlConfig)}`);
-            addResult('info', `API Key: ${apiKey ? 'Present' : 'Missing'}`);
-            addResult('info', `Auth Type: ${authType}`);
-
-            if (apiKey && graphqlConfig) {
-                addResult('success', '✅ Amplify configuration looks good');
-            } else {
-                addResult('error', '❌ Amplify configuration incomplete');
-            }
-
+            const user = await getCurrentUser();
+            addResult('success', `✅ Auth: ${user.username}`, user);
         } catch (error) {
-            addResult('error', '❌ Config check failed', error);
+            addResult('error', `❌ Auth failed: ${error.message}`);
         }
-
-        setLoading(false);
     };
 
-    // Test 2: Basic query test
-    const testBasicQuery = async () => {
+    // Test 2: Test Patient API with Cognito auth
+    const testPatients = async () => {
         setLoading(true);
-        addResult('info', '🔍 Testing most basic possible query...');
-
         try {
-            const endpoint = 'https://fpg4zax6sjhvtlbuti7sr4llxi.appsync-api.us-east-1.amazonaws.com/graphql';
-            const apiKey = 'da2-r3ddpxsmfbbcfoajbnq5gwnr6a';
-
-            // Try the absolute simplest query possible
-            const basicQuery = {
-                query: `
-                    query {
-                        __typename
-                    }
-                `
-            };
-
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': apiKey
-                },
-                body: JSON.stringify(basicQuery)
+            // Use Cognito User Pools authentication
+            const client = generateClient({
+                authMode: 'userPool'
             });
 
-            const result = await response.json();
-
-            if (response.ok && !result.errors) {
-                addResult('success', '✅ Basic query successful - API Key auth working!', result);
-
-                // Now try introspection
-                const introspectionQuery = {
-                    query: `
-                        query {
-                            __schema {
-                                queryType {
-                                    name
-                                }
+            // Test list patients (WITHOUT owner field in query, but requires Cognito auth)
+            const listResult = await client.graphql({
+                query: `
+                    query ListPatients {
+                        listPatients(limit: 5) {
+                            items {
+                                id
+                                firstName
+                                lastName
+                                email
+                                dateOfBirth
                             }
+                            nextToken
                         }
-                    `
-                };
+                    }
+                `
+            });
 
-                const introspectionResponse = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': apiKey
-                    },
-                    body: JSON.stringify(introspectionQuery)
-                });
+            addResult('success', `✅ Found ${listResult.data.listPatients.items.length} patients`, listResult.data.listPatients);
 
-                const introspectionResult = await introspectionResponse.json();
-
-                if (introspectionResponse.ok && !introspectionResult.errors) {
-                    addResult('success', '✅ Introspection also works!', introspectionResult);
-                } else {
-                    addResult('warning', '⚠️ Basic query works but introspection fails', {
-                        status: introspectionResponse.status,
-                        result: introspectionResult
-                    });
+            // Test create patient (owner field automatically set by AWS)
+            const createResult = await client.graphql({
+                query: `
+                    mutation CreatePatient($input: CreatePatientInput!) {
+                        createPatient(input: $input) {
+                            id
+                            firstName
+                            lastName
+                            email
+                            dateOfBirth
+                        }
+                    }
+                `,
+                variables: {
+                    input: {
+                        firstName: 'Test',
+                        lastName: 'Patient',
+                        email: `test-${Date.now()}@example.com`,
+                        dateOfBirth: '1990-01-01'
+                        // AWS automatically sets owner field based on authenticated user
+                    }
                 }
+            });
 
-            } else {
-                addResult('error', '❌ Even basic query failed', {
-                    status: response.status,
-                    statusText: response.statusText,
-                    result: result
-                });
-            }
+            addResult('success', '✅ Patient created successfully!', createResult.data.createPatient);
 
         } catch (error) {
-            addResult('error', '❌ Basic query threw error', error);
-        }
+            addResult('error', `❌ Patient test failed: ${error.message || 'Unknown error'}`, error);
 
+            // Safe check for error message
+            const errorMessage = error.message || error.toString() || '';
+            if (errorMessage.includes && errorMessage.includes('Not Authorized')) {
+                addResult('warning', '⚠️ You must be signed in with Cognito to access data');
+            }
+        }
         setLoading(false);
     };
 
-    // Test 3: Direct fetch to AppSync endpoint
-    const testDirectFetch = async () => {
+    // Test 3: Test Doctor API (might fail if not deployed)
+    const testDoctors = async () => {
         setLoading(true);
-        addResult('info', '🌐 Testing direct fetch to AppSync...');
-
         try {
-            const endpoint = 'https://fpg4zax6sjhvtlbuti7sr4llxi.appsync-api.us-east-1.amazonaws.com/graphql';
-            const apiKey = 'da2-r3ddpxsmfbbcfoajbnq5gwnr6a';
+            const client = generateClient();
 
-            // Simple introspection query
-            const introspectionQuery = {
+            // Test list doctors
+            const listResult = await client.graphql({
+                query: `
+                    query ListDoctors {
+                        listDoctors(limit: 5) {
+                            items {
+                                id
+                                firstName
+                                lastName
+                                specialty
+                                owner
+                            }
+                            nextToken
+                        }
+                    }
+                `
+            });
+
+            addResult('success', `✅ Found ${listResult.data.listDoctors.items.length} doctors`, listResult.data.listDoctors);
+
+        } catch (error) {
+            addResult('error', `❌ Doctor test failed: ${error.message || 'Unknown error'}`, error);
+
+            const errorMessage = error.message || error.toString() || '';
+            if (errorMessage.includes && (errorMessage.includes('Cannot query field') || errorMessage.includes('Doctor'))) {
+                addResult('warning', '⚠️ Doctor model not deployed. Run: npx amplify push');
+            }
+        }
+        setLoading(false);
+    };
+
+    // Test 4: Test Notes API
+    const testNotes = async () => {
+        setLoading(true);
+        try {
+            const client = generateClient();
+            const user = await getCurrentUser();
+
+            // Test create note
+            const createResult = await client.graphql({
+                query: `
+                    mutation CreateNote($input: CreateNoteInput!) {
+                        createNote(input: $input) {
+                            id
+                            title
+                            content
+                            owner
+                        }
+                    }
+                `,
+                variables: {
+                    input: {
+                        title: 'Test Note',
+                        content: 'This is a test note created via API',
+                        owner: user.username
+                    }
+                }
+            });
+
+            addResult('success', '✅ Note created successfully!', createResult.data.createNote);
+
+            // Test list notes
+            const listResult = await client.graphql({
+                query: `
+                    query ListNotes {
+                        listNotes(limit: 5) {
+                            items {
+                                id
+                                title
+                                content
+                                owner
+                            }
+                            nextToken
+                        }
+                    }
+                `
+            });
+
+            addResult('success', `✅ Found ${listResult.data.listNotes.items.length} notes`, listResult.data.listNotes);
+
+        } catch (error) {
+            addResult('error', `❌ Notes test failed: ${error.message || 'Unknown error'}`, error);
+        }
+        setLoading(false);
+    };
+
+    // Test 5: Test raw GraphQL introspection
+    const testIntrospection = async () => {
+        setLoading(true);
+        try {
+            const client = generateClient();
+
+            const result = await client.graphql({
                 query: `
                     query IntrospectionQuery {
                         __schema {
-                            queryType {
-                                name
-                            }
-                            mutationType {
-                                name
-                            }
                             types {
                                 name
                                 kind
@@ -208,309 +206,37 @@ const SimpleApiTest = () => {
                         }
                     }
                 `
-            };
-
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': apiKey,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(introspectionQuery)
             });
 
-            const result = await response.json();
+            const modelTypes = result.data.__schema.types.filter(type =>
+                type.kind === 'OBJECT' &&
+                !type.name.startsWith('__') &&
+                ['Patient', 'Doctor', 'Note'].some(model => type.name.includes(model))
+            );
 
-            if (response.ok && !result.errors) {
-                addResult('success', '✅ Direct fetch successful!');
-
-                // Check for our types
-                const types = result.data.__schema.types.map(t => t.name);
-                const hasDoctor = types.includes('Doctor');
-                const hasPatient = types.includes('Patient');
-                const hasNote = types.includes('Note');
-
-                addResult('info', `📋 Available types: ${types.filter(t => ['Doctor', 'Patient', 'Note'].includes(t)).join(', ')}`);
-                addResult(hasDoctor ? 'success' : 'error', `Doctor type: ${hasDoctor ? 'Found' : 'Missing'}`);
-                addResult(hasPatient ? 'success' : 'error', `Patient type: ${hasPatient ? 'Found' : 'Missing'}`);
-                addResult(hasNote ? 'success' : 'error', `Note type: ${hasNote ? 'Found' : 'Missing'}`);
-
-                addResult('info', 'Full schema result:', result.data);
-            } else {
-                addResult('error', '❌ Direct fetch failed', {
-                    status: response.status,
-                    statusText: response.statusText,
-                    errors: result.errors,
-                    data: result
-                });
-            }
+            addResult('info', `📋 Available models: ${modelTypes.map(t => t.name).join(', ')}`, modelTypes);
 
         } catch (error) {
-            addResult('error', '❌ Direct fetch threw error', {
-                message: error.message,
-                stack: error.stack
-            });
+            addResult('error', `❌ Introspection failed: ${error.message || 'Unknown error'}`, error);
         }
-
         setLoading(false);
-    };
-
-    // Test 4: Simple list query
-    const testSimpleList = async () => {
-        setLoading(true);
-        addResult('info', '📋 Testing simple list query...');
-
-        try {
-            const endpoint = 'https://fpg4zax6sjhvtlbuti7sr4llxi.appsync-api.us-east-1.amazonaws.com/graphql';
-            const apiKey = 'da2-r3ddpxsmfbbcfoajbnq5gwnr6a';
-
-            // Try the simplest possible query
-            const simpleQuery = {
-                query: `
-                    query ListPatients {
-                        listPatients(limit: 1) {
-                            items {
-                                id
-                                firstName
-                                lastName
-                            }
-                        }
-                    }
-                `
-            };
-
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': apiKey
-                },
-                body: JSON.stringify(simpleQuery)
-            });
-
-            const result = await response.json();
-
-            if (response.ok && !result.errors) {
-                addResult('success', '✅ Simple list query successful!', result.data);
-            } else {
-                addResult('error', '❌ Simple list query failed', {
-                    status: response.status,
-                    errors: result.errors,
-                    data: result
-                });
-            }
-
-        } catch (error) {
-            addResult('error', '❌ Simple query threw error', error);
-        }
-
-        setLoading(false);
-    };
-
-    // Add this test to your SimpleApiTest component
-    // This avoids introspection entirely
-
-    const testNonIntrospection = async () => {
-        setLoading(true);
-        addResult('info', '🧪 Testing without introspection...');
-
-        try {
-            const endpoint = 'https://fpg4zax6sjhvtlbuti7sr4llxi.appsync-api.us-east-1.amazonaws.com/graphql';
-            const apiKey = 'da2-r3ddpxsmfbbcfoajbnq5gwnr6a'; // Use your current key first
-
-            // Try a simple mutation that should exist
-            const testQuery = {
-                query: `
-                query TestBasic {
-                    listPatients(limit: 1) {
-                        items {
-                            id
-                        }
-                    }
-                }
-            `
-            };
-
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': apiKey
-                },
-                body: JSON.stringify(testQuery)
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                addResult('success', '✅ Non-introspection query worked!', result);
-            } else {
-                addResult('error', '❌ Non-introspection query also failed', {
-                    status: response.status,
-                    result: result
-                });
-            }
-
-        } catch (error) {
-            addResult('error', '❌ Non-introspection test threw error', error);
-        }
-
-        setLoading(false);
-    };
-
-    // Test 5: Try creating with minimal fields
-    const testMinimalCreate = async () => {
-        setLoading(true);
-        addResult('info', '📝 Testing minimal doctor creation...');
-
-        try {
-            const endpoint = 'https://fpg4zax6sjhvtlbuti7sr4llxi.appsync-api.us-east-1.amazonaws.com/graphql';
-            const apiKey = 'da2-r3ddpxsmfbbcfoajbnq5gwnr6a';
-
-            const createMutation = {
-                query: `
-                    mutation CreateDoctor($input: CreateDoctorInput!) {
-                        createDoctor(input: $input) {
-                            id
-                            firstName
-                            lastName
-                            email
-                            specialty
-                            licenseNumber
-                        }
-                    }
-                `,
-                variables: {
-                    input: {
-                        firstName: 'Test',
-                        lastName: 'Doctor',
-                        email: `test-${Date.now()}@example.com`,
-                        specialty: 'General Medicine',
-                        licenseNumber: `TEST${Date.now()}`
-                    }
-                }
-            };
-
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': apiKey
-                },
-                body: JSON.stringify(createMutation)
-            });
-
-            const result = await response.json();
-
-            if (response.ok && !result.errors) {
-                addResult('success', '✅ Minimal doctor creation successful!', result.data);
-            } else {
-                addResult('error', '❌ Minimal doctor creation failed', {
-                    status: response.status,
-                    errors: result.errors,
-                    data: result
-                });
-            }
-
-        } catch (error) {
-            addResult('error', '❌ Minimal create threw error', error);
-        }
-
-        setLoading(false);
-    };
-
-    const getResultStyle = (type) => {
-        const baseStyle = { padding: '10px', margin: '5px 0', borderRadius: '4px', fontSize: '14px' };
-        switch (type) {
-            case 'success': return { ...baseStyle, backgroundColor: '#d4edda', color: '#155724', border: '1px solid #c3e6cb' };
-            case 'error': return { ...baseStyle, backgroundColor: '#f8d7da', color: '#721c24', border: '1px solid #f5c6cb' };
-            case 'warning': return { ...baseStyle, backgroundColor: '#fff3cd', color: '#856404', border: '1px solid #ffeaa7' };
-            default: return { ...baseStyle, backgroundColor: '#d1ecf1', color: '#0c5460', border: '1px solid #bee5eb' };
-        }
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-            <h1>🔍 Direct AppSync API Testing</h1>
-            <p>Testing AppSync directly without Amplify client abstraction.</p>
-
-            <div style={{ marginBottom: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                <button
-                    onClick={testAmplifyConfig}
-                    disabled={loading}
-                    style={{
-                        padding: '10px 15px',
-                        backgroundColor: '#6c757d',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: loading ? 'not-allowed' : 'pointer'
-                    }}
-                >
-                    Check Config
-                </button>
-                <button
-                    onClick={testBasicQuery}
-                    disabled={loading}
-                    style={{
-                        padding: '10px 15px',
-                        backgroundColor: '#17a2b8',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: loading ? 'not-allowed' : 'pointer'
-                    }}
-                >
-                    Test Basic Query
-                </button>
-                <button
-                    onClick={testDirectFetch}
-                    disabled={loading}
-                    style={{
-                        padding: '10px 15px',
-                        backgroundColor: '#007bff',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: loading ? 'not-allowed' : 'pointer'
-                    }}
-                >
-                    Test Direct Fetch
-                </button>
-                <button
-                    onClick={testSimpleList}
-                    disabled={loading}
-                    style={{
-                        padding: '10px 15px',
-                        backgroundColor: '#28a745',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: loading ? 'not-allowed' : 'pointer'
-                    }}
-                >
-                    Test Simple List
-                </button>
-                <button
-                    onClick={testMinimalCreate}
-                    disabled={loading}
-                    style={{
-                        padding: '10px 15px',
-                        backgroundColor: '#ffc107',
-                        color: 'black',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: loading ? 'not-allowed' : 'pointer'
-                    }}
-                >
-                    Test Minimal Create
-                </button>
+        <div style={{
+            padding: '20px',
+            border: '2px solid #e5e7eb',
+            borderRadius: '8px',
+            margin: '20px',
+            backgroundColor: '#f9fafb'
+        }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3>🧪 Simple API Tests</h3>
                 <button
                     onClick={clearResults}
                     style={{
-                        padding: '10px 15px',
-                        backgroundColor: '#dc3545',
+                        padding: '6px 12px',
+                        backgroundColor: '#6b7280',
                         color: 'white',
                         border: 'none',
                         borderRadius: '4px',
@@ -521,42 +247,83 @@ const SimpleApiTest = () => {
                 </button>
             </div>
 
-            <div style={{
-                maxHeight: '600px',
-                overflowY: 'auto',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                padding: '10px',
-                backgroundColor: '#f8f9fa'
-            }}>
-                {results.length === 0 ? (
-                    <p style={{ textAlign: 'center', color: '#666', fontStyle: 'italic' }}>
-                        No test results yet. Click a test button to start.
-                    </p>
-                ) : (
-                    results.map(result => (
-                        <div key={result.id} style={getResultStyle(result.type)}>
-                            <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>
-                                [{result.timestamp}] {result.message}
-                            </div>
-                            {result.data && (
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '20px' }}>
+                <button onClick={testAuth} style={buttonStyle('#3b82f6')}>
+                    1. Test Auth
+                </button>
+                <button onClick={testPatients} disabled={loading} style={buttonStyle('#10b981')}>
+                    2. Test Patients
+                </button>
+                <button onClick={testDoctors} disabled={loading} style={buttonStyle('#f59e0b')}>
+                    3. Test Doctors
+                </button>
+                <button onClick={testNotes} disabled={loading} style={buttonStyle('#8b5cf6')}>
+                    4. Test Notes
+                </button>
+                <button onClick={testIntrospection} disabled={loading} style={buttonStyle('#ef4444')}>
+                    5. Schema Info
+                </button>
+            </div>
+
+            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                {results.map(result => (
+                    <div
+                        key={result.id}
+                        style={{
+                            margin: '10px 0',
+                            padding: '12px',
+                            borderRadius: '6px',
+                            backgroundColor: result.type === 'success' ? '#dcfce7' :
+                                result.type === 'error' ? '#fef2f2' :
+                                    result.type === 'warning' ? '#fef3c7' : '#f3f4f6',
+                            color: result.type === 'success' ? '#166534' :
+                                result.type === 'error' ? '#dc2626' :
+                                    result.type === 'warning' ? '#d97706' : '#374151',
+                            fontSize: '14px'
+                        }}
+                    >
+                        <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>
+                            [{result.timestamp}] {result.message}
+                        </div>
+                        {result.data && (
+                            <details style={{ marginTop: '8px' }}>
+                                <summary style={{ cursor: 'pointer', color: '#6b7280' }}>
+                                    View Data
+                                </summary>
                                 <pre style={{
+                                    marginTop: '8px',
                                     fontSize: '12px',
                                     backgroundColor: 'rgba(0,0,0,0.05)',
                                     padding: '8px',
-                                    borderRadius: '3px',
+                                    borderRadius: '4px',
                                     overflow: 'auto',
                                     maxHeight: '200px'
                                 }}>
                                     {JSON.stringify(result.data, null, 2)}
                                 </pre>
-                            )}
-                        </div>
-                    ))
-                )}
+                            </details>
+                        )}
+                    </div>
+                ))}
             </div>
+
+            {loading && (
+                <div style={{ textAlign: 'center', color: '#6b7280', marginTop: '20px' }}>
+                    ⏳ Running test...
+                </div>
+            )}
         </div>
     );
 };
+
+const buttonStyle = (bgColor) => ({
+    padding: '8px 16px',
+    backgroundColor: bgColor,
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '14px'
+});
 
 export default SimpleApiTest;

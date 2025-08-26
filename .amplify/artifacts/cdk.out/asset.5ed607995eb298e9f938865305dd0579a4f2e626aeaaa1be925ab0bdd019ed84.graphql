@@ -1,0 +1,439 @@
+type Doctor @aws_iam @aws_api_key {
+  firstName: String!
+  lastName: String!
+  email: AWSEmail!
+  specialty: String!
+  experience: String
+  phone: String
+  bio: String
+  isActive: Boolean
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Patient @aws_iam @aws_api_key {
+  firstName: String!
+  lastName: String!
+  email: AWSEmail!
+  dateOfBirth: AWSDate!
+  phone: String
+  isActive: Boolean
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Note @aws_iam @aws_api_key {
+  title: String!
+  content: String!
+  category: String
+  priority: String
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+input AmplifyAIConversationTurnErrorInput {
+  errorType: String!
+  message: String!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelDoctorConnection @aws_api_key @aws_iam {
+  items: [Doctor]!
+  nextToken: String
+}
+
+input ModelDoctorFilterInput {
+  firstName: ModelStringInput
+  lastName: ModelStringInput
+  email: ModelStringInput
+  specialty: ModelStringInput
+  experience: ModelStringInput
+  phone: ModelStringInput
+  bio: ModelStringInput
+  isActive: ModelBooleanInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelDoctorFilterInput]
+  or: [ModelDoctorFilterInput]
+  not: ModelDoctorFilterInput
+}
+
+type Query {
+  getDoctor(id: ID!): Doctor @aws_api_key @aws_iam
+  listDoctors(filter: ModelDoctorFilterInput, limit: Int, nextToken: String): ModelDoctorConnection @aws_api_key @aws_iam
+  getPatient(id: ID!): Patient @aws_api_key @aws_iam
+  listPatients(filter: ModelPatientFilterInput, limit: Int, nextToken: String): ModelPatientConnection @aws_api_key @aws_iam
+  getNote(id: ID!): Note @aws_api_key @aws_iam
+  listNotes(filter: ModelNoteFilterInput, limit: Int, nextToken: String): ModelNoteConnection @aws_api_key @aws_iam
+}
+
+input ModelDoctorConditionInput {
+  firstName: ModelStringInput
+  lastName: ModelStringInput
+  email: ModelStringInput
+  specialty: ModelStringInput
+  experience: ModelStringInput
+  phone: ModelStringInput
+  bio: ModelStringInput
+  isActive: ModelBooleanInput
+  and: [ModelDoctorConditionInput]
+  or: [ModelDoctorConditionInput]
+  not: ModelDoctorConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateDoctorInput {
+  firstName: String!
+  lastName: String!
+  email: AWSEmail!
+  specialty: String!
+  experience: String
+  phone: String
+  bio: String
+  isActive: Boolean
+  id: ID
+}
+
+input UpdateDoctorInput {
+  firstName: String
+  lastName: String
+  email: AWSEmail
+  specialty: String
+  experience: String
+  phone: String
+  bio: String
+  isActive: Boolean
+  id: ID!
+}
+
+input DeleteDoctorInput {
+  id: ID!
+}
+
+type Mutation {
+  createDoctor(input: CreateDoctorInput!, condition: ModelDoctorConditionInput): Doctor @aws_api_key @aws_iam
+  updateDoctor(input: UpdateDoctorInput!, condition: ModelDoctorConditionInput): Doctor @aws_api_key @aws_iam
+  deleteDoctor(input: DeleteDoctorInput!, condition: ModelDoctorConditionInput): Doctor @aws_api_key @aws_iam
+  createPatient(input: CreatePatientInput!, condition: ModelPatientConditionInput): Patient @aws_api_key @aws_iam
+  updatePatient(input: UpdatePatientInput!, condition: ModelPatientConditionInput): Patient @aws_api_key @aws_iam
+  deletePatient(input: DeletePatientInput!, condition: ModelPatientConditionInput): Patient @aws_api_key @aws_iam
+  createNote(input: CreateNoteInput!, condition: ModelNoteConditionInput): Note @aws_api_key @aws_iam
+  updateNote(input: UpdateNoteInput!, condition: ModelNoteConditionInput): Note @aws_api_key @aws_iam
+  deleteNote(input: DeleteNoteInput!, condition: ModelNoteConditionInput): Note @aws_api_key @aws_iam
+}
+
+input ModelSubscriptionDoctorFilterInput {
+  firstName: ModelSubscriptionStringInput
+  lastName: ModelSubscriptionStringInput
+  email: ModelSubscriptionStringInput
+  specialty: ModelSubscriptionStringInput
+  experience: ModelSubscriptionStringInput
+  phone: ModelSubscriptionStringInput
+  bio: ModelSubscriptionStringInput
+  isActive: ModelSubscriptionBooleanInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionDoctorFilterInput]
+  or: [ModelSubscriptionDoctorFilterInput]
+}
+
+type Subscription {
+  onCreateDoctor(filter: ModelSubscriptionDoctorFilterInput): Doctor @aws_subscribe(mutations: ["createDoctor"]) @aws_api_key @aws_iam
+  onUpdateDoctor(filter: ModelSubscriptionDoctorFilterInput): Doctor @aws_subscribe(mutations: ["updateDoctor"]) @aws_api_key @aws_iam
+  onDeleteDoctor(filter: ModelSubscriptionDoctorFilterInput): Doctor @aws_subscribe(mutations: ["deleteDoctor"]) @aws_api_key @aws_iam
+  onCreatePatient(filter: ModelSubscriptionPatientFilterInput): Patient @aws_subscribe(mutations: ["createPatient"]) @aws_api_key @aws_iam
+  onUpdatePatient(filter: ModelSubscriptionPatientFilterInput): Patient @aws_subscribe(mutations: ["updatePatient"]) @aws_api_key @aws_iam
+  onDeletePatient(filter: ModelSubscriptionPatientFilterInput): Patient @aws_subscribe(mutations: ["deletePatient"]) @aws_api_key @aws_iam
+  onCreateNote(filter: ModelSubscriptionNoteFilterInput): Note @aws_subscribe(mutations: ["createNote"]) @aws_api_key @aws_iam
+  onUpdateNote(filter: ModelSubscriptionNoteFilterInput): Note @aws_subscribe(mutations: ["updateNote"]) @aws_api_key @aws_iam
+  onDeleteNote(filter: ModelSubscriptionNoteFilterInput): Note @aws_subscribe(mutations: ["deleteNote"]) @aws_api_key @aws_iam
+}
+
+type ModelPatientConnection @aws_api_key @aws_iam {
+  items: [Patient]!
+  nextToken: String
+}
+
+input ModelPatientFilterInput {
+  firstName: ModelStringInput
+  lastName: ModelStringInput
+  email: ModelStringInput
+  dateOfBirth: ModelStringInput
+  phone: ModelStringInput
+  isActive: ModelBooleanInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelPatientFilterInput]
+  or: [ModelPatientFilterInput]
+  not: ModelPatientFilterInput
+}
+
+input ModelPatientConditionInput {
+  firstName: ModelStringInput
+  lastName: ModelStringInput
+  email: ModelStringInput
+  dateOfBirth: ModelStringInput
+  phone: ModelStringInput
+  isActive: ModelBooleanInput
+  and: [ModelPatientConditionInput]
+  or: [ModelPatientConditionInput]
+  not: ModelPatientConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreatePatientInput {
+  firstName: String!
+  lastName: String!
+  email: AWSEmail!
+  dateOfBirth: AWSDate!
+  phone: String
+  isActive: Boolean
+  id: ID
+}
+
+input UpdatePatientInput {
+  firstName: String
+  lastName: String
+  email: AWSEmail
+  dateOfBirth: AWSDate
+  phone: String
+  isActive: Boolean
+  id: ID!
+}
+
+input DeletePatientInput {
+  id: ID!
+}
+
+input ModelSubscriptionPatientFilterInput {
+  firstName: ModelSubscriptionStringInput
+  lastName: ModelSubscriptionStringInput
+  email: ModelSubscriptionStringInput
+  dateOfBirth: ModelSubscriptionStringInput
+  phone: ModelSubscriptionStringInput
+  isActive: ModelSubscriptionBooleanInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionPatientFilterInput]
+  or: [ModelSubscriptionPatientFilterInput]
+}
+
+type ModelNoteConnection @aws_api_key @aws_iam {
+  items: [Note]!
+  nextToken: String
+}
+
+input ModelNoteFilterInput {
+  title: ModelStringInput
+  content: ModelStringInput
+  category: ModelStringInput
+  priority: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelNoteFilterInput]
+  or: [ModelNoteFilterInput]
+  not: ModelNoteFilterInput
+}
+
+input ModelNoteConditionInput {
+  title: ModelStringInput
+  content: ModelStringInput
+  category: ModelStringInput
+  priority: ModelStringInput
+  and: [ModelNoteConditionInput]
+  or: [ModelNoteConditionInput]
+  not: ModelNoteConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateNoteInput {
+  title: String!
+  content: String!
+  category: String
+  priority: String
+  id: ID
+}
+
+input UpdateNoteInput {
+  title: String
+  content: String
+  category: String
+  priority: String
+  id: ID!
+}
+
+input DeleteNoteInput {
+  id: ID!
+}
+
+input ModelSubscriptionNoteFilterInput {
+  title: ModelSubscriptionStringInput
+  content: ModelSubscriptionStringInput
+  category: ModelSubscriptionStringInput
+  priority: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionNoteFilterInput]
+  or: [ModelSubscriptionNoteFilterInput]
+}

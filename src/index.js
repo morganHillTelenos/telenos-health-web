@@ -1,122 +1,39 @@
-// src/index.js - Fixed to allow public landing page
+// src/index.js - Final configuration
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import { Amplify } from 'aws-amplify';
-import { Authenticator } from '@aws-amplify/ui-react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import amplifyConfig from './amplify_outputs.json';
 import App from './App';
-import LandingPage from './pages/LandingPage';
-import '@aws-amplify/ui-react/styles.css';
 import './index.css';
 
-// Configure Amplify
-Amplify.configure(amplifyConfig);
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-
-// Custom form fields for healthcare app
-const formFields = {
-  signUp: {
-    email: {
-      order: 1,
-      placeholder: 'Enter your email address',
-      label: 'Email *',
-      inputProps: { required: true, type: 'email' }
-    },
-    password: {
-      order: 2,
-      placeholder: 'Enter a strong password',
-      label: 'Password *'
-    },
-    confirm_password: {
-      order: 3,
-      placeholder: 'Confirm your password',
-      label: 'Confirm Password *'
+// 🔧 FINAL: Force API key as default auth mode
+const correctedConfig = {
+  ...amplifyConfig,
+  API: {
+    GraphQL: {
+      endpoint: amplifyConfig.data.url, // Auto-use current endpoint
+      region: amplifyConfig.data.aws_region,
+      defaultAuthMode: 'apiKey',
+      apiKey: amplifyConfig.data.api_key // Auto-use current API key
     }
   }
 };
 
-// Custom components for better UX
-const components = {
-  Header() {
-    return (
-      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <div style={{
-          width: '60px',
-          height: '60px',
-          background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)',
-          borderRadius: '12px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 1rem',
-          fontSize: '24px',
-          fontWeight: 'bold',
-          color: 'white'
-        }}>
-          🏥
-        </div>
-        <h1 style={{ margin: 0, color: '#1F2937', fontSize: '1.5rem' }}>
-          Promind Psychiatry
-        </h1>
-        <p style={{ margin: '0.5rem 0 0', color: '#6B7280', fontSize: '0.875rem' }}>
-          Healthcare Provider Portal
-        </p>
-      </div>
-    );
-  }
-};
+// Configure Amplify with corrected config
+Amplify.configure(correctedConfig);
 
-// Component to conditionally render authentication
-const ConditionalAuth = () => {
-  const location = useLocation();
+console.log('🚀 AWS Amplify configured with FINAL sandbox');
+console.log('🌐 GraphQL API:', amplifyConfig.data.url);
+console.log('🔑 API Key:', amplifyConfig.data.api_key);
+console.log('📊 Available Models: Doctor, Patient, Note');
 
-  // Define public routes that don't need authentication
-  const publicRoutes = ['/', '/landing'];
-  const isPublicRoute = publicRoutes.includes(location.pathname);
-
-  // If it's a public route, render the landing page directly
-  if (isPublicRoute) {
-    return <LandingPage />;
-  }
-
-  // For all other routes, require authentication
-  return (
-    <Authenticator
-      formFields={formFields}
-      components={components}
-      variation="modal"
-      hideSignUp={false}
-    >
-      {({ signOut, user }) => (
-        <App signOut={signOut} user={user} />
-      )}
-    </Authenticator>
-  );
-};
+const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
-    <Router>
-      <Routes>
-        {/* Public landing page route */}
-        <Route path="/" element={<LandingPage />} />
-
-        {/* All other routes require authentication */}
-        <Route path="/*" element={
-          <Authenticator
-            formFields={formFields}
-            components={components}
-            variation="modal"
-            hideSignUp={false}
-          >
-            {({ signOut, user }) => (
-              <App signOut={signOut} user={user} />
-            )}
-          </Authenticator>
-        } />
-      </Routes>
-    </Router>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>
 );
