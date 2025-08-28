@@ -867,3 +867,211 @@ body {
         text-align: center;
     }
 }
+
+/* Add this to your LandingTest.css file */
+
+/* Dropdown Navigation Styles */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    flex-wrap: nowrap;
+}
+
+.nav-dropdown {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.dropdown-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    white-space: nowrap;
+    padding: var(--space-xs) var(--space-sm);
+    min-width: max-content;
+}
+
+.dropdown-arrow {
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
+}
+
+.nav-dropdown:hover .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    min-width: 250px;
+    max-width: 400px;
+    padding: var(--space-md);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.nav-dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-section {
+    margin-bottom: var(--space-md);
+}
+
+.dropdown-link {
+    display: block;
+    padding: var(--space-xs) var(--space-sm);
+    color: var(--primary-gray);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+
+.dropdown-link:hover {
+    background: var(--primary-blue-light);
+    color: var(--primary-blue);
+}
+
+.dropdown-submenu {
+    position: relative;
+    margin-left: var(--space-md);
+}
+
+.submenu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.submenu {
+    margin-left: var(--space-md);
+    margin-top: var(--space-xs);
+    padding-left: var(--space-md);
+    border-left: 2px solid var(--border-light);
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.dropdown-submenu:hover .submenu {
+    opacity: 1;
+    max-height: 500px;
+}
+
+.dropdown-text {
+    padding: var(--space-sm);
+    color: var(--primary-gray);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    background: var(--primary-blue-light);
+    border-radius: var(--radius-md);
+    margin: var(--space-xs) 0;
+}
+
+.dropdown-header {
+    color: var(--primary-blue);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin: var(--space-sm) 0 var(--space-xs) 0;
+    display: block;
+}
+
+/* Ensure dropdowns don't get cut off */
+.modern-nav {
+    overflow: visible;
+}
+
+.nav-container {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+/* Force horizontal layout at larger screens */
+@media (min-width: 992px) {
+    .nav-links {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: var(--space-xl);
+        align-items: center;
+        justify-content: flex-end;
+        flex: 1;
+    }
+    
+    .nav-dropdown {
+        flex-shrink: 0;
+    }
+    
+    .dropdown-toggle {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+}
+
+/* Tablet adjustments */
+@media (max-width: 991px) and (min-width: 769px) {
+    .nav-links {
+        gap: var(--space-md);
+    }
+    
+    .dropdown-toggle {
+        font-size: 0.9rem;
+        padding: var(--space-xs);
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+        padding: var(--space-md);
+    }
+    
+    .nav-links {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+    }
+    
+    .nav-dropdown {
+        flex: 1;
+        min-width: calc(50% - var(--space-xs));
+    }
+    
+    .dropdown-toggle {
+        width: 100%;
+        justify-content: center;
+        padding: var(--space-sm);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        background: white;
+        font-size: 0.9rem;
+    }
+}

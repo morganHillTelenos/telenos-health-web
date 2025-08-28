@@ -72,8 +72,6 @@ const LandingPage = () => {
         };
     }, []);
 
-    
-
     return (
         <div className="landing-page">
             {/* Modern Navigation */}
@@ -84,9 +82,71 @@ const LandingPage = () => {
                         <span>Promind Psychiatry</span>
                     </a>
                     <div className="nav-links">
-                        <button onClick={handlePatientPortal} className="nav-link">
-                            Patient Portal
-                        </button>
+                        <div className="nav-dropdown">
+                            <button className="nav-link dropdown-toggle">
+                                Patients
+                                <span className="dropdown-arrow">▼</span>
+                            </button>
+                            <div className="dropdown-menu">
+                                <div className="dropdown-section">
+                                    <button onClick={() => navigate('/home')} className="dropdown-link">Schedule an Appointment</button>
+                                    <div className="dropdown-submenu">
+                                        <button className="dropdown-link submenu-toggle">
+                                            Services
+                                            <span className="dropdown-arrow">▼</span>
+                                        </button>
+                                        <div className="submenu">
+                                            <a href="#" className="dropdown-link">Evaluation</a>
+                                            <a href="#" className="dropdown-link">Medication Management</a>
+                                            <a href="#" className="dropdown-link">Psychotherapy</a>
+                                            <button onClick={() => navigate('/coming-soon')} className="dropdown-link">Genomics</button>
+                                            <button onClick={() => navigate('/coming-soon')} className="dropdown-link">Emerging Treatments</button>
+                                            <button onClick={() => navigate('/coming-soon')} className="dropdown-link">Group Therapy</button>
+                                            <div className="dropdown-submenu">
+                                                <button className="dropdown-link submenu-toggle">
+                                                    Technology
+                                                    <span className="dropdown-arrow">▼</span>
+                                                </button>
+                                                <div className="submenu">
+                                                    <a href="mailto:Anthony.Privratsky@promindpsychiatry.com" className="dropdown-link">Send us an inquiry</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="nav-dropdown">
+                            <button className="nav-link dropdown-toggle">
+                                For Providers
+                                <span className="dropdown-arrow">▼</span>
+                            </button>
+                            <div className="dropdown-menu">
+                                <button onClick={() => navigate('/coming-soon')} className="dropdown-link">Open Positions</button>
+                                <button onClick={() => navigate('/coming-soon')} className="dropdown-link">Technology</button>
+                            </div>
+                        </div>
+
+                        <button onClick={() => navigate('/home')} className="nav-link">About</button>
+
+                        <div className="nav-dropdown">
+                            <button className="nav-link dropdown-toggle">
+                                Contact & Login
+                                <span className="dropdown-arrow">▼</span>
+                            </button>
+                            <div className="dropdown-menu">
+                                <div className="dropdown-section">
+                                    <strong className="dropdown-header">Investors</strong>
+                                    <a href="mailto:investor.relations@promindpsychiatry.com" className="dropdown-link">investor.relations@promindpsychiatry.com</a>
+                                </div>
+                                <div className="dropdown-section">
+                                    <strong className="dropdown-header">Login</strong>
+                                    <button onClick={() => navigate('/login')} className="dropdown-link">Patient Login</button>
+                                    <button onClick={() => navigate('/login')} className="dropdown-link">Provider Login</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -108,7 +168,7 @@ const LandingPage = () => {
                         </div>
 
                         <h1 className="hero-title">
-                            <span className="gradient-text">Promind Psychiatry</span>
+                            <span className="gradient-text">Promind Precision Psychiatry</span>
                             <br />
                             <span style={{
                                 fontSize: '0.8em',
@@ -491,7 +551,7 @@ const LandingPage = () => {
 
                             <div className="hero-actions">
                                 <a
-                                    href="mailto:anthony.privratsky@promindpsychiatry.com"
+                                    href="mailto:contact@promindpsychiatry.com"
                                     className="btn btn-primary btn-large"
                                 >
                                     Express Interest
@@ -516,13 +576,13 @@ const LandingPage = () => {
                         <p>Connect with our team to explore how precision psychiatry can enhance your practice.</p>
 
                         <div className="contact-options">
-                            <a href="mailto:anthony.privratsky@promindpsychiatry.com" className="contact-method">
+                            <a href="mailto:contact@promindpsychiatry.com" className="contact-method">
                                 <div className="contact-icon">
                                     <Envelope size={32} color="#2563eb" />
                                 </div>
                                 <div className="contact-text">
                                     <strong>Email</strong>
-                                    <span>anthony.privratsky@promindpsychiatry.com</span>
+                                    <span>contact@promindpsychiatry.com</span>
                                 </div>
                             </a>
 

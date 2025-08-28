@@ -16,6 +16,7 @@ import Header from './components/Header';
 import NewAppointmentPage from './pages/NewAppointmentPage';
 import NotesPage from './pages/NotesPage';
 import LandingPatient from './pages/LandingPagePatients';
+import ComingSoonPage from './pages/ComingSoonPage';
 
 // Import services - fallback only
 import { authService } from './services/auth';
@@ -479,6 +480,7 @@ function App({ signOut, user }) {
         <Route path="/" element={<PublicRoute><LandingPageWrapper /></PublicRoute>} />
         <Route path="/home" element={<PublicRoute><LandingPagePatientWrapper /></PublicRoute>} />
         <Route path="/login" element={<PublicRoute><LoginPageWrapper /></PublicRoute>} />
+        <Route path="/coming-soon" element={<ComingSoonPage />} />
 
         {/* Provider Routes - For now, allow all authenticated users */}
         <Route
