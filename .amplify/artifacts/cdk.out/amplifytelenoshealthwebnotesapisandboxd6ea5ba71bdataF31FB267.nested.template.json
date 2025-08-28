@@ -17,10 +17,6 @@
       "Value": "sandbox"
      },
      {
-      "Key": "amplify:friendly-name",
-      "Value": "amplifyData"
-     },
-     {
       "Key": "created-by",
       "Value": "amplify"
      }
@@ -60,7 +56,7 @@
       "ApiId"
      ]
     },
-    "Expires": 1758502269
+    "Expires": 1758864197
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -104,10 +100,6 @@
       "Value": "sandbox"
      },
      {
-      "Key": "amplify:friendly-name",
-      "Value": "amplifyData"
-     },
-     {
       "Key": "created-by",
       "Value": "amplify"
      }
@@ -128,7 +120,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/7271470344218dbc4073b6cc159b2bd5bb85aba66e6c50fc59786a0d7f3cf91a.json"
+       "/e4d26d2773075c53e60d8de563c29fde1d38bb975cea0a20f3e0add8fdca5207.json"
       ]
      ]
     }
@@ -185,10 +177,6 @@
       "Value": "sandbox"
      },
      {
-      "Key": "amplify:friendly-name",
-      "Value": "amplifyData"
-     },
-     {
       "Key": "created-by",
       "Value": "amplify"
      }
@@ -209,7 +197,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/8f53588ba44d0ff7247292c09b74aca57dfc2ee2ae3d6e1a15cdeb81452c8090.json"
+       "/182e4373e74056476641a2575209d45d35c7551940becd9b91a3a14f0039cff3.json"
       ]
      ]
     }
@@ -269,10 +257,6 @@
       "Value": "sandbox"
      },
      {
-      "Key": "amplify:friendly-name",
-      "Value": "amplifyData"
-     },
-     {
       "Key": "created-by",
       "Value": "amplify"
      }
@@ -293,7 +277,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/0d0c55456d86884fd2cc7378ce84b0ed1e81dff92c4714511015ec3b4dd975f4.json"
+       "/62b79c0b11cb906f4f63bbcd20d65ff32c5c2a7bfadb6e6d1717a4250b5c3162.json"
       ]
      ]
     }
@@ -353,10 +337,6 @@
       "Value": "sandbox"
      },
      {
-      "Key": "amplify:friendly-name",
-      "Value": "amplifyData"
-     },
-     {
       "Key": "created-by",
       "Value": "amplify"
      }
@@ -377,7 +357,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/d4e929ebe259977750f787ca41a473a83a12f803ffc2a646dbfb34297a2828e8.json"
+       "/22f1260a243c1a63a99144d0a2682649e0d9c70705f10a2727871a1cce53eea3.json"
       ]
      ]
     }
@@ -427,10 +407,6 @@
      {
       "Key": "amplify:deployment-type",
       "Value": "sandbox"
-     },
-     {
-      "Key": "amplify:friendly-name",
-      "Value": "amplifyData"
      },
      {
       "Key": "aws-cdk:auto-delete-objects",
@@ -795,43 +771,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": [
-        "s3:GetObject*",
-        "s3:GetBucket*",
-        "s3:List*",
-        "s3:DeleteObject*",
-        "s3:PutObject",
-        "s3:PutObjectLegalHold",
-        "s3:PutObjectRetention",
-        "s3:PutObjectTagging",
-        "s3:PutObjectVersionTagging",
-        "s3:Abort*"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "modelIntrospectionSchemaBucketF566B665",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "modelIntrospectionSchemaBucketF566B665",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
       }
      ],
      "Version": "2012-10-17"
@@ -902,278 +841,10 @@
     "aws:asset:property": "Code"
    }
   },
-  "modelIntrospectionSchemaBucketF566B665": {
-   "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "amplify:deployment-type",
-      "Value": "sandbox"
-     },
-     {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
-     },
-     {
-      "Key": "aws-cdk:cr-owned:909481cf",
-      "Value": "true"
-     },
-     {
-      "Key": "created-by",
-      "Value": "amplify"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/modelIntrospectionSchemaBucket/Resource"
-   }
-  },
-  "modelIntrospectionSchemaBucketPolicy4DAB0D15": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "modelIntrospectionSchemaBucketF566B665"
-    },
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "s3:*",
-       "Condition": {
-        "Bool": {
-         "aws:SecureTransport": "false"
-        }
-       },
-       "Effect": "Deny",
-       "Principal": {
-        "AWS": "*"
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "modelIntrospectionSchemaBucketF566B665",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "modelIntrospectionSchemaBucketF566B665",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": [
-        "s3:PutBucketPolicy",
-        "s3:GetBucket*",
-        "s3:List*",
-        "s3:DeleteObject*"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "modelIntrospectionSchemaBucketF566B665",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "modelIntrospectionSchemaBucketF566B665",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/modelIntrospectionSchemaBucket/Policy/Resource"
-   }
-  },
-  "modelIntrospectionSchemaBucketAutoDeleteObjectsCustomResourceFE57309F": {
-   "Type": "Custom::S3AutoDeleteObjects",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "modelIntrospectionSchemaBucketF566B665"
-    }
-   },
-   "DependsOn": [
-    "modelIntrospectionSchemaBucketPolicy4DAB0D15"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/modelIntrospectionSchemaBucket/AutoDeleteObjectsCustomResource/Default"
-   }
-  },
-  "modelIntrospectionSchemaBucketDeploymentAwsCliLayer13C432F7": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "1b2c92f2cd21c170884393633bd4c732676df6290562199b6e3ca5e2a1be7d18.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/modelIntrospectionSchemaBucketDeployment/AwsCliLayer/Resource",
-    "aws:asset:path": "asset.1b2c92f2cd21c170884393633bd4c732676df6290562199b6e3ca5e2a1be7d18.zip",
-    "aws:asset:is-bundled": false,
-    "aws:asset:property": "Content"
-   }
-  },
-  "modelIntrospectionSchemaBucketDeploymentCustomResource1536MiB104B97EC": {
-   "Type": "Custom::CDKBucketDeployment",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiBC5D8AB21",
-      "Arn"
-     ]
-    },
-    "SourceBucketNames": [
-     {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     }
-    ],
-    "SourceObjectKeys": [
-     "d035f4bfffbbd8d8207ab3cde3afaf75bb530ed04831bb3fae34be3fd6fb6c00.zip"
-    ],
-    "SourceMarkers": [
-     {}
-    ],
-    "DestinationBucketName": {
-     "Ref": "modelIntrospectionSchemaBucketF566B665"
-    },
-    "Prune": true,
-    "OutputObjectKeys": true
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/modelIntrospectionSchemaBucketDeployment/CustomResource-1536MiB/Default"
-   }
-  },
-  "AMPLIFYDATAGRAPHQLENDPOINTParameter1C2CBB16": {
-   "Type": "AWS::SSM::Parameter",
-   "Properties": {
-    "Name": "/amplify/resource_reference/telenoshealthweb/notesapi-sandbox-d6ea5ba71b/AMPLIFY_DATA_GRAPHQL_ENDPOINT",
-    "Tags": {
-     "amplify:deployment-type": "sandbox",
-     "created-by": "amplify"
-    },
-    "Type": "String",
-    "Value": {
-     "Fn::GetAtt": [
-      "amplifyDataGraphQLAPI42A6FA33",
-      "GraphQLUrl"
-     ]
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/AMPLIFY_DATA_GRAPHQL_ENDPOINTParameter/Resource"
-   }
-  },
-  "AMPLIFYDATAMODELINTROSPECTIONSCHEMABUCKETNAMEParameter47BF4F44": {
-   "Type": "AWS::SSM::Parameter",
-   "Properties": {
-    "Name": "/amplify/resource_reference/telenoshealthweb/notesapi-sandbox-d6ea5ba71b/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_BUCKET_NAME",
-    "Tags": {
-     "amplify:deployment-type": "sandbox",
-     "created-by": "amplify"
-    },
-    "Type": "String",
-    "Value": {
-     "Ref": "modelIntrospectionSchemaBucketF566B665"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_BUCKET_NAMEParameter/Resource"
-   }
-  },
-  "AMPLIFYDATAMODELINTROSPECTIONSCHEMAKEYParameterB6AEAE8A": {
-   "Type": "AWS::SSM::Parameter",
-   "Properties": {
-    "Name": "/amplify/resource_reference/telenoshealthweb/notesapi-sandbox-d6ea5ba71b/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_KEY",
-    "Tags": {
-     "amplify:deployment-type": "sandbox",
-     "created-by": "amplify"
-    },
-    "Type": "String",
-    "Value": "modelIntrospectionSchema.json"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_KEYParameter/Resource"
-   }
-  },
-  "AMPLIFYDATADEFAULTNAMEParameterE7C23CC4": {
-   "Type": "AWS::SSM::Parameter",
-   "Properties": {
-    "Name": "/amplify/resource_reference/telenoshealthweb/notesapi-sandbox-d6ea5ba71b/AMPLIFY_DATA_DEFAULT_NAME",
-    "Tags": {
-     "amplify:deployment-type": "sandbox",
-     "created-by": "amplify"
-    },
-    "Type": "String",
-    "Value": "amplifyData"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/AMPLIFY_DATA_DEFAULT_NAMEParameter/Resource"
-   }
-  },
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WRQW/CMAyFf8vuIeu6046laDuMIUalXSuTmhJIkyxOqaqq/31KCmWc/N5nOXp2Up4mKU+eoKOFqM4LJfd82CB5rAoP4sygo3IAa6nXgg8fDuzxV2VWLoGQ5Qcdyfc6s/KfK8QRGwggs/ITe7YxGlfgoTCtE3Hu7kZGr3xYtuKMPnSuaipbo6To7/jqJxMyhOlyqNAq0zeoPZ9aqxkwIEJPPAtlZAqafQV8yA96DT26H3QkjWaF1LVCb/R7q4UPZBb5YYYjk9DwYWdUXCLWe8RJjYyo4UPhndT1Fhw06NHF/s2MY7DTgfOWvGl2SPNpZj1lLVXIWUJHQkmedZQrGaOzuFLhoZa6fng/mC+wNvKH97fOXGSFLn7fDY5Mmwr5iZ4vacJf3njydCIpF67VXjbId1P9A3NapScsAgAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WRQU/DMAyFfwv3LJRy4th1ggNjGqvEtfJSb8uWJiFOV1VR/ztKOjo4+b3PsvWc5DzPcp49QE8L0VwWSu552CB5bCoP4sKgpzqAtTRowcObA3v6VoWVSyBk5UEn8rkurPzjKnHCFiIorHzHgW2MxhV4qEznRJq7u5HRMw/LTlzQx85NTWVrlBTDHd/8ZGKGOF2HBq0yQ4va86m1mgEDIvTEi1hGpqDdN8BDedBrGNB9oSNpNKukPir0Rr92WvhIZlEeZjgyCS0PO6PSEaneI05qHKOeXq/syJt2hzTfPespSK1iiBp6EkryoqdSyZSLpbyVh6PUx7QcHLTo0UXzAdYm/m//1pmrbNClv/mFI9OmQX6mx2ue8acXnj2cScqF67SXLfLdVH8AOO9S6AkCAAA="
    },
    "Metadata": {
     "aws:cdk:path": "amplify-telenoshealthweb-notesapi-sandbox-d6ea5ba71b/data/CDKMetadata/Default"
@@ -1614,40 +1285,6 @@
      ]
     }
    ]
-  }
- },
- "Outputs": {
-  "amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551ApiId": {
-   "Value": {
-    "Fn::GetAtt": [
-     "amplifyDataGraphQLAPI42A6FA33",
-     "ApiId"
-    ]
-   }
-  },
-  "amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551GraphQLUrl": {
-   "Value": {
-    "Fn::GetAtt": [
-     "amplifyDataGraphQLAPI42A6FA33",
-     "GraphQLUrl"
-    ]
-   }
-  },
-  "amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB15F7EA0ADestinationBucketArn": {
-   "Value": {
-    "Fn::GetAtt": [
-     "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB21775929",
-     "DestinationBucketArn"
-    ]
-   }
-  },
-  "amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPIDefaultApiKey2880C2FBApiKey": {
-   "Value": {
-    "Fn::GetAtt": [
-     "amplifyDataGraphQLAPIDefaultApiKey1C8ED374",
-     "ApiKey"
-    ]
-   }
   }
  }
 }

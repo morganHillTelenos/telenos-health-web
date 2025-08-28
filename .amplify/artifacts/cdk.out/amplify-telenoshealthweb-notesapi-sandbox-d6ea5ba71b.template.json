@@ -7,18 +7,6 @@
     "deploymentType",
     "region"
    ]
-  },
-  "AWS::Amplify::GraphQL": {
-   "version": "1",
-   "stackOutputs": [
-    "awsAppsyncApiId",
-    "awsAppsyncApiEndpoint",
-    "awsAppsyncAuthenticationType",
-    "awsAppsyncRegion",
-    "amplifyApiModelSchemaS3Uri",
-    "awsAppsyncApiKey",
-    "awsAppsyncAdditionalAuthenticationTypes"
-   ]
   }
  },
  "Outputs": {
@@ -29,78 +17,6 @@
    "Value": {
     "Ref": "AWS::Region"
    }
-  },
-  "awsAppsyncApiId": {
-   "Value": {
-    "Fn::GetAtt": [
-     "data7552DF31",
-     "Outputs.amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551ApiId"
-    ]
-   }
-  },
-  "awsAppsyncApiEndpoint": {
-   "Value": {
-    "Fn::GetAtt": [
-     "data7552DF31",
-     "Outputs.amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPI51A3D551GraphQLUrl"
-    ]
-   }
-  },
-  "awsAppsyncAuthenticationType": {
-   "Value": "API_KEY"
-  },
-  "awsAppsyncRegion": {
-   "Value": {
-    "Ref": "AWS::Region"
-   }
-  },
-  "amplifyApiModelSchemaS3Uri": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "s3://",
-      {
-       "Fn::Select": [
-        0,
-        {
-         "Fn::Split": [
-          "/",
-          {
-           "Fn::Select": [
-            5,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Fn::GetAtt": [
-                "data7552DF31",
-                "Outputs.amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB15F7EA0ADestinationBucketArn"
-               ]
-              }
-             ]
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      },
-      "/model-schema.graphql"
-     ]
-    ]
-   }
-  },
-  "awsAppsyncApiKey": {
-   "Value": {
-    "Fn::GetAtt": [
-     "data7552DF31",
-     "Outputs.amplifytelenoshealthwebnotesapisandboxd6ea5ba71bdataamplifyDataGraphQLAPIDefaultApiKey2880C2FBApiKey"
-    ]
-   }
-  },
-  "awsAppsyncAdditionalAuthenticationTypes": {
-   "Value": "AWS_IAM"
   }
  },
  "Resources": {
@@ -133,7 +49,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/5ba248f4c39e06422bce630bfcdcad5b7214015f9be0cc7ac17dedfa22d9cb79.json"
+       "/89e11328fd4987cd6e4856af99826ec86f143ce9db41bd933ffc5c24edfdef53.json"
       ]
      ]
     }

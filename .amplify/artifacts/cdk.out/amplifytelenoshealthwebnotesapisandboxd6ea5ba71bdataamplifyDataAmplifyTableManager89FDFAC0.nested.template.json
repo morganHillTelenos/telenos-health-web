@@ -82,10 +82,6 @@
       "Value": "sandbox"
      },
      {
-      "Key": "amplify:friendly-name",
-      "Value": "amplifyData"
-     },
-     {
       "Key": "created-by",
       "Value": "amplify"
      }
@@ -179,10 +175,6 @@
       "Value": "sandbox"
      },
      {
-      "Key": "amplify:friendly-name",
-      "Value": "amplifyData"
-     },
-     {
       "Key": "created-by",
       "Value": "amplify"
      }
@@ -253,10 +245,6 @@
       "Value": "sandbox"
      },
      {
-      "Key": "amplify:friendly-name",
-      "Value": "amplifyData"
-     },
-     {
       "Key": "created-by",
       "Value": "amplify"
      }
@@ -300,10 +288,6 @@
       "Value": "sandbox"
      },
      {
-      "Key": "amplify:friendly-name",
-      "Value": "amplifyData"
-     },
-     {
       "Key": "created-by",
       "Value": "amplify"
      }
@@ -341,10 +325,6 @@
      {
       "Key": "amplify:deployment-type",
       "Value": "sandbox"
-     },
-     {
-      "Key": "amplify:friendly-name",
-      "Value": "amplifyData"
      },
      {
       "Key": "created-by",

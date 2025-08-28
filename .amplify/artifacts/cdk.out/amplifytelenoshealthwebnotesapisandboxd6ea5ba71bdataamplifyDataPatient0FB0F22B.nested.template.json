@@ -394,7 +394,7 @@
     },
     "deletionProtectionEnabled": false,
     "allowDestructiveGraphqlSchemaUpdates": true,
-    "replaceTableUponGsiUpdate": true,
+    "replaceTableUponGsiUpdate": false,
     "pointInTimeRecoverySpecification": {
      "Fn::If": [
       "ShouldUsePointInTimeRecovery",
@@ -520,10 +520,6 @@
      {
       "Key": "amplify:deployment-type",
       "Value": "sandbox"
-     },
-     {
-      "Key": "amplify:friendly-name",
-      "Value": "amplifyData"
      },
      {
       "Key": "created-by",
