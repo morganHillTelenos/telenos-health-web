@@ -11,7 +11,7 @@ const ComingSoonPage = () => {
     };
 
     const handleContactUs = () => {
-        window.open('mailto:connect@promindpsychiatry.com', '_blank');
+        window.open('mailto:Anthony.Privratsky@promindpsychiatry.com', '_blank');
     };
 
     return (
@@ -59,7 +59,7 @@ const ComingSoonPage = () => {
                 </div>
 
                 <div className="text-sm text-gray-500">
-                    <p>Questions? Email us at <a href="mailto:connect@promindpsychiatry.com" className="text-blue-600 hover:underline">connect@promindpsychiatry.com</a></p>
+                    <p>Questions? Email us at <a href="mailto:Anthony.Privratsky@promindpsychiatry.com" className="text-blue-600 hover:underline">Anthony.Privratsky@promindpsychiatry.com</a></p>
                 </div>
             </div>
         </div>
