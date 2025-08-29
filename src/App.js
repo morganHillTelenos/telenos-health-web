@@ -142,7 +142,8 @@ function App({ signOut, user }) {
       return <Navigate to={redirectPath} replace />;
     }
 
-    return <Navigate to="/dashboard" replace />; // Since user is authenticated
+    // Show login page if not authenticated
+    return <LoginPage />;
   };
 
   const LandingPageWrapper = () => {
