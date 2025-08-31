@@ -83,9 +83,6 @@ const LandingPage = () => {
                         <span>Promind Psychiatry</span>
                     </a>
                     <div className="nav-links">
-                        <button onClick={handlePatientPortal} className="nav-link">
-                            Patient Portal
-                        </button>
                         <div className="nav-dropdown">
                             <button className="nav-link dropdown-toggle">
                                 Patients
