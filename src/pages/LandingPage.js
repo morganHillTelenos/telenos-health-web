@@ -1,5 +1,5 @@
 // src/pages/LandingPage.js
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LandingTest.css';
 import {
@@ -21,16 +21,35 @@ import {
 const LandingPage = () => {
     const navigate = useNavigate();
     const heroRef = useRef(null);
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
+    const handleGetStarted = () => {
+        navigate('/dashboard');
+    };
+
+    // Fixed: All login buttons now navigate to /login
     const handleLogin = () => {
         navigate('/login');
     };
 
-    const handleScheduleConsultation = () => {
-        window.open('https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1TQd70RLRe-P2ldmz7nCeb9qJa0RQst1-9CJScUzPbAyCsG9wGpmD2xuhyKwT_JH5WXlK0smpf', '_blank');
+    const handleSignUp = () => {
+        navigate('/login'); // Changed from /dashboard to /login
+    };
+
+    const handlePatientPortal = () => {
+        navigate('/home');
     };
 
     useEffect(() => {
+        const handleMouseMove = (e) => {
+            setMousePosition({
+                x: (e.clientX - window.innerWidth / 2) / 20,
+                y: (e.clientY - window.innerHeight / 2) / 20
+            });
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+
         // Animate elements on scroll
         const observerOptions = {
             threshold: 0.1,
@@ -49,6 +68,7 @@ const LandingPage = () => {
         animateElements.forEach(el => observer.observe(el));
 
         return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
             observer.disconnect();
         };
     }, []);
@@ -58,11 +78,14 @@ const LandingPage = () => {
             {/* Modern Navigation */}
             <nav className="modern-nav">
                 <div className="nav-container">
-                    <div className="nav-logo">
+                    <a href="#" className="nav-logo">
                         <img src="/images/pm-logo.png" alt="Promind Psychiatry" className="logo-image" />
                         <span>Promind Psychiatry</span>
-                    </div>
+                    </a>
                     <div className="nav-links">
+                        <button onClick={handlePatientPortal} className="nav-link">
+                            Patient Portal
+                        </button>
                         <div className="nav-dropdown">
                             <button className="nav-link dropdown-toggle">
                                 Patients
@@ -70,30 +93,15 @@ const LandingPage = () => {
                             </button>
                             <div className="dropdown-menu">
                                 <div className="dropdown-section">
+                                    <button onClick={() => navigate('/home')} className="dropdown-link">Patients</button>
                                     <button onClick={() => navigate('/home')} className="dropdown-link">Schedule an Appointment</button>
-                                    <div className="dropdown-submenu">
-                                        <button className="dropdown-link submenu-toggle">
-                                            Services
-                                            <span className="dropdown-arrow">▼</span>
-                                        </button>
-                                        <div className="submenu">
-                                            <a href="#" className="dropdown-link">Evaluation</a>
-                                            <a href="#" className="dropdown-link">Medication Management</a>
-                                            <a href="#" className="dropdown-link">Psychotherapy</a>
-                                            <button onClick={() => navigate('/coming-soon')} className="dropdown-link">Genomics</button>
-                                            <button onClick={() => navigate('/coming-soon')} className="dropdown-link">Emerging Treatments</button>
-                                            <button onClick={() => navigate('/coming-soon')} className="dropdown-link">Group Therapy</button>
-                                            <div className="dropdown-submenu">
-                                                <button className="dropdown-link submenu-toggle">
-                                                    Technology
-                                                    <span className="dropdown-arrow">▼</span>
-                                                </button>
-                                                <div className="submenu">
-                                                    <a href="mailto:connect@promindpsychiatry.com" className="dropdown-link">Send us an inquiry</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <button onClick={() => navigate('/home')} className="dropdown-link">Evaluation</button>
+                                    <button onClick={() => navigate('/home')} className="dropdown-link">Medication Management</button>
+                                    <button onClick={() => navigate('/home')} className="dropdown-link">Psychotherapy</button>
+                                    <button onClick={() => navigate('/coming-soon')} className="dropdown-link">Genomics</button>
+                                    <button onClick={() => navigate('/coming-soon')} className="dropdown-link">Emerging Treatments</button>
+                                    <button onClick={() => navigate('/coming-soon')} className="dropdown-link">Group Therapy</button>
+                                    <button onClick={() => navigate('/coming-soon')} className="dropdown-link">Technology</button>
                                 </div>
                             </div>
                         </div>
@@ -109,7 +117,7 @@ const LandingPage = () => {
                             </div>
                         </div>
 
-                        <button onClick={() => navigate('/home')} className="nav-link">About Us</button>
+                        <button onClick={() => navigate('/home')} className="nav-link">About</button>
 
                         <div className="nav-dropdown">
                             <button className="nav-link dropdown-toggle">
@@ -123,189 +131,201 @@ const LandingPage = () => {
                                 </div>
                                 <div className="dropdown-section">
                                     <strong className="dropdown-header">Login</strong>
-                                    <button onClick={() => navigate('/login')} className="dropdown-link">Patient Login</button>
-                                    <button onClick={() => navigate('/login')} className="dropdown-link">Provider Login</button>
+                                    <button onClick={handleLogin} className="dropdown-link">Patient Login</button>
+                                    <button onClick={handleLogin} className="dropdown-link">Provider Login</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <button className="cta-button nav-cta" onClick={handleLogin}>
-                        Provider Login
-                    </button>
                 </div>
             </nav>
 
             {/* Hero Section */}
             <section className="hero-section" ref={heroRef}>
                 <div className="hero-container">
-                    <div className="animate-on-scroll">
+                    <div className="hero-content animate-on-scroll">
+                        <div className="hero-badge" style={{
+                            background: 'var(--primary-blue-light)',
+                            padding: 'var(--space-xs) var(--space-md)',
+                            borderRadius: 'var(--radius-xl)',
+                            display: 'inline-block',
+                            marginBottom: 'var(--space-lg)',
+                            fontSize: '0.9rem',
+                            fontWeight: '500'
+                        }}>
+                            <span>⚡ Next-Gen Mental Health</span>
+                        </div>
+
                         <h1 className="hero-title">
-                            <span className="gradient-text">Transform Your Mental Health Journey</span>
+                            <span className="gradient-text">Promind Psychiatry</span>
                             <br />
-                            with Promind Psychiatry
+                            <span style={{
+                                fontSize: '0.8em',
+                                fontWeight: '600',
+                                color: 'var(--primary-gray)'
+                            }}>
+                                Engineering the Future of Mental Health
+                            </span>
                         </h1>
 
                         <p className="hero-description">
-                            Schedule a headache-free telehealth appointment at your convenience with compassionate,
-                            evidence-based care tailored to your unique needs.
+                            Beyond the Snapshot. Continuous Optimization for the Human Mind.
+                            <br />
+                            <span style={{
+                                color: 'var(--primary-blue)',
+                                fontWeight: '600'
+                            }}>
+                                Integrating computational psychiatry with holistic care.
+                            </span>
                         </p>
 
                         <div className="hero-actions">
-                            <button className="btn btn-primary btn-large" onClick={handleScheduleConsultation}>
-                                Schedule Your Consultation Today
+                            <button
+                                className="btn btn-primary btn-large"
+                                onClick={() => document.getElementById('philosophy').scrollIntoView({ behavior: 'smooth' })}
+                            >
+                                Explore Our Vision
+                            </button>
+                            <button
+                                className="btn btn-secondary btn-large"
+                                onClick={() => document.getElementById('beta').scrollIntoView({ behavior: 'smooth' })}
+                            >
+                                Join Beta Program
                             </button>
                         </div>
-                    </div>
-                </div>
-            </section>
 
-            {/* About Section */}
-            <section id="about" className="section">
-                <div className="container">
-                    <div className="content-grid">
-                        <div className="content-text animate-on-scroll">
-                            <h2>About Anthony Privratsky, MD, PHD</h2>
-                            <p>
-                                I am passionate about helping all people reach their potential, whether their challenges are severe or mundane.
-                                My approach combines the latest advances in precision psychiatry with compassionate, collaborative care to ensure
-                                you experience lasting improvements—not just symptom management.
-                            </p>
-                            <p>
-                                I completed Residency Training in Psychiatry at the University of Utah and medical school and my PhD
-                                (psychiatric neuroimaging and PTSD) at the University of Arkansas for Medical Sciences.
-                            </p>
-                            <p>
-                                As a psychiatrist, I am extensively trained to identify and treat mental health conditions using a comprehensive
-                                approach that considers biological, social/environmental, and psychological factors. Together, we'll develop a
-                                personalized treatment plan that works for your specific needs and goals.
-                            </p>
-                        </div>
-                        <div className="animate-on-scroll">
-                            <div className="doctor-profile">
-                                <div className="doctor-image">
-                                    <img src="/images/doctor-image.png" alt="Dr. Privratsky" />
-                                </div>
-                                <div className="credentials">
-                                    <h4>Education & Training</h4>
-                                    <ul>
-                                        <li>PhD in Psychiatric Neuroimaging and PTSD</li>
-                                        <li>University of Arkansas for Medical Sciences</li>
-                                        <li>Psychiatry Residency - University of Utah</li>
-                                    </ul>
-                                </div>
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            gap: 'var(--space-xl)',
+                            marginTop: 'var(--space-xl)',
+                            flexWrap: 'wrap'
+                        }}>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{
+                                    fontSize: '1.5rem',
+                                    fontWeight: '700',
+                                    color: 'var(--primary-blue)'
+                                }}>Precision</div>
+                                <div style={{
+                                    fontSize: '0.9rem',
+                                    color: 'var(--primary-gray)'
+                                }}>Driven Care</div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Specialties Section */}
-            <section id="specialties" className="section section-alt">
-                <div className="container">
-                    <div className="section-header animate-on-scroll">
-                        <h2 className="section-title">Specialties & Expertise</h2>
-                    </div>
-
-                    <div className="animate-on-scroll">
-                        <h3 style={{ textAlign: 'center', marginBottom: 'var(--space-lg)', fontSize: '1.5rem', fontWeight: '600' }}>Primary Specialties</h3>
-                        <div className="specialty-grid">
-                            <div className="specialty-card">
-                                <div className="specialty-icon">
-                                    <Brain size={32} color="#EE6352" />
-                                </div>
-                                <h4>Anxiety</h4>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{
+                                    fontSize: '1.5rem',
+                                    fontWeight: '700',
+                                    color: 'var(--primary-blue)'
+                                }}>Continuous</div>
+                                <div style={{
+                                    fontSize: '0.9rem',
+                                    color: 'var(--primary-gray)'
+                                }}>Monitoring</div>
                             </div>
-                            <div className="specialty-card">
-                                <div className="specialty-icon">
-                                    <HeartBreak size={32} color="#EE6352" />
-                                </div>
-                                <h4>Depression</h4>
-                            </div>
-                            <div className="specialty-card">
-                                <div className="specialty-icon">
-                                    <Shield size={32} color="#EE6352" />
-                                </div>
-                                <h4>Trauma and PTSD</h4>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{
+                                    fontSize: '1.5rem',
+                                    fontWeight: '700',
+                                    color: 'var(--primary-blue)'
+                                }}>AI-Powered</div>
+                                <div style={{
+                                    fontSize: '0.9rem',
+                                    color: 'var(--primary-gray)'
+                                }}>Insights</div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="animate-on-scroll" style={{ marginTop: 'var(--space-3xl)' }}>
-                        <h3 style={{ textAlign: 'center', marginBottom: 'var(--space-lg)', fontSize: '1.5rem', fontWeight: '600' }}>Areas of Expertise</h3>
-                        <div className="expertise-grid">
-                            <div className="expertise-item">Addiction</div>
-                            <div className="expertise-item">ADHD</div>
-                            <div className="expertise-item">Alcohol Use</div>
-                            <div className="expertise-item">Autism</div>
-                            <div className="expertise-item">Bipolar Disorder</div>
-                            <div className="expertise-item">Eating Disorders</div>
-                            <div className="expertise-item">LGBTQ+</div>
-                            <div className="expertise-item">Medication Management</div>
-                            <div className="expertise-item">Personality Disorders</div>
-                            <div className="expertise-item">Pregnancy, Prenatal, Postpartum</div>
-                            <div className="expertise-item">Psychosis</div>
-                            <div className="expertise-item">Psychotherapy (DBT, Exposure, etc)</div>
-                            <div className="expertise-item">School Issues</div>
-                            <div className="expertise-item">Scientific Approach to Mental Health</div>
-                            <div className="expertise-item">Self-Harming</div>
-                            <div className="expertise-item">Sleep or Insomnia</div>
-                            <div className="expertise-item">Substance Use</div>
-                            <div className="expertise-item">Suicidal Ideation</div>
-                            <div className="expertise-item">Testing and Evaluation</div>
-                            <div className="expertise-item">Traumatic Brain Injury (TBI)</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Services Section */}
-            <section id="services" className="section">
-                <div className="container">
-                    <div className="section-header animate-on-scroll">
-                        <h2 className="section-title">Services We Provide</h2>
-                    </div>
-                    <div className="card-grid animate-on-scroll">
-                        <div className="card">
-                            <div className="card-icon">
-                                <HeartBreak size={32} color="#EE6352" />
+                    <div className="animate-on-scroll" style={{ marginTop: 'var(--space-xl)' }}>
+                        <div style={{
+                            background: 'white',
+                            border: '1px solid var(--border-light)',
+                            borderRadius: 'var(--radius-xl)',
+                            padding: 'var(--space-lg)',
+                            boxShadow: 'var(--shadow-lg)',
+                            maxWidth: '400px',
+                            margin: '0 auto'
+                        }}>
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                marginBottom: 'var(--space-md)',
+                                paddingBottom: 'var(--space-sm)',
+                                borderBottom: '1px solid var(--border-light)'
+                            }}>
+                                <div style={{
+                                    display: 'flex',
+                                    gap: 'var(--space-xs)'
+                                }}>
+                                    <div style={{
+                                        width: '8px',
+                                        height: '8px',
+                                        background: '#10b981',
+                                        borderRadius: '50%'
+                                    }}></div>
+                                    <div style={{
+                                        width: '8px',
+                                        height: '8px',
+                                        background: '#10b981',
+                                        borderRadius: '50%'
+                                    }}></div>
+                                    <div style={{
+                                        width: '8px',
+                                        height: '8px',
+                                        background: '#f59e0b',
+                                        borderRadius: '50%'
+                                    }}></div>
+                                </div>
+                                <div style={{
+                                    fontSize: '0.9rem',
+                                    fontWeight: '600',
+                                    color: 'var(--primary-gray)'
+                                }}>Patient Monitoring</div>
                             </div>
-                            <h3>Depression & Mood Disorders</h3>
-                            <p>Evidence-based treatment for major depression, bipolar disorder, and mood regulation challenges</p>
-                        </div>
-                        <div className="card">
-                            <div className="card-icon">
-                                <Brain size={32} color="#EE6352" />
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                marginBottom: 'var(--space-md)'
+                            }}>
+                                <div>
+                                    <div style={{
+                                        fontSize: '0.8rem',
+                                        color: 'var(--primary-gray)'
+                                    }}>Treatment Coherence</div>
+                                    <div style={{
+                                        fontSize: '1.5rem',
+                                        fontWeight: '600',
+                                        color: 'var(--primary-blue)'
+                                    }}>Optimal</div>
+                                </div>
+                                <div>
+                                    <div style={{
+                                        fontSize: '0.8rem',
+                                        color: 'var(--primary-gray)'
+                                    }}>Patient Response</div>
+                                    <div style={{
+                                        fontSize: '1.5rem',
+                                        fontWeight: '600',
+                                        color: '#10b981'
+                                    }}>Improving</div>
+                                </div>
                             </div>
-                            <h3>Anxiety Disorders</h3>
-                            <p>Comprehensive care for generalized anxiety, panic disorder, social anxiety, and phobias</p>
-                        </div>
-                        <div className="card">
-                            <div className="card-icon">
-                                <Target size={32} color="#EE6352" />
+                            <div style={{
+                                width: '100%',
+                                height: '8px',
+                                background: 'var(--border-light)',
+                                borderRadius: '4px',
+                                overflow: 'hidden'
+                            }}>
+                                <div style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    background: 'linear-gradient(90deg, var(--primary-blue), var(--secondary-purple))',
+                                    borderRadius: '4px'
+                                }}></div>
                             </div>
-                            <h3>ADHD & Focus Issues</h3>
-                            <p>Adult ADHD assessment and management with both medication and behavioral strategies</p>
-                        </div>
-                        <div className="card">
-                            <div className="card-icon">
-                                <Shield size={32} color="#EE6352" />
-                            </div>
-                            <h3>Trauma & PTSD</h3>
-                            <p>Trauma-informed care using proven therapeutic approaches and medication when appropriate</p>
-                        </div>
-                        <div className="card">
-                            <div className="card-icon">
-                                <Waves size={32} color="#EE6352" />
-                            </div>
-                            <h3>Stress & Life Transitions</h3>
-                            <p>Support during major life changes, work stress, relationship challenges, and adjustment difficulties</p>
-                        </div>
-                        <div className="card">
-                            <div className="card-icon">
-                                <Pill size={32} color="#EE6352" />
-                            </div>
-                            <h3>Medication Management</h3>
-                            <p>Expert psychiatric medication consultation, monitoring, and optimization</p>
                         </div>
                     </div>
                 </div>
@@ -314,149 +334,256 @@ const LandingPage = () => {
             {/* Philosophy Section */}
             <section id="philosophy" className="section section-alt">
                 <div className="container">
-                    <div className="content-grid">
-                        <div className="content-text animate-on-scroll">
-                            <h2>A Safe Space for Healing</h2>
-                            <p>
-                                It can be overwhelming to struggle with your mental health. I'm here to offer a guiding hand and a safe space
-                                for healing and growth. My goal is to see you not just survive, but truly thrive.
-                            </p>
-                            <div className="philosophy-points">
-                                <div className="philosophy-point">
-                                    <div className="point-icon">
-                                        <Target size={32} color="#EE6352" />
-                                    </div>
-                                    <div>
-                                        <h4>Root Cause Focus</h4>
-                                        <p>Rather than simply treating symptoms, we work together to identify and address underlying factors.</p>
-                                    </div>
-                                </div>
-                                <div className="philosophy-point">
-                                    <div className="point-icon">
-                                        <Star size={32} color="#EE6352" />
-                                    </div>
-                                    <div>
-                                        <h4>Lasting Improvement</h4>
-                                        <p>Our approach is designed for long-term success, helping you develop tools for sustained wellness.</p>
-                                    </div>
-                                </div>
+                    <div className="section-header animate-on-scroll">
+                        <div style={{
+                            background: 'var(--primary-blue-light)',
+                            color: 'var(--primary-blue)',
+                            padding: 'var(--space-xs) var(--space-md)',
+                            borderRadius: 'var(--radius-xl)',
+                            display: 'inline-block',
+                            fontSize: '0.9rem',
+                            fontWeight: '600',
+                            marginBottom: 'var(--space-md)'
+                        }}>Innovation</div>
+                        <h2 className="section-title">The Algorithmic Advantage</h2>
+                        <p className="section-subtitle">Precision. Prediction. Progress.</p>
+                    </div>
+
+                    <div className="card-grid">
+                        {[
+                            {
+                                icon: <Brain size={48} color="#2563eb" />,
+                                title: "Objective Insights",
+                                description: "Data-driven diagnosis and treatment, moving past subjective interpretations toward evidence-based precision.",
+                                tagline: "Deconstructing complexity to reveal truth."
+                            },
+                            {
+                                icon: <Target size={48} color="#2563eb" />,
+                                title: "Holistic Integration",
+                                description: "Understanding the patient as a complex system, where problems are interconnected and require comprehensive solutions.",
+                                tagline: "The mind as a dynamic ecosystem. Engineered for equilibrium."
+                            },
+                            {
+                                icon: <Waves size={48} color="#2563eb" />,
+                                title: "Continuous Evolution",
+                                description: "Ongoing analysis, refinement, and adaptation that evolves with your needs beyond traditional appointments.",
+                                tagline: "Beyond the confines of the clinic. Persistent optimization."
+                            },
+                            {
+                                icon: <Shield size={48} color="#2563eb" />,
+                                title: "Computational Psychiatry",
+                                description: "Advanced algorithms and data science integration to achieve unparalleled mental health outcomes.",
+                                tagline: "Leveraging computation for state-of-the-art mental health."
+                            }
+                        ].map((feature, index) => (
+                            <div key={index} className="card animate-on-scroll">
+                                <div className="card-icon">{feature.icon}</div>
+                                <h3>{feature.title}</h3>
+                                <p>{feature.description}</p>
+                                <p style={{
+                                    fontStyle: 'italic',
+                                    color: 'var(--primary-blue)',
+                                    marginTop: 'var(--space-sm)',
+                                    fontSize: '0.9rem'
+                                }}>
+                                    "{feature.tagline}"
+                                </p>
                             </div>
-                        </div>
-                        <div className="animate-on-scroll">
-                            <div className="process-steps">
-                                <div className="process-step">
-                                    <div className="step-number">1</div>
-                                    <div className="step-content">
-                                        <h4>Initial Consultation</h4>
-                                        <p>Comprehensive assessment of your mental health needs and goals</p>
-                                    </div>
-                                </div>
-                                <div className="process-step">
-                                    <div className="step-number">2</div>
-                                    <div className="step-content">
-                                        <h4>Personalized Plan</h4>
-                                        <p>Development of a treatment strategy tailored specifically to you</p>
-                                    </div>
-                                </div>
-                                <div className="process-step">
-                                    <div className="step-number">3</div>
-                                    <div className="step-content">
-                                        <h4>Ongoing Support</h4>
-                                        <p>Regular check-ins and plan adjustments as you progress</p>
-                                    </div>
-                                </div>
-                                <div className="process-step">
-                                    <div className="step-number">4</div>
-                                    <div className="step-content">
-                                        <h4>Collaborative Care</h4>
-                                        <p>Working together every step of the way</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* CTA Section */}
-            <section className="cta-section">
+            {/* What Makes Us Different */}
+            <section id="difference" className="section">
                 <div className="container">
-                    <div className="cta-content animate-on-scroll">
-                        <h2>Take the First Step</h2>
-                        <p>
-                            Your journey to better mental health starts with a single conversation.
-                        </p>
-                        <button className="btn btn-primary btn-large" onClick={handleScheduleConsultation}>
-                            Schedule Your Appointment
-                        </button>
-                        <p className="cta-subtext">
-                            Book your confidential telehealth consultation today and begin your journey toward lasting mental wellness.
-                        </p>
+                    <div className="section-header animate-on-scroll">
+                        <div style={{
+                            background: 'var(--secondary-purple-light)',
+                            color: 'var(--secondary-purple)',
+                            padding: 'var(--space-xs) var(--space-md)',
+                            borderRadius: 'var(--radius-xl)',
+                            display: 'inline-block',
+                            fontSize: '0.9rem',
+                            fontWeight: '600',
+                            marginBottom: 'var(--space-md)'
+                        }}>Excellence</div>
+                        <h2 className="section-title">Unlocking Human Potential</h2>
+                        <p className="section-subtitle">Accelerating Mental Wellness Through Innovation.</p>
+                    </div>
+
+                    <div className="animate-on-scroll" style={{ textAlign: 'center' }}>
+                        {[
+                            "Personalized Mental Architecture",
+                            "Proactive Intervention Strategies",
+                            "Optimized Treatment Trajectories",
+                            "Sustainable Well-being Solutions"
+                        ].map((offering, index) => (
+                            <div key={index} style={{
+                                background: 'white',
+                                border: '1px solid var(--border-light)',
+                                borderRadius: 'var(--radius-xl)',
+                                padding: 'var(--space-lg)',
+                                margin: 'var(--space-md) 0',
+                                boxShadow: 'var(--shadow-sm)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--space-md)'
+                            }}>
+                                <div style={{
+                                    width: '50px',
+                                    height: '50px',
+                                    background: 'var(--primary-blue)',
+                                    color: 'white',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: '700',
+                                    fontSize: '1.25rem'
+                                }}>
+                                    {String(index + 1).padStart(2, '0')}
+                                </div>
+                                <h3 style={{
+                                    fontSize: '1.25rem',
+                                    fontWeight: '600',
+                                    color: 'var(--secondary-purple)',
+                                    margin: 0
+                                }}>{offering}</h3>
+                            </div>
+                        ))}
+
+                        <div style={{
+                            marginTop: 'var(--space-xl)',
+                            padding: 'var(--space-xl)',
+                            background: 'white',
+                            borderRadius: 'var(--radius-xl)',
+                            border: '1px solid var(--border-light)'
+                        }}>
+                            <h3 style={{
+                                fontSize: '1.5rem',
+                                fontWeight: '600',
+                                marginBottom: 'var(--space-md)',
+                                color: 'var(--primary-blue)'
+                            }}>
+                                Join the Vanguard of Mental Evolution
+                            </h3>
+                            <div style={{
+                                display: 'flex',
+                                gap: 'var(--space-sm)',
+                                justifyContent: 'center',
+                                flexWrap: 'wrap'
+                            }}>
+                                {["Cutting-edge Approach", "Superior Outcomes", "Forward-thinking Methodology", "Continuous Innovation"].map((benefit, index) => (
+                                    <span key={index} style={{
+                                        background: 'var(--primary-blue-light)',
+                                        color: 'var(--primary-blue)',
+                                        padding: 'var(--space-xs) var(--space-md)',
+                                        borderRadius: 'var(--radius-lg)',
+                                        fontSize: '0.9rem',
+                                        fontWeight: '500'
+                                    }}>{benefit}</span>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* Contact Section */}
+            {/* Beta Program */}
+            <section id="beta" className="section section-alt">
+                <div className="container">
+                    <div className="section-header animate-on-scroll">
+                        <div style={{
+                            background: 'linear-gradient(135deg, var(--primary-blue), var(--secondary-purple))',
+                            color: 'white',
+                            padding: 'var(--space-xs) var(--space-md)',
+                            borderRadius: 'var(--radius-xl)',
+                            display: 'inline-block',
+                            fontSize: '0.9rem',
+                            fontWeight: '600',
+                            marginBottom: 'var(--space-md)'
+                        }}>Exclusive</div>
+                        <h2 className="section-title">The Next Frontier</h2>
+                        <p className="section-subtitle">Shape the Future of Mental Health Technology</p>
+                    </div>
+
+                    <div className="animate-on-scroll" style={{
+                        textAlign: 'center',
+                        maxWidth: '800px',
+                        margin: '0 auto'
+                    }}>
+                        <div style={{
+                            background: 'white',
+                            border: '1px solid var(--border-light)',
+                            borderRadius: 'var(--radius-2xl)',
+                            padding: 'var(--space-3xl)',
+                            boxShadow: 'var(--shadow-xl)'
+                        }}>
+                            <h3 style={{
+                                fontSize: '1.75rem',
+                                fontWeight: '600',
+                                marginBottom: 'var(--space-md)',
+                                color: 'var(--primary-blue)'
+                            }}>
+                                Be at the Forefront of Innovation
+                            </h3>
+                            <p style={{
+                                fontSize: '1.125rem',
+                                color: 'var(--primary-gray)',
+                                marginBottom: 'var(--space-xl)',
+                                lineHeight: '1.7'
+                            }}>
+                                Experience cutting-edge treatments and technologies before they become widely available.
+                                Join an exclusive community shaping the future of psychiatric care.
+                            </p>
+
+                            <div className="hero-actions">
+                                <a
+                                    href="mailto:anthony.privratsky@promindpsychiatry.com"
+                                    className="btn btn-primary btn-large"
+                                >
+                                    Express Interest
+                                </a>
+                                <button
+                                    className="btn btn-secondary btn-large"
+                                    onClick={() => document.getElementById('beta').scrollIntoView({ behavior: 'smooth' })}
+                                >
+                                    Learn More
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Contact */}
             <section id="contact" className="contact-section">
                 <div className="container">
                     <div className="contact-content animate-on-scroll">
-                        <h2>Get in Touch</h2>
+                        <h2>Ready to Transform Mental Health Care?</h2>
+                        <p>Connect with our team to explore how precision psychiatry can enhance your practice.</p>
 
                         <div className="contact-options">
-                            <a href="mailto:Anthony.Privratsky@promindpsychiatry.com" className="contact-method">
+                            <a href="mailto:anthony.privratsky@promindpsychiatry.com" className="contact-method">
                                 <div className="contact-icon">
-                                    <Envelope size={32} color="#EE6352" />
+                                    <Envelope size={32} color="#2563eb" />
                                 </div>
                                 <div className="contact-text">
                                     <strong>Email</strong>
-                                    <span>Anthony.Privratsky@promindpsychiatry.com</span>
+                                    <span>anthony.privratsky@promindpsychiatry.com</span>
                                 </div>
                             </a>
 
-                            <a href="tel:+1-385-455-4671" className="contact-method">
+                            <button className="contact-method" onClick={handleGetStarted}>
                                 <div className="contact-icon">
-                                    <Phone size={32} color="#EE6352" />
+                                    <RocketLaunch size={32} color="#2563eb" />
                                 </div>
                                 <div className="contact-text">
-                                    <strong>Phone</strong>
-                                    <span>(385) 455-4671</span>
-                                </div>
-                            </a>
-
-                            <button className="contact-method" onClick={handleScheduleConsultation}>
-                                <div className="contact-icon">
-                                    <RocketLaunch size={32} color="#EE6352" />
-                                </div>
-                                <div className="contact-text">
-                                    <strong>Schedule Online</strong>
-                                    <span>Book your consultation</span>
+                                    <strong>Platform Access</strong>
+                                    <span>Request demonstration</span>
                                 </div>
                             </button>
-                        </div>
-
-                        <div className="important-notes">
-                            <div className="note-card">
-                                <div className="bottom-icon">
-                                    <CreditCard size={24} color="#EE6352" />
-                                    <h4>Fee Information</h4>
-                                </div>
-                                <p><strong>Currently accepting Fee-for-Service only</strong><br />
-                                    Initial Session Fee: $300 • Standard Visit: $150</p>
-                            </div>
-                            <div className="note-card">
-                                <div className="bottom-icon">
-                                    <Lock size={24} color="#EE6352" />
-                                    <h4>Privacy & Security</h4>
-                                </div>
-                                <p>All appointments are conducted through our secure, HIPAA-compliant telehealth platform.</p>
-                            </div>
-                            <div className="note-card">
-                                <div className="bottom-icon">
-                                    <Fire size={24} color="#EE6352" />
-                                    <h4>Crisis Support</h4>
-                                </div>
-                                <p>If you're experiencing a mental health emergency, please call 988 (Suicide & Crisis Lifeline) or go to your nearest emergency room.</p>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -469,45 +596,14 @@ const LandingPage = () => {
                         <div className="footer-brand">
                             <div className="footer-logo">
                                 <img src="/images/pm-logo.png" alt="Promind Psychiatry" className="footer-logo-image" />
-                                <span>Promind Psychiatry</span>
+                                <span>Promind Precision Psychiatry</span>
                             </div>
-                            <p>Transforming mental health through precision, compassion, and personalized care.</p>
+                            <p>Engineering the future of mental health through precision, innovation, and continuous optimization.</p>
                         </div>
-
-                        <div className="footer-links">
-                            <div className="footer-section">
-                                <h4>Services</h4>
-                                <ul>
-                                    <li><a href="#services">Depression & Anxiety</a></li>
-                                    <li><a href="#services">ADHD Treatment</a></li>
-                                    <li><a href="#services">Trauma & PTSD</a></li>
-                                    <li><a href="#services">Medication Management</a></li>
-                                </ul>
-                            </div>
-
-                            <div className="footer-section">
-                                <h4>About</h4>
-                                <ul>
-                                    <li><a href="#about">Our Approach</a></li>
-                                    <li><a href="#philosophy">Treatment Philosophy</a></li>
-                                    <li><a href="#contact">Contact Us</a></li>
-                                    <li><a href="mailto:Anthony.Privratsky@promindpsychiatry.com">Get Started</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="footer-bottom">
-                        <p>&copy; 2025 Promind Psychiatry. All rights reserved.</p>
-                        <p className="footer-disclaimer">
-                            Ready to transform your mental health with precision, compassionate care?
-                            Schedule your consultation today and take the first step toward a better tomorrow.
-                        </p>
                     </div>
                 </div>
             </footer>
         </div>
     );
 };
-
 export default LandingPage;

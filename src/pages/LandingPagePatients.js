@@ -18,7 +18,7 @@ import {
     Fire
 } from 'phosphor-react';
 
-const LandingPage = () => {
+const LandingPagePatients = () => {
     const navigate = useNavigate();
 
     const handleScheduleConsultation = () => {
@@ -441,4 +441,4 @@ const LandingPage = () => {
     );
 };
 
-export default LandingPage;
+export default LandingPagePatients;

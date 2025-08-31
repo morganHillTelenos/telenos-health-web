@@ -1,10 +1,10 @@
-// src/App.js - Updated with role-based routing and experiences
+// src/App.js - Fixed without nested Router
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate, useLocation, useParams } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { getCurrentUser } from 'aws-amplify/auth';
 import './styles/globals.css';
 
-// Import your existing components
+// Proper ES6 imports
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import HealthcareDashboard from './pages/HealthcareDashboard';
@@ -15,14 +15,41 @@ import VideoCallPage from './pages/VideoCallPage';
 import Header from './components/Header';
 import NewAppointmentPage from './pages/NewAppointmentPage';
 import NotesPage from './pages/NotesPage';
-import LandingPatient from './pages/LandingPagePatients';
-import ComingSoonPage from './pages/ComingSoonPage';
+import LandingPagePatients from './pages/LandingPagePatients';
 
-// Import services - fallback only
-import { authService } from './services/auth';
+const ComingSoonPage = () => (
+  <div style={{
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'white',
+    fontFamily: 'system-ui, -apple-system, sans-serif'
+  }}>
+    <div style={{ textAlign: 'center', padding: '2rem' }}>
+      <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>Coming Soon</h1>
+      <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>This feature is under development</p>
+      <button
+        onClick={() => window.history.back()}
+        style={{
+          background: 'rgba(255,255,255,0.2)',
+          border: '2px solid rgba(255,255,255,0.3)',
+          color: 'white',
+          padding: '1rem 2rem',
+          fontSize: '1.1rem',
+          borderRadius: '50px',
+          cursor: 'pointer'
+        }}
+      >
+        Go Back
+      </button>
+    </div>
+  </div>
+);
 
-// Role-based Route Guards
-const ProviderRoute = ({ children }) => {
+// Simple Protected Route Component
+const ProtectedRoute = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -41,298 +68,90 @@ const ProviderRoute = ({ children }) => {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
 
-  // For Cognito users, we'll assume providers for now
-  // You can add custom attributes to distinguish roles
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return children;
 };
 
-const PatientRoute = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      const currentUser = await getCurrentUser();
-      // Check if user has patient role attribute
-      const userRole = currentUser.attributes?.['custom:role'] || 'patient';
-      if (userRole === 'patient') {
-        setUser(currentUser);
-      }
-    } catch (error) {
-      console.log('Not authenticated or not a patient');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) return <LoadingSpinner />;
-
-  if (!user) {
-    return <Navigate to="/home" replace />;
-  }
-
-  return children;
-};
-
-// Public routes - no authentication required
-const PublicRoute = ({ children }) => {
-  return children;
-};
-
-// Simplified Protected Route Component - works with Cognito Authenticator wrapper
-const ProtectedRoute = ({ children, requiredRole = null }) => {
-  // Since you're using Authenticator wrapper, user is already authenticated when this renders
-  // The user prop is passed down from your main App component
-  return children;
-};
-
-// Loading Spinner Component
-const LoadingSpinner = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-  </div>
-);
-
-// Main App Component - Updated to handle role-based routing
+// Main App Component
 function App({ signOut, user }) {
   // Helper function to create user object from Cognito user
   const getCognitoUser = () => {
     if (!user) return null;
 
-    // Default to provider role if no custom role is set
-    const userRole = user.attributes?.['custom:role'] || 'provider';
     return {
       username: user.username,
       email: user.signInDetails?.loginId || user.attributes?.email || user.username,
       userId: user.userId,
       name: user.attributes?.email || user.username,
-      role: userRole,
-      isProvider: userRole === 'provider',
-      isPatient: userRole === 'patient'
+      role: 'Healthcare Provider'
     };
   };
 
   // Common logout handler
-  const handleLogout = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      console.error('Sign out error:', error);
+  const handleLogout = () => {
+    if (signOut) {
+      signOut();
     }
   };
 
-  // Wrapper Components for Public Routes
+  // Component Wrappers
+  const LandingPageWrapper = () => {
+    return <LandingPage />;
+  };
+
+  const LandingPagePatientsWrapper = () => {
+    return <LandingPagePatients />;
+  };
+
+  const ComingSoonPageWrapper = () => {
+    return <ComingSoonPage />;
+  };
+
   const LoginPageWrapper = () => {
-    const navigate = useNavigate();
     const currentUser = getCognitoUser();
 
-    // Redirect based on role if already authenticated
     if (currentUser) {
-      const redirectPath = currentUser.isPatient ? '/patient-dashboard' : '/dashboard';
-      return <Navigate to={redirectPath} replace />;
+      return <Navigate to="/dashboard" replace />;
     }
 
-    // Show login page if not authenticated
     return <LoginPage />;
   };
 
-  const LandingPageWrapper = () => {
-    const navigate = useNavigate();
+  const DashboardWrapper = () => {
     const currentUser = getCognitoUser();
-
-    const handleGetStarted = () => {
-      if (currentUser) {
-        const redirectPath = currentUser.isPatient ? '/patient-dashboard' : '/dashboard';
-        navigate(redirectPath);
-      } else {
-        navigate('/dashboard');
-      }
-    };
-
-    const handleLogin = () => {
-      if (currentUser) {
-        const redirectPath = currentUser.isPatient ? '/patient-dashboard' : '/dashboard';
-        navigate(redirectPath);
-      } else {
-        navigate('/dashboard');
-      }
-    };
-
-    return (
-      <LandingPage
-        onGetStarted={handleGetStarted}
-        onLogin={handleLogin}
-      />
-    );
-  };
-
-  const LandingPagePatientWrapper = () => {
-    const navigate = useNavigate();
-    const currentUser = getCognitoUser();
-
-    const handleGetStarted = () => {
-      if (currentUser) {
-        const redirectPath = currentUser.isPatient ? '/patient-dashboard' : '/dashboard';
-        navigate(redirectPath);
-      } else {
-        navigate('/patient-dashboard');
-      }
-    };
-
-    const handleLogin = () => {
-      if (currentUser) {
-        const redirectPath = currentUser.isPatient ? '/patient-dashboard' : '/dashboard';
-        navigate(redirectPath);
-      } else {
-        navigate('/patient-dashboard');
-      }
-    };
-
-    return (
-      <LandingPatient
-        onGetStarted={handleGetStarted}
-        onLogin={handleLogin}
-      />
-    );
-  };
-
-  // Provider Dashboard Wrapper
-  const ProviderDashboardWrapper = () => {
-    const navigate = useNavigate();
-    const currentUser = getCognitoUser();
-
-    const handleVideoCallStart = async (appointmentId) => {
-      try {
-        const id = appointmentId || `appointment-${Date.now()}`;
-        console.log('Starting video call for appointment:', id);
-        navigate(`/video-call/start/${id}`);
-      } catch (error) {
-        console.error('Video call start error:', error);
-      }
-    };
-
-    const handleNavigateToPatients = () => navigate('/patients');
-    const handleNavigateToCalendar = () => navigate('/calendar');
-    const handleNavigateToNotes = () => navigate('/notes');
 
     return (
       <div>
         <Header user={currentUser} onLogout={handleLogout} />
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
           <div className="container mx-auto px-6 py-8 pt-20">
-            <HealthcareDashboard
-              user={currentUser}
-              onVideoCallStart={handleVideoCallStart}
-              onNavigateToPatients={handleNavigateToPatients}
-              onNavigateToCalendar={handleNavigateToCalendar}
-              onNavigateToNotes={handleNavigateToNotes}
-            />
+            <HealthcareDashboard user={currentUser} />
           </div>
         </div>
       </div>
     );
   };
 
-  // Patient Dashboard Wrapper - Different experience for patients
-  const PatientDashboardWrapper = () => {
-    const navigate = useNavigate();
-    const currentUser = getCognitoUser();
-
-    return (
-      <div>
-        <Header user={currentUser} onLogout={handleLogout} />
-        <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
-          <div className="container mx-auto px-6 py-8 pt-20">
-            <div className="max-w-4xl mx-auto">
-              <h1 className="text-3xl font-bold text-gray-800 mb-8">Patient Portal</h1>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Upcoming Appointments */}
-                <div className="bg-white rounded-xl shadow-lg p-6">
-                  <h2 className="text-xl font-semibold mb-4 text-blue-600">Upcoming Appointments</h2>
-                  <div className="text-gray-600">
-                    <p>No upcoming appointments scheduled.</p>
-                    <button
-                      className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                      onClick={() => navigate('/patient-appointments')}
-                    >
-                      Schedule Appointment
-                    </button>
-                  </div>
-                </div>
-
-                {/* Recent Activity */}
-                <div className="bg-white rounded-xl shadow-lg p-6">
-                  <h2 className="text-xl font-semibold mb-4 text-green-600">My Health Records</h2>
-                  <div className="text-gray-600">
-                    <p>Access your medical records and test results.</p>
-                    <button
-                      className="mt-4 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
-                      onClick={() => navigate('/patient-records')}
-                    >
-                      View Records
-                    </button>
-                  </div>
-                </div>
-
-                {/* Messages */}
-                <div className="bg-white rounded-xl shadow-lg p-6">
-                  <h2 className="text-xl font-semibold mb-4 text-purple-600">Messages</h2>
-                  <div className="text-gray-600">
-                    <p>No new messages from your healthcare provider.</p>
-                    <button
-                      className="mt-4 bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600"
-                      onClick={() => navigate('/patient-messages')}
-                    >
-                      View Messages
-                    </button>
-                  </div>
-                </div>
-
-                {/* Video Calls */}
-                <div className="bg-white rounded-xl shadow-lg p-6">
-                  <h2 className="text-xl font-semibold mb-4 text-orange-600">Telemedicine</h2>
-                  <div className="text-gray-600">
-                    <p>Join video consultations with your doctor.</p>
-                    <button
-                      className="mt-4 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
-                      onClick={() => navigate('/patient-video-calls')}
-                    >
-                      Join Call
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Provider-specific wrappers (existing ones)
   const PatientsWrapper = () => {
-    const navigate = useNavigate();
     const currentUser = getCognitoUser();
-
-    const handleAddPatient = () => navigate('/patients/new');
 
     return (
       <div>
         <Header user={currentUser} onLogout={handleLogout} />
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
           <div className="container mx-auto px-6 py-8 pt-20">
-            <PatientsPage user={currentUser} onAddPatient={handleAddPatient} />
+            <PatientsPage user={currentUser} />
           </div>
         </div>
       </div>
@@ -340,18 +159,14 @@ function App({ signOut, user }) {
   };
 
   const NewPatientWrapper = () => {
-    const navigate = useNavigate();
     const currentUser = getCognitoUser();
-
-    const handleSuccess = () => navigate('/patients');
-    const handleCancel = () => navigate('/patients');
 
     return (
       <div>
         <Header user={currentUser} onLogout={handleLogout} />
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
           <div className="container mx-auto px-6 py-8 pt-20">
-            <NewPatientForm onSuccess={handleSuccess} onCancel={handleCancel} />
+            <NewPatientForm user={currentUser} />
           </div>
         </div>
       </div>
@@ -359,34 +174,14 @@ function App({ signOut, user }) {
   };
 
   const CalendarWrapper = () => {
-    const navigate = useNavigate();
     const currentUser = getCognitoUser();
-
-    const handleNewAppointment = () => {
-      navigate('/appointments/new');
-    };
-
-    const handleJoinVideoCall = (appointmentId) => {
-      console.log('Joining video call for appointment:', appointmentId);
-      navigate(`/video-call/${appointmentId}`);
-    };
-
-    const handleStartVideoCall = (appointmentId) => {
-      console.log('Starting video call for appointment:', appointmentId);
-      navigate(`/video-call/start/${appointmentId}`);
-    };
 
     return (
       <div>
         <Header user={currentUser} onLogout={handleLogout} />
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
           <div className="container mx-auto px-6 py-8 pt-20">
-            <CalendarPage
-              user={currentUser}
-              onNewAppointment={handleNewAppointment}
-              onJoinVideoCall={handleJoinVideoCall}
-              onStartVideoCall={handleStartVideoCall}
-            />
+            <CalendarPage user={currentUser} />
           </div>
         </div>
       </div>
@@ -394,18 +189,14 @@ function App({ signOut, user }) {
   };
 
   const NewAppointmentWrapper = () => {
-    const navigate = useNavigate();
     const currentUser = getCognitoUser();
-
-    const handleSuccess = () => navigate('/calendar');
-    const handleCancel = () => navigate('/calendar');
 
     return (
       <div>
         <Header user={currentUser} onLogout={handleLogout} />
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
           <div className="container mx-auto px-6 py-8 pt-20">
-            <NewAppointmentPage onSuccess={handleSuccess} onCancel={handleCancel} />
+            <NewAppointmentPage user={currentUser} />
           </div>
         </div>
       </div>
@@ -428,26 +219,15 @@ function App({ signOut, user }) {
   };
 
   const VideoCallWrapper = () => {
-    const { appointmentId } = useParams();
-    const navigate = useNavigate();
-    const currentUser = getCognitoUser();
     const location = useLocation();
+    const { appointmentId } = useParams();
+    const isProviderStart = location.pathname.includes('/start/');
 
-    const isStartCall = location.pathname.includes('/start/');
-    const isPatient = currentUser?.isPatient || false;
+    console.log('Provider video call page loaded');
+    console.log('- URL:', location.pathname);
+    console.log('- Provider start:', isProviderStart);
 
-    return (
-      <div>
-        <Header user={currentUser} onLogout={handleLogout} />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <VideoCallPage
-            appointmentId={appointmentId}
-            isPatient={isPatient}
-            isStartCall={isStartCall}
-          />
-        </div>
-      </div>
-    );
+    return <VideoCallPage />;
   };
 
   const PatientVideoCallWrapper = () => {
@@ -468,8 +248,7 @@ function App({ signOut, user }) {
       console.log('Cognito user authenticated:', {
         username: user.username,
         email: user.attributes?.email || user.signInDetails?.loginId,
-        userId: user.userId,
-        role: user.attributes?.['custom:role'] || 'provider'
+        userId: user.userId
       });
     }
   }, [user]);
@@ -477,108 +256,30 @@ function App({ signOut, user }) {
   return (
     <div className="App">
       <Routes>
-        {/* Public Routes - No authentication required */}
-        <Route path="/" element={<PublicRoute><LandingPageWrapper /></PublicRoute>} />
-        <Route path="/home" element={<PublicRoute><LandingPagePatientWrapper /></PublicRoute>} />
-        <Route path="/login" element={<PublicRoute><LoginPageWrapper /></PublicRoute>} />
-        <Route path="/coming-soon" element={<ComingSoonPage />} />
+        {/* Public Routes */}
+        <Route path="/" element={<LandingPageWrapper />} />
+        <Route path="/home" element={<LandingPagePatientsWrapper />} />
+        <Route path="/coming-soon" element={<ComingSoonPageWrapper />} />
+        <Route path="/login" element={<LoginPageWrapper />} />
 
-        {/* Provider Routes - For now, allow all authenticated users */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <ProviderDashboardWrapper />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/patients"
-          element={
-            <ProtectedRoute>
-              <PatientsWrapper />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/patients/new"
-          element={
-            <ProtectedRoute>
-              <NewPatientWrapper />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/appointments/new"
-          element={
-            <ProtectedRoute>
-              <NewAppointmentWrapper />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/calendar"
-          element={
-            <ProtectedRoute>
-              <CalendarWrapper />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/notes"
-          element={
-            <ProtectedRoute>
-              <NotesWrapper />
-            </ProtectedRoute>
-          }
-        />
+        {/* Protected Routes - All require Cognito authentication */}
+        <Route path="/dashboard" element={<ProtectedRoute><DashboardWrapper /></ProtectedRoute>} />
+        <Route path="/patients" element={<ProtectedRoute><PatientsWrapper /></ProtectedRoute>} />
+        <Route path="/patients/new" element={<ProtectedRoute><NewPatientWrapper /></ProtectedRoute>} />
+        <Route path="/appointments/new" element={<ProtectedRoute><NewAppointmentWrapper /></ProtectedRoute>} />
+        <Route path="/calendar" element={<ProtectedRoute><CalendarWrapper /></ProtectedRoute>} />
+        <Route path="/notes" element={<ProtectedRoute><NotesWrapper /></ProtectedRoute>} />
 
-        {/* Patient Routes - For testing patient experience */}
-        <Route
-          path="/patient-dashboard"
-          element={
-            <ProtectedRoute>
-              <PatientDashboardWrapper />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Shared Video Call Routes - Both roles can access */}
-        <Route
-          path="/video-call/start/:appointmentId"
-          element={
-            <ProtectedRoute>
-              <VideoCallWrapper />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/video-call/:appointmentId"
-          element={
-            <ProtectedRoute>
-              <VideoCallWrapper />
-            </ProtectedRoute>
-          }
-        />
+        {/* Video Call Routes */}
+        <Route path="/video-call/start/:appointmentId" element={<ProtectedRoute><VideoCallWrapper /></ProtectedRoute>} />
+        <Route path="/video-call/:appointmentId" element={<ProtectedRoute><VideoCallWrapper /></ProtectedRoute>} />
 
         {/* Patient Video Call Routes - NO AUTHENTICATION REQUIRED */}
         <Route path="/join/:appointmentId" element={<PatientVideoCallWrapper />} />
         <Route path="/join/:appointmentId/:patientToken" element={<PatientVideoCallWrapper />} />
 
-        {/* Catch all for unknown routes - redirect based on authentication */}
-        <Route
-          path="*"
-          element={
-            user ? (
-              <Navigate
-                to={user.attributes?.['custom:role'] === 'patient' ? '/patient-dashboard' : '/dashboard'}
-                replace
-              />
-            ) : (
-              <Navigate to="/" replace />
-            )
-          }
-        />
+        {/* Catch all - redirect to home for non-authenticated users */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );
